@@ -83,6 +83,9 @@ static int cmd_x(char *args) {
       printf("%x\t", *(uint32_t*) guest_to_host(val + i));
     }
   }
+  else {
+    printf("Invalid expression\n");
+  }
   return 0;
 }
 
@@ -91,6 +94,9 @@ static int cmd_p(char *args) {
   word_t val = expr(args, &success);
   if (success == true) {
     printf("%ld\n", val);
+  }
+  else {
+    printf("Invalid expression\n");
   }
   return 0;
 }
