@@ -3,5 +3,7 @@ module top(
     input b,
     output f
 );
-    assign f = a ^ b;
+
+    wire aa;
+    assign aa = ~aa;
 endmodule
