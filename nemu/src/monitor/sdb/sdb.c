@@ -73,7 +73,9 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_x(char *args) {
-  
+  bool success = true;
+
+  word_t val = expr();
   return 0;
 }
 

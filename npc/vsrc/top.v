@@ -4,6 +4,6 @@ module top(
     output f
 );
 
-    wire aa;
-    assign aa = ~aa;
+    wire A, B, C;
+    assign A = B == 1'b1 ? C : A;
 endmodule
