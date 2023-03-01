@@ -22,9 +22,7 @@
 
 enum {
   TK_NOTYPE = 256, TK_EQ,
-
-  /* TODO: Add more token types */
-
+  TK_NUM,
 };
 
 static struct rule {
@@ -38,6 +36,7 @@ static struct rule {
   {"/", '/'},
   {"\\(", '('},
   {"\\)", ')'},
+  {"[0-9]+", TK_NUM},
   {"==", TK_EQ},        // equal
 };
 
@@ -111,6 +110,79 @@ static bool make_token(char *e) {
   return true;
 }
 
+bool check_parantheses(int l, int r) {
+  if (tokens[l].type != '(') {
+    return false;
+  }
+  int bracket = 0;
+  for (int i = l; i < r; ++ i) {
+    if (tokens[i].type == '(') {
+      ++ bracket;
+    }
+    else if (tokens[i].type == ')') {
+      -- bracket;
+    }
+    if (bracket == 0 && i != r - 1) {
+      return false;
+    }
+  }
+  return true;
+}
+
+word_t eval(int l, int r, bool *success) {
+  if (l >= r) {
+    *success = false;
+    return 0;
+  }
+  else if (l == r - 1) {
+    if (tokens[l].type == TK_NUM) {
+      return atoi(tokens[l].str);
+    }
+    else {
+      *success = false;
+      return 0;
+    }
+  }
+  else if (check_parantheses(l, r)) {
+    return eval(l + 1, r - 1, success);
+  }
+  else {
+    int op = l;
+    int bracket = 0;
+    int pri = 1;
+    for (int i = l; i < r; ++ i) {
+      if (tokens[i].type == '(') {
+        ++ bracket;
+      }
+      else if (tokens[i].type == ')') {
+        -- bracket;
+      }
+      if (bracket > 0) {
+        continue;
+      }
+      
+      if (tokens[i].type != '+' || tokens[i].type != '-') {
+        pri = 0;
+        op = i;
+      }
+      if (pri == 1 && (tokens[i].type != '*' || tokens[i].type != '/')) {
+        op = i;
+      }
+
+      word_t val1 = eval(l, op, success);
+      word_t val2 = eval(op + 1, r, success);
+
+      switch (tokens[op].type) {
+        case '+' : return val1 + val2;
+        case '-' : return val1 - val2;
+        case '*' : return val1 * val2;
+        case '/' : return val1 / val2;
+        default : assert(0);
+      }
+    }
+  }
+  return 0;
+}
 
 word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
@@ -118,8 +190,5 @@ word_t expr(char *e, bool *success) {
     return 0;
   }
 
-  /* TODO: Insert codes to evaluate the expression. */
-  TODO();
-
-  return 0;
+  return eval(0, nr_token, success);
 }
