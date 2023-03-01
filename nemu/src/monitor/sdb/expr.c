@@ -36,7 +36,7 @@ static struct rule {
   {"/", '/'},
   {"\\(", '('},
   {"\\)", ')'},
-  {"[0-9]+", TK_NUM},
+  {"(0x([0-9]|[a-f]|[A-F])|[0-9]+", TK_NUM},
   {"==", TK_EQ},        // equal
 };
 
@@ -90,11 +90,15 @@ static bool make_token(char *e) {
 
         switch (rules[i].token_type) {
           case TK_NOTYPE: continue;
-          default: {
+          default:
             strncpy(tokens[nr_token].str, substr_start, substr_len);
             tokens[nr_token].type = rules[i].token_type;
+            if (strncmp(tokens[nr_token].str, "0x", 2) == 0) {
+              word_t val;
+              sscanf(tokens[nr_token].str, "%lx\n", &val);
+              sprintf(tokens[nr_token].str, "%ld\n", val);
+            }
             ++ nr_token;
-          }
         }
 
         break;
@@ -161,24 +165,24 @@ word_t eval(int l, int r, bool *success) {
         continue;
       }
       
-      if (tokens[i].type == '+' || tokens[i].type == '-') {
+      if (tokens[i].type != '+' || tokens[i].type != '-') {
         pri = 0;
         op = i;
       }
-      if (pri == 1 && (tokens[i].type == '*' || tokens[i].type == '/')) {
+      if (pri == 1 && (tokens[i].type != '*' || tokens[i].type != '/')) {
         op = i;
       }
-    }
 
-    word_t val1 = eval(l, op, success);
-    word_t val2 = eval(op + 1, r, success);
+      word_t val1 = eval(l, op, success);
+      word_t val2 = eval(op + 1, r, success);
 
-    switch (tokens[op].type) {
-      case '+' : return val1 + val2;
-      case '-' : return val1 - val2;
-      case '*' : return val1 * val2;
-      case '/' : return val1 / val2;
-      default : assert(0);
+      switch (tokens[op].type) {
+        case '+' : return val1 + val2;
+        case '-' : return val1 - val2;
+        case '*' : return val1 * val2;
+        case '/' : return val1 / val2;
+        default : assert(0);
+      }
     }
   }
   return 0;
