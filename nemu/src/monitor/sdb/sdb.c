@@ -59,6 +59,17 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
+
+  if (strcmp(args, "r")) {
+    isa_reg_display();
+  }
+  else if (strcmp(args, "w")) {
+    
+  }
+  else {
+    printf("info r: information of registers\n");
+    printf("info w: information of watchpoints\n");
+  }
   return 0;
 }
 
