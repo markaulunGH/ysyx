@@ -47,10 +47,35 @@ static int cmd_c(char *args) {
   return 0;
 }
 
-
 static int cmd_q(char *args) {
   nemu_state.state = NEMU_QUIT;
   return -1;
+}
+
+static int cmd_si(char *args) {
+  int step = args == NULL ? 1 : atoi(args);
+  cpu_exec(step);
+  return 0;
+}
+
+static int cmd_info(char *args) {
+  return 0;
+}
+
+static int cmd_x(char *args) {
+  return 0;
+}
+
+static int cmd_p(char *args) {
+  return 0;
+}
+
+static int cmd_w(char *args) {
+  return 0;
+}
+
+static int cmd_d(char *args) {
+  return 0;
 }
 
 static int cmd_help(char *args);
@@ -63,9 +88,12 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NEMU", cmd_q },
-
-  /* TODO: Add more commands */
-
+  { "si", "Step over", cmd_si },
+  { "info", "Print state of program", cmd_info },
+  { "x", "Scan the memory", cmd_x },
+  { "p", "Print the value of expression", cmd_p },
+  { "w", "Watch the value of expression", cmd_w },
+  { "d", "Delete watch point", cmd_d },
 };
 
 #define NR_CMD ARRLEN(cmd_table)
