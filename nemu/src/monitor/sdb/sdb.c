@@ -80,7 +80,7 @@ static int cmd_x(char *args) {
   word_t val = expr(args + strlen(byte_str) + 1, &success);
   if (success == true) {
     for (int i = 0; i < byte; i += 4) {
-      printf("%x", *(uint32_t*) guest_to_host(val + i));
+      printf("%x\t", *(uint32_t*) guest_to_host(val + i));
     }
   }
   return 0;
