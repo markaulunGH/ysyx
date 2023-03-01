@@ -89,7 +89,6 @@ static bool make_token(char *e) {
         position += substr_len;
 
         switch (rules[i].token_type) {
-          case TK_NOTYPE: break;
           default: {
             strncpy(tokens[nr_token].str, substr_start, substr_len);
             tokens[nr_token].type = rules[i].token_type;
