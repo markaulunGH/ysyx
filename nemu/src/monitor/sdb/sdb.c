@@ -15,6 +15,7 @@
 
 #include <isa.h>
 #include <cpu/cpu.h>
+#include <memory/paddr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "sdb.h"
@@ -59,14 +60,38 @@ static int cmd_si(char *args) {
 }
 
 static int cmd_info(char *args) {
+  if (strcmp(args, "r")) {
+    isa_reg_display();
+  }
+  else if (strcmp(args, "w")) {
+    
+  }
+  else {
+    printf("info r: information of registers\n");
+    printf("info w: information of watchpoints\n");
+  }
   return 0;
 }
 
 static int cmd_x(char *args) {
+  char *byte_str = strtok(args, " ");
+  int byte = atoi(byte_str);
+  bool success = true;
+  word_t val = expr(args + strlen(byte_str) + 1, &success);
+  if (success == true) {
+    for (int i = 0; i < byte; i += 4) {
+      printf("%x\t", *(uint32_t*) guest_to_host(val + i));
+    }
+  }
   return 0;
 }
 
 static int cmd_p(char *args) {
+  bool success = true;
+  word_t val = expr(args, &success);
+  if (success == true) {
+    printf("%ld\n", val);
+  }
   return 0;
 }
 
