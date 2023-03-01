@@ -165,11 +165,11 @@ word_t eval(int l, int r, bool *success) {
         continue;
       }
       
-      if (tokens[i].type != '+' || tokens[i].type != '-') {
+      if (tokens[i].type == '+' || tokens[i].type == '-') {
         pri = 0;
         op = i;
       }
-      if (pri == 1 && (tokens[i].type != '*' || tokens[i].type != '/')) {
+      if (pri == 1 && (tokens[i].type == '*' || tokens[i].type == '/')) {
         op = i;
       }
     }
