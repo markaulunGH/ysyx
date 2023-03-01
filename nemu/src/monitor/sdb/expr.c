@@ -36,7 +36,7 @@ static struct rule {
   {"/", '/'},
   {"\\(", '('},
   {"\\)", ')'},
-  {"(0x([0-9]|[a-f]|[A-F])+)|([0-9]+)", TK_NUM},
+  {"0x([0-9]|[a-f]|[A-F])+|[0-9]+", TK_NUM},
   {"==", TK_EQ},        // equal
 };
 
@@ -172,17 +172,16 @@ word_t eval(int l, int r, bool *success) {
       if (pri == 1 && (tokens[i].type != '*' || tokens[i].type != '/')) {
         op = i;
       }
+    }
+    word_t val1 = eval(l, op, success);
+    word_t val2 = eval(op + 1, r, success);
 
-      word_t val1 = eval(l, op, success);
-      word_t val2 = eval(op + 1, r, success);
-
-      switch (tokens[op].type) {
-        case '+' : return val1 + val2;
-        case '-' : return val1 - val2;
-        case '*' : return val1 * val2;
-        case '/' : return val1 / val2;
-        default : assert(0);
-      }
+    switch (tokens[op].type) {
+      case '+' : return val1 + val2;
+      case '-' : return val1 - val2;
+      case '*' : return val1 * val2;
+      case '/' : return val1 / val2;
+      default : assert(0);
     }
   }
   return 0;
