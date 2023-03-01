@@ -74,14 +74,18 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_x(char *args) {
-  char *byte_str = strtok(args, " ");
-  int byte = atoi(byte_str);
+  char *num_str = strtok(args, " ");
+  int num = atoi(num_str);
   bool success = true;
-  word_t val = expr(args + strlen(byte_str) + 1, &success);
+  word_t val = expr(args + strlen(num_str) + 1, &success);
   if (success == true) {
-    for (int i = 0; i < byte; i += 4) {
-      printf("%x\t", *(uint32_t*) guest_to_host(val + i));
+    for (int i = 0; i < num; ++ i) {
+      printf("0x%-14x", *(uint32_t*) guest_to_host(val + i * 4));
     }
+    printf("\n");
+  }
+  else {
+    printf("Invalid expression\n");
   }
   return 0;
 }
@@ -91,6 +95,9 @@ static int cmd_p(char *args) {
   word_t val = expr(args, &success);
   if (success == true) {
     printf("%ld\n", val);
+  }
+  else {
+    printf("Invalid expression\n");
   }
   return 0;
 }
