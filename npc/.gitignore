@@ -13,6 +13,7 @@
 !build.sc
 !README.md
 build/
+obj_dir/
 
 # mill
 out/
