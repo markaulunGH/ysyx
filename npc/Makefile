@@ -24,7 +24,7 @@ VERILATOR_FLAGS += -cc --exe
 # Optimize
 VERILATOR_FLAGS += -Os -x-assign 0
 # Warn abount lint issues; may not want this on less solid designs
-# VERILATOR_FLAGS += -Wall
+VERILATOR_FLAGS += -Wall -Wno-unused
 # Make waveforms
 VERILATOR_FLAGS += --trace-fst
 # Check SystemVerilog assertions
@@ -40,7 +40,7 @@ VERILATOR_FLAGS += --build
 # Input files for Verilator
 VERILATOR_INPUT = build/top.v src/csrc/main.cpp
 
-default: all
+default: sim
 
 test:
 	mill -i __.test
@@ -88,10 +88,6 @@ sim:
 	@echo
 	@echo "-- DONE --------------------"
 	@echo
-
-all:
-	$(call verilog)
-	$(call sim)
 
 show-config:
 	$(VERILATOR) -V
