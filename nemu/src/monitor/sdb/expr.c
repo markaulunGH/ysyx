@@ -165,24 +165,23 @@ word_t eval(int l, int r, bool *success) {
         continue;
       }
       
-      if (tokens[i].type != '+' || tokens[i].type != '-') {
+      if (tokens[i].type == '+' || tokens[i].type == '-') {
         pri = 0;
         op = i;
       }
-      if (pri == 1 && (tokens[i].type != '*' || tokens[i].type != '/')) {
+      if (pri == 1 && (tokens[i].type == '*' || tokens[i].type == '/')) {
         op = i;
       }
+    }
+    word_t val1 = eval(l, op, success);
+    word_t val2 = eval(op + 1, r, success);
 
-      word_t val1 = eval(l, op, success);
-      word_t val2 = eval(op + 1, r, success);
-
-      switch (tokens[op].type) {
-        case '+' : return val1 + val2;
-        case '-' : return val1 - val2;
-        case '*' : return val1 * val2;
-        case '/' : return val1 / val2;
-        default : assert(0);
-      }
+    switch (tokens[op].type) {
+      case '+' : return val1 + val2;
+      case '-' : return val1 - val2;
+      case '*' : return val1 * val2;
+      case '/' : return val1 / val2;
+      default : assert(0);
     }
   }
   return 0;
