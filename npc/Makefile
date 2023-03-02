@@ -1,6 +1,7 @@
 BUILD_DIR = ./build
 
 export PATH := $(PATH):$(abspath ./utils)
+export PATH := $(PATH):$(abspath ./)
 
 # Set up variables
 
@@ -23,7 +24,7 @@ VERILATOR_FLAGS += -cc --exe
 # Optimize
 VERILATOR_FLAGS += -Os -x-assign 0
 # Warn abount lint issues; may not want this on less solid designs
-VERILATOR_FLAGS += -Wall
+VERILATOR_FLAGS += -Wall -Wno-unused
 # Make waveforms
 VERILATOR_FLAGS += --trace-fst
 # Check SystemVerilog assertions
@@ -37,7 +38,7 @@ VERILATOR_FLAGS += --assert
 VERILATOR_FLAGS += --build
 
 # Input files for Verilator
-VERILATOR_INPUT = vsrc/top.v csrc/main.cpp
+VERILATOR_INPUT = build/top.v src/csrc/main.cpp
 
 default: sim
 
@@ -63,9 +64,6 @@ reformat:
 
 checkformat:
 	mill -i __.checkFormat
-
-clean:
-	-rm -rf $(BUILD_DIR)
 
 .PHONY: test verilog help compile bsp reformat checkformat clean
 
@@ -96,6 +94,6 @@ show-config:
 
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
-	-rm -rf obj_dir logs *.log *.dmp *.vpd coverage.dat core
+	-rm -rf obj_dir logs *.log *.dmp *.vpd coverage.dat core $(BUILD_DIR)
 
 include ../Makefile
