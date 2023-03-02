@@ -64,7 +64,7 @@ static int cmd_info(char *args) {
     isa_reg_display();
   }
   else if (strcmp(args, "w") == 0) {
-    
+    wp_display();
   }
   else {
     printf("info r: information of registers\n");
