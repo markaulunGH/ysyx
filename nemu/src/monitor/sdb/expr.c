@@ -43,7 +43,7 @@ static struct rule {
   {"\\(", '('},
   {"\\)", ')'},
   {"0x([0-9]|[a-f]|[A-F])+|[0-9]+", TK_NUM},
-  {"$([a-z]+|[0-9]+)", TK_REG},
+  {"\\$([a-z]|[0-9])+", TK_REG},
   {"==", TK_EQ},
   {"!=", TK_NEQ},
   {"&&", TK_AND},
@@ -196,12 +196,15 @@ word_t eval(int l, int r, bool *success) {
     word_t val2 = eval(op + 1, r, success);
 
     switch (tokens[op].type) {
-      case '+' : return val1 + val2;
-      case '-' : return val1 - val2;
-      case '*' : return val1 * val2;
-      case '/' : return val1 / val2;
+      case '+'      : return val1 + val2;
+      case '-'      : return val1 - val2;
+      case '*'      : return val1 * val2;
+      case '/'      : return val1 / val2;
+      case TK_EQ    : return val1 == val2;
+      case TK_NEQ   : return val1 != val2;
+      case TK_AND   : return val1 && val2;
       case TK_DEREF : return *(word_t*) guest_to_host(val2);
-      default : assert(0);
+      default       : assert(0);
     }
   }
   return 0;

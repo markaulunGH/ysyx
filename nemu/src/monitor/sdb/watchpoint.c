@@ -14,15 +14,15 @@
 ***************************************************************************************/
 
 #include "sdb.h"
+#include <difftest-def.h>
 
 #define NR_WP 32
 
 typedef struct watchpoint {
   int NO;
   struct watchpoint *next;
-
-  /* TODO: Add more members if necessary */
-
+  char e[64];
+  word_t val;
 } WP;
 
 static WP wp_pool[NR_WP] = {};
@@ -39,8 +39,54 @@ void init_wp_pool() {
   free_ = wp_pool;
 }
 
-/* TODO: Implement the functionality of watchpoint */
+void display_wp() {
+  for (WP *x = head; x != NULL; x = x->next) {
+    printf("%d: %s\n", x->NO, x->e);
+  }
+}
 
-void wp_display() {
-  
+void new_wp(char *e, bool *success) {
+  if (free_ == NULL) {
+    printf("Fail to add watchpoints, please delete some first\n");
+    *success = false;
+    return;
+  }
+  WP *x = free_;
+  free_ = free_->next;
+  x->next = head;
+  head = x;
+  strcpy(x->e, e);
+  x->val = expr(e, success);
+  printf("Watchpoint %d: %s\n", x->NO, x->e);
+}
+
+void free_wp(int NO) {
+  if (head == NULL) {
+    return;
+  }
+  for (WP *x = head, *y = NULL; x != NULL; y = x, x = x->next) {
+    if (x->NO == NO) {
+      if (y) {
+        y->next = x->next;
+      }
+      x->next = free_;
+      free_ = x;
+      return;
+    }
+  }
+}
+
+bool scan_wp() {
+  bool success;
+  for (WP *x = head; x != NULL; x = x->next) {
+    word_t val = expr(x->e, &success);
+    if (val != x->val) {
+      printf("Watchpoint %d: %s\n", x->NO, x->e);
+      printf("Old value = %ld\n", x->val);
+      printf("New value = %ld\n", val);
+      x->val = val;
+      return true;
+    }
+  }
+  return false;
 }

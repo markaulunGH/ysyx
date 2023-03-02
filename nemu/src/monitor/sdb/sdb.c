@@ -64,7 +64,7 @@ static int cmd_info(char *args) {
     isa_reg_display();
   }
   else if (strcmp(args, "w") == 0) {
-    wp_display();
+    display_wp();
   }
   else {
     printf("info r: information of registers\n");
@@ -103,10 +103,13 @@ static int cmd_p(char *args) {
 }
 
 static int cmd_w(char *args) {
+  bool success = true;
+  new_wp(args, &success);
   return 0;
 }
 
 static int cmd_d(char *args) {
+  free_wp(atoi(args));
   return 0;
 }
 
