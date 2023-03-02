@@ -64,7 +64,7 @@ static int cmd_info(char *args) {
     isa_reg_display();
   }
   else if (strcmp(args, "w") == 0) {
-    
+    wp_display();
   }
   else {
     printf("info r: information of registers\n");
@@ -80,7 +80,7 @@ static int cmd_x(char *args) {
   word_t val = expr(args + strlen(num_str) + 1, &success);
   if (success == true) {
     for (int i = 0; i < num; ++ i) {
-      printf("0x%-14x", *(uint32_t*) guest_to_host(val + i * 4));
+      printf("0x%-14lx", *(word_t*) guest_to_host(val + i * 8));
     }
     printf("\n");
   }

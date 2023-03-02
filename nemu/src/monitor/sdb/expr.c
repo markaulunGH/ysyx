@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include <memory/paddr.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -21,23 +22,31 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256,
   TK_NUM,
+  TK_REG,
+  TK_EQ,
+  TK_NEQ,
+  TK_AND,
+  TK_DEREF,
 };
 
 static struct rule {
   const char *regex;
   int token_type;
 } rules[] = {
-  {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
+  {" +", TK_NOTYPE},
+  {"\\+", '+'},
   {"-", '-'},
   {"\\*", '*'},
   {"/", '/'},
   {"\\(", '('},
   {"\\)", ')'},
   {"0x([0-9]|[a-f]|[A-F])+|[0-9]+", TK_NUM},
-  {"==", TK_EQ},        // equal
+  {"$([a-z]+|[0-9]+)", TK_REG},
+  {"==", TK_EQ},
+  {"!=", TK_NEQ},
+  {"&&", TK_AND},
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -93,7 +102,7 @@ static bool make_token(char *e) {
           default:
             strncpy(tokens[nr_token].str, substr_start, substr_len);
             tokens[nr_token].type = rules[i].token_type;
-            if (strncmp(tokens[nr_token].str, "0x", 2) == 0) {
+            if (strncmp(tokens[nr_token].str, "0x", 2) == 0 && tokens[nr_token].type == TK_NUM) {
               word_t val;
               sscanf(tokens[nr_token].str, "%lx\n", &val);
               sprintf(tokens[nr_token].str, "%ld\n", val);
@@ -142,6 +151,9 @@ word_t eval(int l, int r, bool *success) {
     if (tokens[l].type == TK_NUM) {
       return atoi(tokens[l].str);
     }
+    else if (tokens[l].type == TK_REG) {
+      return isa_reg_str2val(tokens[l].str + 1, success);
+    }
     else {
       *success = false;
       return 0;
@@ -153,7 +165,7 @@ word_t eval(int l, int r, bool *success) {
   else {
     int op = l;
     int bracket = 0;
-    int pri = 1;
+    int pri = 2;
     for (int i = l; i < r; ++ i) {
       if (tokens[i].type == '(') {
         ++ bracket;
@@ -172,8 +184,15 @@ word_t eval(int l, int r, bool *success) {
       if (pri == 1 && (tokens[i].type == '*' || tokens[i].type == '/')) {
         op = i;
       }
+      if (pri == 2 && tokens[i].type == TK_DEREF) {
+        op = i;
+      }
     }
-    word_t val1 = eval(l, op, success);
+
+    word_t val1 = 0;
+    if (tokens[op].type != TK_DEREF) {
+      val1 = eval(l, op, success);
+    }
     word_t val2 = eval(op + 1, r, success);
 
     switch (tokens[op].type) {
@@ -181,6 +200,7 @@ word_t eval(int l, int r, bool *success) {
       case '-' : return val1 - val2;
       case '*' : return val1 * val2;
       case '/' : return val1 / val2;
+      case TK_DEREF : return *(word_t*) guest_to_host(val2);
       default : assert(0);
     }
   }
@@ -191,6 +211,12 @@ word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
+  }
+
+  for (int i = 0; i < nr_token; ++ i) {
+    if (tokens[i].type == '*' && (i == 0 || (tokens[i - 1].type != TK_NUM && tokens[i - 1].type != ')'))) {
+      tokens[i].type = TK_DEREF;
+    }
   }
 
   return eval(0, nr_token, success);
