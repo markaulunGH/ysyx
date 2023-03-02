@@ -69,14 +69,14 @@ int main(int argc, char** argv, char** env)
         // new API, and sc_time_stamp() will no longer work.
 
         int in = random(1 << 4);
-        top->in = in;
+        top->io_in = in;
 
         // Evaluate model
         // (If you have multiple models being simulated in the same
         // timestep then instead of eval(), call eval_step() on each, then
         // eval_end_step() on each. See the manual.)
         top->eval();
-        assert(top->out == in);
+        assert(top->io_out == in);
 
         tfp->dump(contextp->time());
     }
