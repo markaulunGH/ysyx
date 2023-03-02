@@ -5,7 +5,7 @@
 #include <verilated.h>
 
 // Include model header, generated from Verilating "top.v"
-#include "Vtop.h"
+#include "VGCD.h"
 
 #include "verilated_fst_c.h"
 
@@ -41,7 +41,7 @@ int main(int argc, char** argv, char** env)
     // Construct the Verilated model, from Vtop.h generated from Verilating "top.v".
     // Using unique_ptr is similar to "Vtop* top = new Vtop" then deleting at end.
     // "TOP" will be the hierarchical name of the module.
-    const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
+    const std::unique_ptr<VGCD> top{new VGCD{contextp.get(), "TOP"}};
     VerilatedFstC* tfp = new VerilatedFstC;
     top->trace(tfp, 0);
     tfp->open("logs/dump.fst");

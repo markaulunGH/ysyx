@@ -38,7 +38,7 @@ VERILATOR_FLAGS += --assert
 VERILATOR_FLAGS += --build
 
 # Input files for Verilator
-VERILATOR_INPUT = vsrc/top.v csrc/main.cpp
+VERILATOR_INPUT = src/src/GCD.v src/csrc/main.cpp
 
 default: all
 
