@@ -9,6 +9,12 @@
 
 #include "verilated_fst_c.h"
 
+//generate random numbers in 0~x-1
+int random(int x)
+{
+    return rand() % x;
+}
+
 int main(int argc, char** argv, char** env)
 {
     // Create logs/ directory in case we have traces to put under it
@@ -62,18 +68,17 @@ int main(int argc, char** argv, char** env)
         // is called (with non-zero), the Verilated libraries assume the
         // new API, and sc_time_stamp() will no longer work.
 
-        int a = rand() & 1;
-        int b = rand() & 1;
-        top->a = a;
-        top->b = b;
+        int value1 = random(1 << 16);
+        int value2 = random(1 << 16);
+        top->value1 = value1;
+        top->value2 = value2;
+        top->loadingValues = random(2);
 
         // Evaluate model
         // (If you have multiple models being simulated in the same
         // timestep then instead of eval(), call eval_step() on each, then
         // eval_end_step() on each. See the manual.)
         top->eval();
-        printf("a = %d, b = %d, f = %d\n", a, b, top->f);
-        assert(top->f == (a ^ b));
 
         tfp->dump(contextp->time());
     }
