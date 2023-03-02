@@ -33,4 +33,6 @@ enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 # error Unsupport ISA
 #endif
 
+bool scan_wp();
+
 #endif
