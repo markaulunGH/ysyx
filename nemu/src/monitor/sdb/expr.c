@@ -14,6 +14,7 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include <memory/paddr.h>
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
@@ -23,10 +24,11 @@
 enum {
   TK_NOTYPE = 256,
   TK_NUM,
+  TK_REG,
   TK_EQ,
   TK_NEQ,
   TK_AND,
-  DEREF,
+  TK_DEREF,
 };
 
 static struct rule {
@@ -41,7 +43,7 @@ static struct rule {
   {"\\(", '('},
   {"\\)", ')'},
   {"0x([0-9]|[a-f]|[A-F])+|[0-9]+", TK_NUM},
-  // {"$()"}
+  {"$([a-z]+|[0-9]+)", TK_REG},
   {"==", TK_EQ},
   {"!=", TK_NEQ},
   {"&&", TK_AND},
@@ -149,6 +151,9 @@ word_t eval(int l, int r, bool *success) {
     if (tokens[l].type == TK_NUM) {
       return atoi(tokens[l].str);
     }
+    else if (tokens[l].type == TK_REG) {
+      return isa_reg_str2val(tokens[l].str + 1, success);
+    }
     else {
       *success = false;
       return 0;
@@ -160,7 +165,7 @@ word_t eval(int l, int r, bool *success) {
   else {
     int op = l;
     int bracket = 0;
-    int pri = 1;
+    int pri = 2;
     for (int i = l; i < r; ++ i) {
       if (tokens[i].type == '(') {
         ++ bracket;
@@ -179,8 +184,15 @@ word_t eval(int l, int r, bool *success) {
       if (pri == 1 && (tokens[i].type == '*' || tokens[i].type == '/')) {
         op = i;
       }
+      if (pri == 2 && tokens[i].type == TK_DEREF) {
+        op = i;
+      }
     }
-    word_t val1 = eval(l, op, success);
+
+    word_t val1 = 0;
+    if (tokens[op].type != TK_DEREF) {
+      val1 = eval(l, op, success);
+    }
     word_t val2 = eval(op + 1, r, success);
 
     switch (tokens[op].type) {
@@ -188,6 +200,7 @@ word_t eval(int l, int r, bool *success) {
       case '-' : return val1 - val2;
       case '*' : return val1 * val2;
       case '/' : return val1 / val2;
+      case TK_DEREF : return *(word_t*) guest_to_host(val2);
       default : assert(0);
     }
   }
@@ -202,7 +215,7 @@ word_t expr(char *e, bool *success) {
 
   for (int i = 0; i < nr_token; ++ i) {
     if (tokens[i].type == '*' && (i == 0 || (tokens[i - 1].type != TK_NUM && tokens[i - 1].type != ')'))) {
-      tokens[i].type = DEREF;
+      tokens[i].type = TK_DEREF;
     }
   }
 
