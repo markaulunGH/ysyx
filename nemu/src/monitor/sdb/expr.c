@@ -21,23 +21,30 @@
 #include <regex.h>
 
 enum {
-  TK_NOTYPE = 256, TK_EQ,
+  TK_NOTYPE = 256,
   TK_NUM,
+  TK_EQ,
+  TK_NEQ,
+  TK_AND,
+  DEREF,
 };
 
 static struct rule {
   const char *regex;
   int token_type;
 } rules[] = {
-  {" +", TK_NOTYPE},    // spaces
-  {"\\+", '+'},         // plus
+  {" +", TK_NOTYPE},
+  {"\\+", '+'},
   {"-", '-'},
   {"\\*", '*'},
   {"/", '/'},
   {"\\(", '('},
   {"\\)", ')'},
   {"0x([0-9]|[a-f]|[A-F])+|[0-9]+", TK_NUM},
-  {"==", TK_EQ},        // equal
+  // {"$()"}
+  {"==", TK_EQ},
+  {"!=", TK_NEQ},
+  {"&&", TK_AND},
 };
 
 #define NR_REGEX ARRLEN(rules)
@@ -191,6 +198,12 @@ word_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
+  }
+
+  for (int i = 0; i < nr_token; ++ i) {
+    if (tokens[i].type == '*' && (i == 0 || (tokens[i - 1].type != TK_NUM && tokens[i - 1].type != ')'))) {
+      tokens[i].type = DEREF;
+    }
   }
 
   return eval(0, nr_token, success);
