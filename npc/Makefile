@@ -3,6 +3,11 @@ BUILD_DIR = ./build
 export PATH := $(PATH):$(abspath ./utils)
 export PATH := $(PATH):$(abspath ./)
 
+# Set up variables
+
+# If $VERILATOR_ROOT isn't in the environment, we assume it is part of a
+# package install, and verilator is in your path. Otherwise find the
+# binary relative to $VERILATOR_ROOT (such as when inside the git sources).
 ifeq ($(VERILATOR_ROOT),)
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
@@ -12,12 +17,21 @@ VERILATOR = $(VERILATOR_ROOT)/bin/verilator
 VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
 endif
 
+# Generate C++ in executable form
 VERILATOR_FLAGS += -cc --exe
+# Generate makefile dependencies (not shown as complicates the Makefile)
+#VERILATOR_FLAGS += -MMD
+# Optimize
 VERILATOR_FLAGS += -Os -x-assign 0
-VERILATOR_FLAGS += -Wall
+# Warn abount lint issues; may not want this on less solid designs
+VERILATOR_FLAGS += -Wall -Wno-unused
+# Make waveforms
 VERILATOR_FLAGS += --trace-fst
+# Check SystemVerilog assertions
 VERILATOR_FLAGS += --assert
+# Generate coverage analysis
 # VERILATOR_FLAGS += --coverage
+# Run Verilator in debug mode
 #VERILATOR_FLAGS += --debug
 # Add this trace to get a backtrace in gdb
 #VERILATOR_FLAGS += --gdbbt
