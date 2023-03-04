@@ -13,6 +13,9 @@ VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
 endif
 
 include $(NVBOARD_HOME)/scripts/nvboard.mk
+INC_PATH ?=
+INCFLAGS = $(addprefix -I, $(INC_PATH))
+CFLAGS += $(INCFLAGS)
 
 VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-unused --trace-fst --assert --build
 # VERILATOR_FLAGS += --coverage
