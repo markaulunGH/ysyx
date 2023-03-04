@@ -14,7 +14,7 @@ class top extends Module
     count := Mux(count >= 5000000.U, 0.U, count + 1.U)
     when (count === 0.U(32.W))
     {
-        led := Cat(led(14, 0), led(15, 15))
+        led := Cat(led(14, 0), led(15))
     }
 
     io.led := led
