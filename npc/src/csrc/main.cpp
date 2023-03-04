@@ -22,6 +22,8 @@ int main(int argc, char** argv, char** env)
     {
         contextp->timeInc(1);
 
+        top->clock = ~top->clock;
+
         top->eval();
 
         tfp->dump(contextp->time());
