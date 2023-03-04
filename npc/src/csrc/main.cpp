@@ -2,7 +2,7 @@
 #include <verilated.h>
 #include "Vtop.h"
 #include "verilated_fst_c.h"
-#include <nvboard.h>
+#include <~/ysyx/nvboard/include/nvboard.h>
 
 int main(int argc, char** argv, char** env)
 {
