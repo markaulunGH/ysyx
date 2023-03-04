@@ -15,7 +15,7 @@ class top extends Module
         // led := Cat(led(14, 0), led(15, 15))
     }
 
-    when (count >= 5000000)
+    when (count >= 5000000.U(32.W))
     {
         count := 0.U(32.W)
     }
