@@ -8,8 +8,8 @@ class top extends Module
         val led = Output(UInt(16.W))
     })
 
-
-    val count = RegNext(Mux(count >= 5000000.U, 0.U, count + 1.U), 0.U(32.W))
+    val count = RegInit(0.U(32.W))
+    count := RegNext(Mux(count >= 5000000.U, 0.U, count + 1.U))
     val led = RegInit(1.U(16.W))
 
     when (count === 0.U(32.W))
