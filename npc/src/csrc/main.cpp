@@ -39,6 +39,8 @@ int main(int argc, char** argv, char** env)
     top->final();
     tfp->close();
 
+    printf("closed\n");
+
 #if VM_COVERAGE
     Verilated::mkdir("logs");
     contextp->coveragep()->write("logs/coverage.dat");
