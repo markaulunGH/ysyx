@@ -12,7 +12,7 @@ VERILATOR = $(VERILATOR_ROOT)/bin/verilator
 VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
 endif
 
-VERILATOR_FLAGS += -cc --exe -Os -x-assign 0 -Wall -Wno-unused --trace-fst --assert --build
+VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -j 0 -Wall -Wno-unused --trace-fst --assert --build
 # VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --debug
 #VERILATOR_FLAGS += --gdbbt
