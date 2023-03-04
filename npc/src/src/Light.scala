@@ -4,7 +4,7 @@ class top extends Module
 {
     val io = IO(new Bundle
     {
-        val led = Output(Reg(UInt(16.W)))
+        val led = Output(UInt(16.W))
     })
 
     val count = RegInit(0.U(32.W))
