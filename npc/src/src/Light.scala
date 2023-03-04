@@ -11,7 +11,7 @@ class top extends Module
     val count = RegInit(0.U(32.W))
     val led = RegInit(1.U(16.W))
     
-    count := RegNext(Mux(count >= 5000000.U, 0.U, count + 1.U))
+    count := Mux(count >= 5000000.U, 0.U, count + 1.U)
     when (count === 0.U(32.W))
     {
         led := Cat(led(14, 0), led(15, 15))
