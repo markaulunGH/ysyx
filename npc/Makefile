@@ -3,11 +3,6 @@ BUILD_DIR = ./build
 export PATH := $(PATH):$(abspath ./utils)
 export PATH := $(PATH):$(abspath ./)
 
-# Set up variables
-
-# If $VERILATOR_ROOT isn't in the environment, we assume it is part of a
-# package install, and verilator is in your path. Otherwise find the
-# binary relative to $VERILATOR_ROOT (such as when inside the git sources).
 ifeq ($(VERILATOR_ROOT),)
 VERILATOR = verilator
 VERILATOR_COVERAGE = verilator_coverage
@@ -17,28 +12,18 @@ VERILATOR = $(VERILATOR_ROOT)/bin/verilator
 VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
 endif
 
-# Generate C++ in executable form
-VERILATOR_FLAGS += -cc --exe
-# Generate makefile dependencies (not shown as complicates the Makefile)
-#VERILATOR_FLAGS += -MMD
-# Optimize
-VERILATOR_FLAGS += -Os -x-assign 0
-# Warn abount lint issues; may not want this on less solid designs
-VERILATOR_FLAGS += -Wall -Wno-unused
-# Make waveforms
-VERILATOR_FLAGS += --trace-fst
-# Check SystemVerilog assertions
-VERILATOR_FLAGS += --assert
-# Generate coverage analysis
-# VERILATOR_FLAGS += --coverage
-# Run Verilator in debug mode
-#VERILATOR_FLAGS += --debug
-# Add this trace to get a backtrace in gdb
-#VERILATOR_FLAGS += --gdbbt
-VERILATOR_FLAGS += --build
+include $(NVBOARD_HOME)/scripts/nvboard.mk
+INC_PATH ?=
+INCFLAGS = $(addprefix -I, $(INC_PATH))
+CFLAGS += $(INCFLAGS)
+LDFLAGS += -lSDL2 -lSDL2_image
 
-# Input files for Verilator
-VERILATOR_INPUT = build/top.v src/csrc/main.cpp
+VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-unused --trace-fst --assert --build
+# VERILATOR_FLAGS += --coverage
+#VERILATOR_FLAGS += --debug
+#VERILATOR_FLAGS += --gdbbt
+
+VERILATOR_INPUT = build/top.v src/csrc/main.cpp $(NVBOARD_ARCHIVE)
 
 default: sim
 
@@ -70,9 +55,10 @@ checkformat:
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
+	@$^
 	@echo
 	@echo "-- VERILATE ----------------"
-	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT)
+	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT) $(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS))
 
 	@echo
 	@echo "-- RUN ---------------------"
@@ -88,9 +74,6 @@ sim:
 	@echo
 	@echo "-- DONE --------------------"
 	@echo
-
-show-config:
-	$(VERILATOR) -V
 
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
