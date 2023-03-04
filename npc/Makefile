@@ -18,7 +18,7 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(INCFLAGS)
 LDFLAGS += -lSDL2 -lSDL2_image
 
-VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-unused --trace-fst --assert --build $(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS))
+VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-unused --trace-fst --assert --build
 # VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --debug
 #VERILATOR_FLAGS += --gdbbt
@@ -55,9 +55,10 @@ checkformat:
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
+	@$^
 	@echo
 	@echo "-- VERILATE ----------------"
-	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT)
+	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT) $(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS))
 
 	@echo
 	@echo "-- RUN ---------------------"
