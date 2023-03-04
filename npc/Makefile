@@ -22,8 +22,7 @@ VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-unused --trace-fst --
 #VERILATOR_FLAGS += --debug
 #VERILATOR_FLAGS += --gdbbt
 
-# Input files for Verilator
-VERILATOR_INPUT = build/top.v src/csrc/main.cpp
+VERILATOR_INPUT = build/top.v src/csrc/main.cpp $(NVBOARD_ARCHIVE)
 
 default: sim
 
