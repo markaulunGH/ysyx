@@ -12,11 +12,18 @@ VERILATOR = $(VERILATOR_ROOT)/bin/verilator
 VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
 endif
 
-VERILATOR_FLAGS += -cc --exe -Os -x-assign 0 -Wall --trace-fst --assert --build
+VERILATOR_FLAGS += -cc --exe
+VERILATOR_FLAGS += -Os -x-assign 0
+VERILATOR_FLAGS += -Wall
+VERILATOR_FLAGS += --trace-fst
+VERILATOR_FLAGS += --assert
 # VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --debug
+# Add this trace to get a backtrace in gdb
 #VERILATOR_FLAGS += --gdbbt
+VERILATOR_FLAGS += --build
 
+# Input files for Verilator
 VERILATOR_INPUT = build/top.v src/csrc/main.cpp
 
 default: sim
