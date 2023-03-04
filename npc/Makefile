@@ -14,7 +14,7 @@ endif
 
 VERILATOR_FLAGS += -cc --exe
 VERILATOR_FLAGS += -Os -x-assign 0
-VERILATOR_FLAGS += -Wall -Wno-unused
+VERILATOR_FLAGS += -Wall
 VERILATOR_FLAGS += --trace-fst
 # Check SystemVerilog assertions
 VERILATOR_FLAGS += --assert
