@@ -18,7 +18,7 @@ int main(int argc, char** argv, char** env)
     top->trace(tfp, 0);
     tfp->open("logs/dump.fst");
 
-    while (contextp->time() < 1000000)
+    while (contextp->time() < 100000000)
     {
         contextp->timeInc(1);
 
