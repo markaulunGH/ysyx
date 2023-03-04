@@ -21,7 +21,7 @@ class top extends Module
     }
     .otherwise
     {
-        count := count + 1
+        count := count + 1.U
     }
 
     io.led := led
