@@ -25,21 +25,18 @@ int main(int argc, char** argv, char** env)
     while (1)
     {
         contextp->timeInc(1);
-        nvboard_update();
 
         top->reset = contextp->time() < 100;
-
         top->clock = ~top->clock;
 
         top->eval();
+        nvboard_update();
 
         tfp->dump(contextp->time());
     }
 
     top->final();
     tfp->close();
-
-    printf("closed\n");
 
 #if VM_COVERAGE
     Verilated::mkdir("logs");
