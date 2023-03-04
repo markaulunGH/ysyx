@@ -9,7 +9,7 @@ int main(int argc, char** argv, char** env)
 
     const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
     contextp->debug(0);
-    // contextp->randReset(2);
+    contextp->randReset(2);
     contextp->traceEverOn(true);
     contextp->commandArgs(argc, argv);
 

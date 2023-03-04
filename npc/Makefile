@@ -12,19 +12,10 @@ VERILATOR = $(VERILATOR_ROOT)/bin/verilator
 VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
 endif
 
-VERILATOR_FLAGS += -cc --exe
-VERILATOR_FLAGS += -Os -x-assign 0
-VERILATOR_FLAGS += -Wall
-VERILATOR_FLAGS += --trace-fst
-# Check SystemVerilog assertions
-VERILATOR_FLAGS += --assert
-# Generate coverage analysis
+VERILATOR_FLAGS += -cc --exe -Os -x-assign 0 -Wall -Wno-unsed --trace-fst --assert --build
 # VERILATOR_FLAGS += --coverage
-# Run Verilator in debug mode
 #VERILATOR_FLAGS += --debug
-# Add this trace to get a backtrace in gdb
 #VERILATOR_FLAGS += --gdbbt
-VERILATOR_FLAGS += --build
 
 # Input files for Verilator
 VERILATOR_INPUT = build/top.v src/csrc/main.cpp
@@ -77,9 +68,6 @@ sim:
 	@echo
 	@echo "-- DONE --------------------"
 	@echo
-
-show-config:
-	$(VERILATOR) -V
 
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
