@@ -9,7 +9,7 @@ class top extends Module
     })
 
 
-    val count = RegNext(Mux(count >= 5000000.U, 0.U, count + 1.U), 0.U(32.W))
+    val count = RegNext(Mux(led >= 5000000.U, 0.U, led + 1.U), 0.U(32.W))
     val led = RegInit(1.U(16.W))
 
     when (count === 0.U(32.W))
