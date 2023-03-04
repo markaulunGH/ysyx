@@ -17,7 +17,7 @@ INC_PATH ?=
 INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(INCFLAGS)
 
-VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-unused --trace-fst --assert --build $(addprefix, -CFLAGS, $(CFLAGS))
+VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-unused --trace-fst --assert --build $(addprefix -CFLAGS, $(CFLAGS))
 # VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --debug
 #VERILATOR_FLAGS += --gdbbt
