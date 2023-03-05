@@ -46,7 +46,7 @@ class top extends Module
     {
         when (count === 10.U)
         {
-            when (buffer(0) === 0.U && ps2_data === 1.U && buffer(9, 1).xorR)
+            when (buffer(0) === 0.U && io.ps2_data && buffer(9, 1).xorR)
             {
                 fifo(w_ptr) := buffer(8, 1)
                 w_ptr := w_ptr + 1.U
