@@ -24,7 +24,7 @@ class top extends Module
     val r_ptr = RegInit(0.U(3.W))
     val count = RegInit(0.U(4.W))
     val ps2_clk_sync = Reg(UInt(3.W))
-    
+
     ps2_clk_sync := Cat(ps2_clk_sync(1, 0), io.ps2_clk)
 
     val sampling = ps2_clk_sync(2) & ~ps2_clk_sync(1)
@@ -49,14 +49,16 @@ class top extends Module
             {
                 fifo(w_ptr) := buffer(8, 1)
                 w_ptr := w_ptr + 1.U
-                ready := true.B
+                ready := 1.U
                 overflow := overflow | (r_ptr === (w_ptr + 1.U))
             }
             count := 0.U
         }
         .otherwise
         {
-            buffer(count) := io.ps2_data
+            val buffer_vec = VecInit(buffer)
+            buffer_vec(count) := io.ps2_data
+            buffer := buffer_vec
             count := count + 1.U
         }
     }
