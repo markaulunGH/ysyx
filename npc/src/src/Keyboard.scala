@@ -18,7 +18,7 @@ class top extends Module
     val w_ptr = RegInit(0.U(3.W))
     val r_ptr = RegInit(0.U(3.W))
     val count = RegInit(0.U(4.W))
-    
+
     val ready = RegInit(0.U(1.W))
     val overflow = RegInit(0.U(1.W))
 
@@ -30,7 +30,7 @@ class top extends Module
 
     val sampling = ps2_clk_sync(2) & ~ps2_clk_sync(1)
 
-    when (ready)
+    when (ready === 1)
     {
         when (nextdata_n === 0)
         {
