@@ -44,6 +44,7 @@ class top extends  Module {
     {
         val num = Input(UInt(4.W))
         val seg = Output(UInt(8.W))
+        val _num = Input(UInt(4.W))
     })
 
     val lut = List(0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71)
@@ -58,7 +59,7 @@ class top extends  Module {
     }
     for (i <- 0 until 16)
     {
-        when (io.num === (i * 2).U)
+        when (io.num === io._num)
         {
             io.seg := lut(15 - i).U
         }
