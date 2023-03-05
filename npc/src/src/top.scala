@@ -40,7 +40,7 @@ import chisel3.util._
 
 
 class top extends  Module {
-        val io = IO(new Bundle
+    val io = IO(new Bundle
     {
         val num = Input(UInt(4.W))
         val seg = Output(UInt(8.W))
