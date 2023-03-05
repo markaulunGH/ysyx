@@ -30,7 +30,7 @@ class top extends Module
 
     val sampling = ps2_clk_sync(2) & ~ps2_clk_sync(1)
 
-    when (ready)
+    when (ready === 1.U)
     {
         when (io.nextdata_n === 0.U)
         {
