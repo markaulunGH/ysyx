@@ -35,8 +35,8 @@ class top extends Module
         when (io.nextdata_n === 0.U)
         {
             r_ptr := r_ptr + 1.U
-            when (w_ptr === r_ptr + 1.U)
-                ready := 0.U
+            when (w_ptr === r_ptr + 1.U){
+                ready := 0.U}
         }
     }
 }
