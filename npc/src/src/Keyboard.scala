@@ -56,7 +56,7 @@ class Keyboard extends Module
         }
         .otherwise
         {
-            val buffer_vec = VecInit(buffer)
+            val buffer_vec = VecInit(buffer.asBools)
             buffer_vec(count) := io.ps2_data
             buffer := buffer_vec.asUInt
             count := count + 1.U
