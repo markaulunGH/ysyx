@@ -1,6 +1,26 @@
 import chisel3._
 import chisel3.util._
 
+class hex2seg extends Module
+{
+    val io = IO(new Bundle
+    {
+        val num = Input(UInt(4.W))
+        val seg = Output(Uint(8.W))
+    })
+
+    val lut = List(0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71)
+
+    io.seg := 0.U
+    for (i <- 0 until 16)
+    {
+        when (io.num === i)
+        {
+            io.seg := lut(i)
+        }
+    }
+}
+
 class Seg extends Module
 {
     val io = IO(new Bundle
@@ -18,6 +38,11 @@ class Seg extends Module
         val seg7 = Output(UInt(8.W))
     })
 
-    val seg0 = RegInit(VecInit(Seq.fill(8)(0.U(1.W))))
-    // seg0 := data(3, 0) === 
+    val seg0 = Module(new hex2seg)
+
+
+    when (ready)
+    {
+        se
+    }
 }
