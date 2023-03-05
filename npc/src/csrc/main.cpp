@@ -39,7 +39,7 @@ int main(int argc, char** argv, char** env)
         top->reset = contextp->time() < 100;
         top->clock = ~top->clock;
 
-        top->io_num = 10;
+        top->io_num = 9;
 
         top->eval();
         // nvboard_update();
