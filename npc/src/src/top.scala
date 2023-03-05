@@ -56,7 +56,7 @@ class top extends  Module {
             io.seg := lut(i).U
         }
     }
-    for (i <- 0 until 16)
+    for (i <- 0 until 10)
     {
         when (io.num === i.U)
         {
