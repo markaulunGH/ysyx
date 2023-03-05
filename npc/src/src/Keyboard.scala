@@ -9,8 +9,8 @@ class top extends Module
         val ps2_data = Input(UInt(1.W))
         val nextdata_n = Input(UInt(1.W))
         val data = Output(UInt(8.W))
-        val ready = Output(Bool())
-        val overflow = Output(Bool())
+        val ready = Output(UInt(1.W))
+        val overflow = Output(UInt(1.W))
     })
 
     val buffer = RegInit(0.U(10.W))
@@ -19,8 +19,8 @@ class top extends Module
     val r_ptr = RegInit(0.U(3.W))
     val count = RegInit(0.U(4.W))
 
-    val ready = RegInit(false.B)
-    val overflow = RegInit(false.B)
+    val ready = RegInit(0.U(1.W))
+    val overflow = RegInit(0.U(1.W))
 
     io.ready := ready
     io.overflow := overflow
