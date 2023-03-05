@@ -23,7 +23,7 @@ class top extends Module
 
     keyboard.io.ps2_clk := io.ps2_clk
     keyboard.io.ps2_data := io.ps2_data
-    keyboard.io.nextdata_n := 0.U
+    keyboard.io.nextdata_n := seg.io.nextdata_n
     
     seg.io.data := keyboard.io.data
     seg.io.ready := keyboard.io.ready

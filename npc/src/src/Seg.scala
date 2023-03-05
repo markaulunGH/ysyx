@@ -28,6 +28,7 @@ class Seg extends Module
         val data = Input(UInt(8.W))
         val ready = Input(UInt(1.W))
         val overflow = Input(UInt(1.W))
+        val nextdata_n = Output(UInt(1.W))
         val seg0 = Output(UInt(8.W))
         val seg1 = Output(UInt(8.W))
         val seg2 = Output(UInt(8.W))
@@ -37,6 +38,8 @@ class Seg extends Module
         val seg6 = Output(UInt(8.W))
         val seg7 = Output(UInt(8.W))
     })
+
+    io.nextdata_n := RegNext(io.ready)
 
     val seg0 = Module(new hex2seg)
     seg0.io.num := RegEnable(io.data(3, 0), io.ready.asBool)
