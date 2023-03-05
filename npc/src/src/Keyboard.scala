@@ -56,7 +56,7 @@ class top extends Module
         }
         .otherwise
         {
-            val buffer_vec = VecInit(buffer.asUInt)
+            val buffer_vec = VecInit(buffer)
             buffer_vec(count) := io.ps2_data
             buffer := buffer_vec.asUInt
             count := count + 1.U
