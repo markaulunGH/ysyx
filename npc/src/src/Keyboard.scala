@@ -44,6 +44,23 @@ class top extends Module
 
     when (sampling)
     {
-        
+        when (count === 10.U)
+        {
+            when (buffer(0) === 0.U && ps2_data && buffer(9, 1).xorR)
+            {
+                fifo(w_ptr) := buffer(8, 1)
+                w_ptr := w_ptr + 1.U
+                ready := true.B
+                overflow := overflow | (r_ptr === (w_ptr + 1.U))
+            }
+            count := 0.U
+        }
+        .otherwise
+        {
+            buffer(count) := ps2_data
+            count := count + 1.U
+        }
     }
+
+    io.data := fifo(r_ptr)
 }
