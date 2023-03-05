@@ -30,7 +30,7 @@ int main(int argc, char** argv, char** env)
     // nvboard_bind_pin(&top->seg6, BIND_RATE_SCR, BIND_DIR_OUT, 8, SEG6A, SEG6B, SEG6C, SEG6D, SEG6E, SEG6F, SEG6G, DEC6P);
     // nvboard_bind_pin(&top->seg7, BIND_RATE_SCR, BIND_DIR_OUT, 8, SEG7A, SEG7B, SEG7C, SEG7D, SEG7E, SEG7F, SEG7G, DEC7P);
 
-    nvboard_init();
+    // nvboard_init();
 
     while (1)
     {
