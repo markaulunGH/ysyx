@@ -39,7 +39,7 @@ class Seg extends Module
         val seg7 = Output(UInt(8.W))
     })
 
-    io.nextdata_n := RegNext(io.ready)
+    io.nextdata_n := RegNext(~io.ready)
 
     val seg0 = Module(new hex2seg)
     seg0.io.num := RegEnable(io.data(3, 0), io.ready.asBool)
