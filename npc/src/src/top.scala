@@ -53,7 +53,7 @@ class top extends  Module {
     {
         when (io.num === i.U)
         {
-            io.seg := lut(i.U)
+            io.seg := lut(i)
         }
     }
 }
