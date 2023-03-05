@@ -14,9 +14,9 @@ class hex2seg extends Module
     io.seg := 0.U
     for (i <- 0 until 16)
     {
-        when (io.num === i)
+        when (io.num === i.U)
         {
-            io.seg := lut(i)
+            io.seg := lut(i).U
         }
     }
 }
@@ -46,5 +46,5 @@ class Seg extends Module
     seg1.io.num := RegEnable(io.data(7, 4), io.ready)
     io.seg1 := seg1.io.seg
 
-    
+
 }
