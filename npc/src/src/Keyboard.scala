@@ -9,8 +9,8 @@ class top extends Module
         val ps2_data = Input(UInt(1.W))
         val nextdata_n = Input(UInt(1.W))
         val data = Output(UInt(8.W))
-        val ready = Output(UInt(1.W))
-        val overflow = Output(UInt(1.W))
+        val ready = Output(Bool())
+        val overflow = Output(Bool())
     })
 
     val buffer = RegInit(0.U(10.W))
@@ -19,8 +19,8 @@ class top extends Module
     val r_ptr = RegInit(0.U(3.W))
     val count = RegInit(0.U(4.W))
 
-    val ready = RegInit(0.U(1.W))
-    val overflow = RegInit(0.U(1.W))
+    val ready = RegInit(false.B)
+    val overflow = RegInit(false.B)
 
     io.ready := ready
     io.overflow := overflow
@@ -30,12 +30,12 @@ class top extends Module
 
     val sampling = ps2_clk_sync(2) & ~ps2_clk_sync(1)
 
-    when (ready === 1.U)
+    when (ready)
     {
         when (io.nextdata_n === 0.U)
         {
             r_ptr := r_ptr + 1.U
-            when (w_ptr === (r_ptr + 1.U))
+            when (w_ptr === r_ptr + 1.U)
                 ready := 0.U
         }
     }
