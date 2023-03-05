@@ -25,15 +25,15 @@ class top extends Module
     keyboard.io.ps2_data := io.ps2_data
     keyboard.io.nextdata_n := 0.U
     
-    seg.data := keyboard.data
-    seg.ready := keyboard.ready
-    seg.overflow := keyboard.overflow
-    io.seg0 := seg.seg0
-    io.seg1 := seg.seg1
-    io.seg2 := seg.seg2
-    io.seg3 := seg.seg3
-    io.seg4 := seg.seg4
-    io.seg5 := seg.seg5
-    io.seg6 := seg.seg6
-    io.seg7 := seg.seg7
+    seg.io.data := keyboard.io.data
+    seg.io.ready := keyboard.io.ready
+    seg.io.overflow := keyboard.io.overflow
+    io.seg0 := seg.io.seg0
+    io.seg1 := seg.io.seg1
+    io.seg2 := seg.io.seg2
+    io.seg3 := seg.io.seg3
+    io.seg4 := seg.io.seg4
+    io.seg5 := seg.io.seg5
+    io.seg6 := seg.io.seg6
+    io.seg7 := seg.io.seg7
 }
