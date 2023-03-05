@@ -39,10 +39,12 @@ class Seg extends Module
     })
 
     val seg0 = Module(new hex2seg)
+    seg0.io.num := RegEnable(io.data(3, 0), io.ready)
+    io.seg0 := seg0.io.seg
 
+    val seg1 = Module(new hex2seg)
+    seg1.io.num := RegEnable(io.data(7, 4), io.ready)
+    io.seg1 := seg1.io.seg
 
-    when (ready)
-    {
-        se
-    }
+    
 }
