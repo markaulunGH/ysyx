@@ -49,7 +49,7 @@ class Seg extends Module
     seg1.io.num := RegEnable(io.data(7, 4), io.ready.asBool)
     io.seg1 := seg1.io.seg
 
-    io.seg2 := 0x9f.U
+    io.seg2 := 0xdc.U
     io.seg3 := 0xff.U
     io.seg4 := 0xff.U
     io.seg5 := 0xff.U
