@@ -21,9 +21,9 @@ class top extends Module
     val keyboard = Module(new Keyboard)
     val seg = Module(new Seg)
 
-    keyboard.ps2_clk := io.ps2_clk
-    keyboard.ps2_data := io.ps2_data
-    keyboard.nextdata_n := 0.U
+    keyboard.io.ps2_clk := io.ps2_clk
+    keyboard.io.ps2_data := io.ps2_data
+    keyboard.io.nextdata_n := 0.U
     
     seg.data := keyboard.data
     seg.ready := keyboard.ready
