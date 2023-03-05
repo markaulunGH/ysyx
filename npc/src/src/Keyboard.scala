@@ -30,13 +30,13 @@ class top extends Module
 
     val sampling = ps2_clk_sync(2) & ~ps2_clk_sync(1)
 
-    when (ready === 1)
+    when (ready === 1.U)
     {
-        when (nextdata_n === 0)
+        when (nextdata_n === 0.U)
         {
-            r_ptr := r_ptr + 1
-            when (w_ptr === r_ptr + 1)
-                ready := 0
+            r_ptr := r_ptr + 1.U
+            when (w_ptr === r_ptr + 1.U)
+                ready := 0.U
         }
     }
 }
