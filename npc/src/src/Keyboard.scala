@@ -57,7 +57,7 @@ class top extends Module
         }
         .otherwise
         {
-            buffer(count) := ps2_data
+            buffer(count) := io.ps2_data
             count := count + 1.U
         }
     }
