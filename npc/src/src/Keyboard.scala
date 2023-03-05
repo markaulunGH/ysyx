@@ -15,7 +15,7 @@ class top extends Module
 
     val ps2_clk_sync = Reg(UInt(3.W))
 
-    ps2_clk_sync := Cat(ps2_clk_sync(1, 0), ps2_clk)
+    ps2_clk_sync := Cat(ps2_clk_sync(1, 0), io.ps2_clk)
 
     val sampling = ps2_clk_sync(2) & ~ps2_clk_sync(1)
 }
