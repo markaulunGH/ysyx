@@ -46,6 +46,10 @@ void display_wp() {
 }
 
 void new_wp(char *e, bool *success) {
+  word_t val = expr(e, success);
+  if (success == false) {
+    return;
+  }
   if (free_ == NULL) {
     printf("Fail to add watchpoints, please delete some first\n");
     *success = false;
@@ -56,7 +60,7 @@ void new_wp(char *e, bool *success) {
   x->next = head;
   head = x;
   strcpy(x->e, e);
-  x->val = expr(e, success);
+  x->val = val;
   printf("Watchpoint %d: %s\n", x->NO, x->e);
 }
 
