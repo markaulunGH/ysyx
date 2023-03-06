@@ -113,7 +113,7 @@ static int decode_exec(Decode *s) {
   INSTPAT("0000000 ????? ????? 101 ????? 01110 11", srlw   , R, R(dest) = SEXT((src1 >> (src2 & 0x1f)) & 0xffffffff, 32));
   INSTPAT("0100000 ????? ????? 101 ????? 01110 11", sraw   , R, R(dest) = SEXT(((sword_t) src1 >> (src2 & 0x1f)) & 0xffffffff, 32));
 
-  INSTPAT("0000001 ????? ????? 000 ????? 01100 11", mul    , R, R(dest) = (src1 * src2) & 0xffffffffffffffffl);
+  INSTPAT("0000001 ????? ????? 000 ????? 01100 11", mul    , R, R(dest) = (__int128_t) (src1 * src2) & 0xffffffffffffffffl);
   
 
   INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak , N, NEMUTRAP(s->pc, R(10))); // R(10) is $a0
