@@ -101,6 +101,7 @@ static bool make_token(char *e) {
           case TK_NOTYPE: continue;
           default:
             strncpy(tokens[nr_token].str, substr_start, substr_len);
+            tokens[nr_token].str[substr_len] = 0;
             tokens[nr_token].type = rules[i].token_type;
             if (strncmp(tokens[nr_token].str, "0x", 2) == 0 && tokens[nr_token].type == TK_NUM) {
               word_t val;
