@@ -81,6 +81,9 @@ static int cmd_x(char *args) {
   if (success == true) {
     for (int i = 0; i < num; ++ i) {
       printf("0x%-18lx", *(word_t*) guest_to_host(val + i * 8));
+      if (i % 8 == 7) {
+        printf("\n");
+      }
     }
     printf("\n");
   }
