@@ -24,7 +24,7 @@ int main(int argc, char** argv, char** env)
     {
         contextp->timeInc(1);
 
-        top->reset = contextp->time() < 100;
+        top->reset = contextp->time() <= 100;
         top->clock = ~top->clock;
 
         if (top->io_pc == 0x80000000 || top->reset)
