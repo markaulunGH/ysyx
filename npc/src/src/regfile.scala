@@ -18,7 +18,7 @@ class regfile extends Module
 
     val rf = Reg(Vec(32, UInt(64.W)))
 
-    when (wen)
+    when (io.wen)
     {
         rf(io.waddr) := io.wdata
     }
