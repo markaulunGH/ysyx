@@ -10,7 +10,7 @@ class top extends Module
     })
     
     val pc = RegInit(0x80000000.U(64.W))
-    pc := pc + 4
+    pc := pc + 4.U
     
     val decoder7128 = Module(new decoder(7, 128))
     val decoder38 = Module(new decoder(3, 8))
