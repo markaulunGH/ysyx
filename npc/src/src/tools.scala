@@ -9,10 +9,10 @@ class decoder(inWidth: Int, outWidth: Int) extends Module
         val out = Output(UInt(outWidth.W))
     })
 
-    val out = Vec(outWidth, UInt(1.W))
+    val out = Wire(Vec(outWidth, UInt(1.W)))
     for (i <- 0 until outWidth)
     {
-        out(i) := Wire(io.in === i.U)
+        out(i) := io.in === i.U
     }
     
     io.out := out.asUInt
