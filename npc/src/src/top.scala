@@ -7,6 +7,8 @@ class top extends Module
     {
         val inst = Input(UInt(64.W))
         val pc = Output(UInt(64.W))
+
+        val result = Output(UInt(64.W))
     })
     
     val pc = RegInit(0x80000000L.U(64.W))
@@ -34,4 +36,6 @@ class top extends Module
     alu.io.aluSrc1 := rf.io.rdata1
     alu.io.aluSrc2 := rf.io.rdata2
     rf.io.wdata := alu.io.aluResult
+
+    io.result := rf.io.wdata
 }
