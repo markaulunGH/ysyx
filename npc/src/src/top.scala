@@ -15,8 +15,8 @@ class top extends Module
     pc := pc + 4.U
     io.pc := pc
     
-    // val decoder7128 = Module(new decoder(7, 128))
-    // val decoder38 = Module(new decoder(3, 8))
+    val decoder7128 = Module(new decoder(7, 128))
+    val decoder38 = Module(new decoder(3, 8))
     // decoder7128.io.in := io.inst(6, 0)
     // decoder38.io.in := io.inst(14, 12)
     // val inst_addi = decoder7128.io.out(0x13) & decoder38.io.out(0x0)
