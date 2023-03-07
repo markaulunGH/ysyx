@@ -19,7 +19,7 @@ int main(int argc, char** argv, char** env)
     top->trace(tfp, 0);
     tfp->open("logs/dump.fst");
 
-    int cnt = 0;l
+    int cnt = 0;
     while (1)
     {
         contextp->timeInc(1);
