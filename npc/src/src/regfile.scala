@@ -23,6 +23,6 @@ class regfile extends Module
         rf(io.waddr) := io.wdata
     }
 
-    io.rdata1 := Mux(io.raddr1 == 0.U, 0.U, rf(io.raddr1))
-    io.rdata2 := Mux(io.raddr2 == 0.U, 0.U, rf(io.raddr2))
+    io.rdata1 := Mux(io.raddr1 === 0.U, 0.U, rf(io.raddr1))
+    io.rdata2 := Mux(io.raddr2 === 0.U, 0.U, rf(io.raddr2))
 }
