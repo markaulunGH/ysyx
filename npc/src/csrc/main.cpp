@@ -26,16 +26,16 @@ int main(int argc, char** argv, char** env)
         top->reset = contextp->time() < 100;
         top->clock = ~top->clock;
 
-        if (top->pc == 0x80000000 || top->reset)
+        if (top->io_pc == 0x80000000 || top->reset)
         {
-            top->inst = 0x100513;
+            top->io_inst = 0x100513;
         }
         else if (top->clock < 1000)
         {
-            top->inst = 0x150513;
+            top->io_inst = 0x150513;
         }
         else break;
-        
+
         top->eval();
 
         tfp->dump(contextp->time());
