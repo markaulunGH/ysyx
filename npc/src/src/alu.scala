@@ -11,5 +11,5 @@ class alu extends Module
         val aluResult = Output(UInt(64.W))
     })
 
-    aluResult := Mux(aluOp(0x0), aluSrc1 + aluSrc2, 0.U)
+    io.aluResult := Mux(io.aluOp(0x0), io.aluSrc1 + io.aluSrc2, 0.U)
 }
