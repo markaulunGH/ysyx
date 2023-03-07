@@ -24,19 +24,22 @@ int main(int argc, char** argv, char** env)
     {
         contextp->timeInc(1);
 
-        top->reset = contextp->time() <= 100;
         top->clock = ~top->clock;
+        if (top->clock)
+        {
+            top->reset = contextp->time() <= 100;
 
-        if (top->io_pc == 0x7ffffffc || top->reset)
-        {
-            top->io_inst = 0x100513;
+            if (top->io_pc == 0x7ffffffc || top->reset)
+            {
+                top->io_inst = 0x100513;
+            }
+            else if (cnt < 1000)
+            {
+                top->io_inst = 0x150513;
+                ++ cnt;
+            }
+            else break;
         }
-        else if (cnt < 1000)
-        {
-            top->io_inst = 0x150513;
-            ++ cnt;
-        }
-        else break;
 
         top->eval();
 
