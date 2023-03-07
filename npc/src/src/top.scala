@@ -27,6 +27,7 @@ class top extends Module
     rf.io.raddr1 := rs1
     rf.io.raddr2 := rs2
     rf.io.waddr := rd
+    rf.io.wen := inst_addi
     
     val alu = Module(new alu)
     alu.io.aluOp := decoder38.io.out
