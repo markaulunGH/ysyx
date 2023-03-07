@@ -17,7 +17,7 @@ class top extends Module
     decoder7128.io.in := io.inst(6, 0)
     decoder38.io.in := io.inst(14, 12)
     
-    val inst_addi = decoder7128.io.out(0x13) & decoder_3_8.io.out(0x0)
+    val inst_addi = decoder7128.io.out(0x13) & decoder38.io.out(0x0)
     
     val rf = Module(new regfile)
     val rs1 = io.inst(19, 15)
