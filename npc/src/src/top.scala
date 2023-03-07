@@ -34,7 +34,7 @@ class top extends Module
     val alu = Module(new alu)
     alu.io.aluOp := decoder38.io.out
     alu.io.aluSrc1 := rf.io.rdata1
-    alu.io.aluSrc2 := rf.io.rdata2
+    alu.io.aluSrc2 := inst(31, 20)
     rf.io.wdata := alu.io.aluResult
 
     io.result := rf.io.wdata
