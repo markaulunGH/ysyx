@@ -19,6 +19,7 @@ int main(int argc, char** argv, char** env)
     top->trace(tfp, 0);
     tfp->open("logs/dump.fst");
 
+    int cnt = 0;l
     while (1)
     {
         contextp->timeInc(1);
@@ -30,9 +31,10 @@ int main(int argc, char** argv, char** env)
         {
             top->io_inst = 0x100513;
         }
-        else if (top->clock < 1000)
+        else if (cnt < 1000)
         {
             top->io_inst = 0x150513;
+            ++ cnt;
         }
         else break;
 
