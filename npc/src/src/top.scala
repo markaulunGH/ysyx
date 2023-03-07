@@ -9,7 +9,7 @@ class top extends Module
         val pc = Output(UInt(64.W))
     })
     
-    val pc = RegInit(0x80000000.U(64.W))
+    val pc = RegInit(0x80000000L.U(64.W))
     pc := pc + 4.U
     
     val decoder7128 = Module(new decoder(7, 128))
