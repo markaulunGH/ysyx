@@ -11,6 +11,7 @@ class top extends Module
     
     val pc = RegInit(0x80000000L.U(64.W))
     pc := pc + 4.U
+    io.pc := pc
     
     val decoder7128 = Module(new decoder(7, 128))
     val decoder38 = Module(new decoder(3, 8))
