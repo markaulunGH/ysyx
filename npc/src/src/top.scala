@@ -5,35 +5,31 @@ class top extends Module
 {
     val io = IO(new Bundle
     {
-        val ps2_clk = Input(UInt(1.W))
-        val ps2_data = Input(UInt(1.W))
-
-        val seg0 = Output(UInt(8.W))
-        val seg1 = Output(UInt(8.W))
-        val seg2 = Output(UInt(8.W))
-        val seg3 = Output(UInt(8.W))
-        val seg4 = Output(UInt(8.W))
-        val seg5 = Output(UInt(8.W))
-        val seg6 = Output(UInt(8.W))
-        val seg7 = Output(UInt(8.W))
+        val inst = Input(UInt(64.W))
+        val pc = Output(UInt(64.W))
     })
-
-    val keyboard = Module(new Keyboard)
-    val seg = Module(new Seg)
-
-    keyboard.io.ps2_clk := io.ps2_clk
-    keyboard.io.ps2_data := io.ps2_data
-    keyboard.io.nextdata_n := seg.io.nextdata_n
     
-    seg.io.data := keyboard.io.data
-    seg.io.ready := keyboard.io.ready
-    seg.io.overflow := keyboard.io.overflow
-    io.seg0 := seg.io.seg0
-    io.seg1 := seg.io.seg1
-    io.seg2 := seg.io.seg2
-    io.seg3 := seg.io.seg3
-    io.seg4 := seg.io.seg4
-    io.seg5 := seg.io.seg5
-    io.seg6 := seg.io.seg6
-    io.seg7 := seg.io.seg7
+    val pc = RegInit(0x80000000.U(64.W))
+    pc = RegNext(pc + 4)
+    
+    val decoder7128 = Module(new decoder(7, 128))
+    val decoder38 = Module(new decoder(3, 8))
+    decoder7128.io.in := inst(6, 0)
+    decoder38.io.in := inst(14, 12)
+    
+    val inst_addi = decoder7128.io.out(0x13) & decoder_3_8.io.out(0x0)
+    
+    val rf = Module(new regfile)
+    val rs1 = inst(19, 15)
+    val rs2 = inst(24, 20)
+    val rd = inst(11, 7)
+    rf.io.raddr1 := rs1
+    rf.io.raddr2 := rs2
+    rf.io.waddr := rd
+    
+    val alu = Module(new alu)
+    alu.io.aluOp := decoder38.io.out
+    alu.io.aluSrc1 := rf.io.rdata1
+    alu.io.aluSrc2 := rf.io.rdata2
+    rf.io.wdata := alu.io.aluResult
 }
