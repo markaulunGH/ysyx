@@ -12,7 +12,7 @@ class decoder(inWidth: Int, outWidth: Int) extends Module
     val out = Vec(outWidth, UInt(1.W))
     for (i <- 0 until outWidth)
     {
-        out(i) := (io.in === i.U).U
+        out(i) := (io.in === i.U).asUInt
     }
     
     io.out := out.asUInt
