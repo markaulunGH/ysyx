@@ -32,9 +32,12 @@ static bool g_print_step = false;
 
 void device_update();
 
+#define IRING_BUF_SIZE 30
+char iringbuf[IRING_BUF_SIZE][128];
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+  if (ITRACE_COND) { strcpy(iringbuf[g_print_step % IRING_BUF_SIZE], _this->logbuf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
@@ -122,6 +125,15 @@ void cpu_exec(uint64_t n) {
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
+      for (int i = 0; i < IRING_BUF_SIZE; ++ i) {
+        if (g_nr_guest_inst % IRING_BUF_SIZE == i) {
+          log_write("-->");
+        }
+        else {
+          log_write("   ");
+        }
+        log_write("%s\n", iringbuf[i]);
+      }
       // fall through
     case NEMU_QUIT: statistic();
   }
