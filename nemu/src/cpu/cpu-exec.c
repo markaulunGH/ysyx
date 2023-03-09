@@ -127,10 +127,10 @@ void cpu_exec(uint64_t n) {
           nemu_state.halt_pc);
       for (int i = 0; i < IRING_BUF_SIZE; ++ i) {
         if (g_nr_guest_inst % IRING_BUF_SIZE == i) {
-          log_write("--> ");
+          log_write(" --> ");
         }
         else {
-          log_write("    ");
+          log_write("     ");
         }
         log_write("%s\n", iringbuf[i]);
       }
