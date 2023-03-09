@@ -57,24 +57,24 @@ void init_mem() {
 }
 
 word_t paddr_read(paddr_t addr, int len) {
+#ifdef CONFIG_MTRACE_COND
+  if (MTRACE_COND) {
+    log_write("0x%x at 0x%lx\n", addr, cpu.pc);
+  }
+#endif
   if (likely(in_pmem(addr))) return pmem_read(addr, len);
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
-// #ifdef CONFIG_MTRACE_COND
-  // if (MTRACE_COND) {
-    log_write("0x%x at 0x%lx\n", addr, cpu.pc);
-  // }
-// #endif
   out_of_bound(addr);
   return 0;
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
+#ifdef CONFIG_MTRACE_COND
+  if (MTRACE_COND) {
+    log_write("0x%x at 0x%lx\n", addr, cpu.pc);
+  }
+#endif
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
-// #ifdef CONFIG_MTRACE_COND
-  // if (MTRACE_COND) {
-    log_write("0x%x at 0x%lx\n", addr, cpu.pc);
-  // }
-// #endif
   out_of_bound(addr);
 }
