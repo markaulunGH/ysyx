@@ -125,6 +125,8 @@ void cpu_exec(uint64_t n) {
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
+#ifdef CONFIG_ITRACE_COND
+  if (ITRACE_COND)
       for (int i = 0; i < IRING_BUF_SIZE; ++ i) {
         if (g_nr_guest_inst % IRING_BUF_SIZE == i) {
           log_write("--> ");
@@ -134,6 +136,7 @@ void cpu_exec(uint64_t n) {
         }
         log_write("%s\n", iringbuf[i]);
       }
+#endif
       // fall through
     case NEMU_QUIT: statistic();
   }
