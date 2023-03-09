@@ -44,6 +44,7 @@ int sprintf(char *out, const char *fmt, ...) {
     }
   }
   va_end(arg);
+  *out = '\0';
 
   return 1;
 }
