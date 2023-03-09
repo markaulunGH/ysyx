@@ -9,7 +9,7 @@ size_t strlen(const char *s) {
   while (*s ++ != '\0') {
     ++ i;
   }
-  return i;
+  return i - 1;
 }
 
 char *strcpy(char *dst, const char *src) {
