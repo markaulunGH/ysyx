@@ -2,7 +2,6 @@
 #include <klib.h>
 #include <klib-macros.h>
 #include <stdarg.h>
-#include <stdlib.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
@@ -26,7 +25,7 @@ int sprintf(char *out, const char *fmt, ...) {
         char tmp[20];
         int ptr = 0;
         while (d) {
-          tmp[ptr ++] = d % 10;
+          tmp[ptr ++] = d % 10 + '0';
           d /= 10;
         }
         while (ptr) {
@@ -44,7 +43,7 @@ int sprintf(char *out, const char *fmt, ...) {
       *out ++ = *fmt;
     }
   }
-  va_end (arg);
+  va_end(arg);
 
   return 1;
 }
