@@ -37,7 +37,7 @@ char iringbuf[IRING_BUF_SIZE][128];
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) { strcpy(iringbuf[g_print_step % IRING_BUF_SIZE], _this->logbuf); }
+  if (ITRACE_COND) { strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
