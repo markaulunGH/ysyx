@@ -73,13 +73,15 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
         log_write(" ");
       }
       log_write("call [");
+      uint64_t addr;
       if (*(_this->logbuf + 35) == 'r') {
         bool success = true;
-        log_write("0x%lx]\n", isa_reg_str2val(_this->logbuf + 37, &success));
+        addr = isa_reg_str2val(_this->logbuf + 37, &success);
       }
       else {
-        log_write("%s]\n", _this->logbuf + 36);
+        addr = atoi(_this->logbuf + 36);
       }
+      log_write("0x%lx]\n", addr);
       stack_depth += 2;
     }
     else if (strncmp("ret", _this->logbuf + 32, 3) == 0) {
