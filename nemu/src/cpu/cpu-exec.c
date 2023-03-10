@@ -68,7 +68,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) {
     strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
-    if (strcmp("jal", _this->logbuf + 32) == 0) {
+    if (strncmp("jal", _this->logbuf + 32, 3) == 0) {
       for (int i = 0; i < stack_depth; ++ i) {
         log_write(" ");
       }
@@ -76,7 +76,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
       log_write("%s]\n", _this->logbuf + 36);
       stack_depth += 2;
     }
-    else if (strcmp("ret", _this->logbuf + 32) == 0) {
+    else if (strncmp("ret", _this->logbuf + 32, 3) == 0) {
       for (int i = 0; i < stack_depth; ++ i) {
         log_write(" ");
       }
