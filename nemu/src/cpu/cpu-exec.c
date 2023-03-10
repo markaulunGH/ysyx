@@ -39,8 +39,7 @@ void device_update();
 char iringbuf[IRING_BUF_SIZE][128];
 
 FILE *elf_fp;
-Elf64_Off symoff, stroff;
-uint64_t symsize, strsize;
+Elf64_Shdr symshdr, strshdr;
 int stack_depth;
 
 void init_ftrace(const char *elf_file) {
@@ -54,12 +53,10 @@ void init_ftrace(const char *elf_file) {
   for (int i = 0; i < ehdr.e_shnum; ++ i) {
     assert(fread(&shdr, sizeof(shdr), 1, elf_fp));
     if ((shdr.sh_type == SHT_SYMTAB)) {
-      symoff = shdr.sh_offset;
-      symsize = shdr.sh_size;
+      symshdr = shdr;
     }
     else if (shdr.sh_type == SHT_STRTAB && (shdr.sh_flags & SHF_ALLOC)) {
-      stroff = shdr.sh_offset;
-      strsize = shdr.sh_size;
+      strshdr = shdr;
     }
   }
 }
@@ -68,11 +65,11 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) {
     strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
+
     if (strncmp("jal", _this->logbuf + 32, 3) == 0) {
       for (int i = 0; i < stack_depth; ++ i) {
         log_write(" ");
       }
-      log_write("call [");
       uint64_t addr;
       if (*(_this->logbuf + 35) == 'r') {
         bool success = true;
@@ -81,7 +78,20 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
       else {
         addr = atoi(_this->logbuf + 36);
       }
-      log_write("0x%lx]\n", addr);
+      Elf64_Sym symtab;
+      fseek(elf_fp, symshdr.sh_offset, SEEK_SET);
+      for (int i = 0; i < symshdr.sh_size; i += symshdr.sh_entsize) {
+        assert(fread(&symtab, symshdr.sh_entsize, 1, elf_fp));
+        if (symtab.st_info == STT_FUNC && symtab.st_value <= addr && addr < symtab.st_value + symtab.st_size) {
+          break;
+        }
+      }
+      fseek(elf_fp, strshdr.sh_offset + symtab.st_name, SEEK_SET);
+      log_write("call [");
+      for (char ch = fgetc(elf_fp); ch; ch = fgetc(elf_fp)) {
+        log_write("%c", ch);
+      }
+      log_write("call @0x%lx]\n",  addr);
       stack_depth += 2;
     }
     else if (strncmp("ret", _this->logbuf + 32, 3) == 0) {
