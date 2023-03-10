@@ -95,10 +95,10 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
       stack_depth += 2;
     }
     else if (strncmp("ret", _this->logbuf + 32, 3) == 0) {
+      stack_depth -= 2;
       for (int i = 0; i < stack_depth; ++ i) {
         log_write(" ");
       }
-      stack_depth -= 2;
       log_write("ret\n");
     }
   }
