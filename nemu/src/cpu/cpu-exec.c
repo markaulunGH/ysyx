@@ -51,7 +51,7 @@ void init_ftrace(const char *elf_file) {
 
   Elf64_Shdr shdr;
   for (int i = 0; i < ehdr.e_shnum; ++ i) {
-    assert(fread(&shdr, sizeof(shdr), 1, elf_fp));
+    assert(fread(&shdr, ehdr.e_shentsize, 1, elf_fp));
     if ((shdr.sh_type == SHT_SYMTAB)) {
       symshdr = shdr;
     }
