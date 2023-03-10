@@ -18,6 +18,9 @@
 #include <cpu/difftest.h>
 #include <locale.h>
 
+#include <elf.h>
+#include <stddef.h>
+
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
  * This is useful when you use the `si' command.
@@ -34,6 +37,37 @@ void device_update();
 
 #define IRING_BUF_SIZE 30
 char iringbuf[IRING_BUF_SIZE][128];
+
+FILE *symtab, *strtab;
+uint64_t symtab_size, strtab_size;
+
+void init_ftrace(const char *elf_file) {
+  FILE *elf_fp = fopen(elf_file, "r");
+
+  Elf64_Off e_shoff;
+  uint16_t e_shentsize, e_shnum;
+  assert(fscanf(elf_fp + offsetof(Elf64_Ehdr, e_shoff), "%ld", &e_shoff));
+  assert(fscanf(elf_fp + offsetof(Elf64_Ehdr, e_shentsize), "%hd", &e_shentsize));
+  assert(fscanf(elf_fp + offsetof(Elf64_Ehdr, e_shnum), "%hd", &e_shnum));
+
+  uint32_t sh_type;
+  uint64_t sh_flags;
+  Elf64_Off sh_offset;
+  for (int i = 0; i < e_shnum; ++ i) {
+    assert(fscanf(elf_fp + e_shoff + i * e_shentsize + offsetof(Elf64_Shdr, sh_type), "%d", &sh_type));
+    assert(fscanf(elf_fp + e_shoff + i * e_shentsize + offsetof(Elf64_Shdr, sh_flags), "%ld", &sh_flags));
+    assert(fscanf(elf_fp + e_shoff + i * e_shentsize + offsetof(Elf64_Shdr, sh_offset), "%ld", &sh_offset));
+
+    if ((sh_type == SHT_SYMTAB)) {
+      symtab = elf_fp + sh_offset;
+      assert(fscanf(elf_fp + e_shoff + i * e_shentsize + offsetof(Elf64_Shdr, sh_size), "%ld", &symtab_size));
+    }
+    else if (sh_type == SHT_STRTAB && (sh_flags & SHF_ALLOC)) {
+      strtab = elf_fp + sh_offset;
+      assert(fscanf(elf_fp + e_shoff + i * e_shentsize + offsetof(Elf64_Shdr, sh_size), "%ld", &strtab_size));
+    }
+  }
+}
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
