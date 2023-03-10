@@ -63,45 +63,50 @@ void init_ftrace(const char *elf_file) {
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) {
-    strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
-
-    if (strncmp("jal", _this->logbuf + 32, 3) == 0) {
+  strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
+#ifdef CONFIG_FTRACE_COND
+  if (strncmp("jal", _this->logbuf + 32, 3) == 0) {
+    if (FTRACE_COND) {
       for (int i = 0; i < stack_depth; ++ i) {
         log_write(" ");
       }
-      uint64_t addr;
-      if (*(_this->logbuf + 35) == 'r') {
-        bool success = true;
-        addr = isa_reg_str2val(_this->logbuf + 37, &success);
+    }
+    uint64_t addr;
+    if (*(_this->logbuf + 35) == 'r') {
+      bool success = true;
+      addr = isa_reg_str2val(_this->logbuf + 37, &success);
+    }
+    else {
+      sscanf(_this->logbuf + 36, "%lx", &addr);
+    }
+    Elf64_Sym symtab;
+    fseek(elf_fp, symshdr.sh_offset, SEEK_SET);
+    for (int i = 0; i < symshdr.sh_size; i += symshdr.sh_entsize) {
+      assert(fread(&symtab, symshdr.sh_entsize, 1, elf_fp));
+      if (ELF32_ST_TYPE(symtab.st_info) == STT_FUNC && symtab.st_value <= addr && addr < symtab.st_value + symtab.st_size) {
+        break;
       }
-      else {
-        sscanf(_this->logbuf + 36, "%lx", &addr);
-      }
-      Elf64_Sym symtab;
-      fseek(elf_fp, symshdr.sh_offset, SEEK_SET);
-      for (int i = 0; i < symshdr.sh_size; i += symshdr.sh_entsize) {
-        assert(fread(&symtab, symshdr.sh_entsize, 1, elf_fp));
-        if (ELF32_ST_TYPE(symtab.st_info) == STT_FUNC && symtab.st_value <= addr && addr < symtab.st_value + symtab.st_size) {
-          break;
-        }
-      }
-      fseek(elf_fp, strshdr.sh_offset + symtab.st_name, SEEK_SET);
+    }
+    fseek(elf_fp, strshdr.sh_offset + symtab.st_name, SEEK_SET);
+    if (FTRACE_COND) {
       log_write("call [");
       for (char ch = fgetc(elf_fp); ch; ch = fgetc(elf_fp)) {
         log_write("%c", ch);
       }
       log_write("@0x%lx]\n",  addr);
-      stack_depth += 2;
     }
-    else if (strncmp("ret", _this->logbuf + 32, 3) == 0) {
-      stack_depth -= 2;
+    stack_depth += 2;
+  }
+  else if (strncmp("ret", _this->logbuf + 32, 3) == 0) {
+    stack_depth -= 2;
+    if (FTRACE_COND) {
       for (int i = 0; i < stack_depth; ++ i) {
         log_write(" ");
       }
       log_write("ret\n");
     }
   }
+#endif
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
@@ -190,7 +195,7 @@ void cpu_exec(uint64_t n) {
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
 #ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND)
+    if (ITRACE_COND) {
       for (int i = 0; i < IRING_BUF_SIZE; ++ i) {
         if (g_nr_guest_inst % IRING_BUF_SIZE == i) {
           log_write("--> ");
@@ -200,6 +205,7 @@ void cpu_exec(uint64_t n) {
         }
         log_write("%s\n", iringbuf[i]);
       }
+    }
 #endif
       // fall through
     case NEMU_QUIT: statistic();
