@@ -163,7 +163,7 @@ config FTRACE
 
 config FTRACE_COND
   depends on FTRACE
-  bool "Only trace function calls when the condition is true"
+  string "Only trace function calls when the condition is true"
   default "true"
 
 config DIFFTEST
