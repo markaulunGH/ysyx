@@ -82,7 +82,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
       fseek(elf_fp, symshdr.sh_offset, SEEK_SET);
       for (int i = 0; i < symshdr.sh_size; i += symshdr.sh_entsize) {
         assert(fread(&symtab, symshdr.sh_entsize, 1, elf_fp));
-        if (symtab.st_info == STT_FUNC && symtab.st_value <= addr && addr < symtab.st_value + symtab.st_size) {
+        if (ELF32_ST_TYPE(symtab.st_info) == STT_FUNC && symtab.st_value <= addr && addr < symtab.st_value + symtab.st_size) {
           break;
         }
       }
