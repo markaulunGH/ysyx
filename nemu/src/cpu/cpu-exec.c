@@ -73,7 +73,13 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
         log_write(" ");
       }
       log_write("call [");
-      log_write("%s]\n", _this->logbuf + 36 + (*(_this->logbuf + 35) == 'r'));
+      if (*(_this->logbuf + 35) == 'r') {
+        bool success = true;
+        log_write("0x%lx]\n", isa_reg_str2val(_this->logbuf + 37, &success));
+      }
+      else {
+        log_write("%s]\n", _this->logbuf + 36);
+      }
       stack_depth += 2;
     }
     else if (strncmp("ret", _this->logbuf + 32, 3) == 0) {
