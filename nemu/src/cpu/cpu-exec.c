@@ -76,7 +76,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
         addr = isa_reg_str2val(_this->logbuf + 37, &success);
       }
       else {
-        addr = atoi(_this->logbuf + 36);
+        sscanf(_this->logbuf + 36, "%lx", &addr);
       }
       Elf64_Sym symtab;
       fseek(elf_fp, symshdr.sh_offset, SEEK_SET);
