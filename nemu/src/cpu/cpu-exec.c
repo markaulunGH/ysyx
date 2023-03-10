@@ -98,8 +98,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
       for (int i = 0; i < stack_depth; ++ i) {
         log_write(" ");
       }
-      log_write("ret\n");
       stack_depth -= 2;
+      log_write("ret\n");
     }
   }
 #endif
