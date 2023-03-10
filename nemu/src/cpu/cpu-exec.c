@@ -39,8 +39,8 @@ void device_update();
 char iringbuf[IRING_BUF_SIZE][128];
 
 FILE *elf_fp;
-Elf64_Off symtab_offset, strtab_offset;
-uint64_t symtab_size, strtab_size;
+Elf64_Off symoff, stroff;
+uint64_t symsize, strsize;
 
 void init_ftrace(const char *elf_file) {
   elf_fp = fopen(elf_file, "r");
@@ -53,19 +53,22 @@ void init_ftrace(const char *elf_file) {
   for (int i = 0; i < ehdr.e_shnum; ++ i) {
     assert(fread(&shdr, sizeof(shdr), 1, elf_fp));
     if ((shdr.sh_type == SHT_SYMTAB)) {
-      symtab_offset = shdr.sh_offset;
-      symtab_size = shdr.sh_size;
+      symoff = shdr.sh_offset;
+      symsize = shdr.sh_size;
     }
     else if (shdr.sh_type == SHT_STRTAB && (shdr.sh_flags & SHF_ALLOC)) {
-      strtab_offset = shdr.sh_offset;
-      strtab_size = shdr.sh_size;
+      stroff = shdr.sh_offset;
+      strsize = shdr.sh_size;
     }
   }
 }
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) { strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf); }
+  if (ITRACE_COND) {
+    strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
+    // if (_this->isa)
+  }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
