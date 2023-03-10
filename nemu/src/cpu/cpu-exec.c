@@ -60,18 +60,13 @@ void init_ftrace(const char *elf_file) {
       strtab_offset = shdr.sh_offset;
       strtab_size = shdr.sh_size;
     }
-    fseek(elf_fp, ehdr.e_shentsize, SEEK_CUR);
+    // fseek(elf_fp, ehdr.e_shentsize, SEEK_CUR);
   }
 }
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) {
-    strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
-    // if () {
-
-    // }
-  }
+  if (ITRACE_COND) { strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
