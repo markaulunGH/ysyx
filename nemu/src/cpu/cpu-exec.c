@@ -91,7 +91,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
       for (char ch = fgetc(elf_fp); ch; ch = fgetc(elf_fp)) {
         log_write("%c", ch);
       }
-      log_write("call @0x%lx]\n",  addr);
+      log_write("@0x%lx]\n",  addr);
       stack_depth += 2;
     }
     else if (strncmp("ret", _this->logbuf + 32, 3) == 0) {
