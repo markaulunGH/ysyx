@@ -41,6 +41,7 @@ char iringbuf[IRING_BUF_SIZE][128];
 FILE *elf_fp;
 Elf64_Off symoff, stroff;
 uint64_t symsize, strsize;
+int stack_depth;
 
 void init_ftrace(const char *elf_file) {
   elf_fp = fopen(elf_file, "r");
@@ -67,7 +68,21 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) {
     strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
-    // if (_this->isa)
+    if (strcmp("jal", _this->logbuf + 32) == 0) {
+      for (int i = 0; i < stack_depth; ++ i) {
+        log_write(" ");
+      }
+      log_write("call [");
+      log_write("%s]\n", _this->logbuf + 36);
+      stack_depth += 2;
+    }
+    else if (strcmp("ret", _this->logbuf + 32) == 0) {
+      for (int i = 0; i < stack_depth; ++ i) {
+        log_write(" ");
+      }
+      log_write("ret\n");
+      stack_depth -= 2;
+    }
   }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
