@@ -55,7 +55,7 @@ void init_ftrace(const char *elf_file) {
     if ((shdr.sh_type == SHT_SYMTAB)) {
       symshdr = shdr;
     }
-    else if (shdr.sh_type == SHT_STRTAB && shdr.sh_offset != ehdr.e_shstrndx) {
+    else if (shdr.sh_type == SHT_STRTAB && i != ehdr.e_shstrndx) {
       strshdr = shdr;
     }
   }
