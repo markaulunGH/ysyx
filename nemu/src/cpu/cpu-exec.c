@@ -38,33 +38,28 @@ void device_update();
 #define IRING_BUF_SIZE 30
 char iringbuf[IRING_BUF_SIZE][128];
 
-FILE *symtab, *strtab;
+FILE *elf_fp;
+Elf64_Off symtab_offset, strtab_offset;
 uint64_t symtab_size, strtab_size;
 
 void init_ftrace(const char *elf_file) {
-  FILE *elf_fp = fopen(elf_file, "r");
+  elf_fp = fopen(elf_file, "r");
 
-  Elf64_Off e_shoff;
-  uint16_t e_shentsize, e_shnum;
-  assert(fscanf(elf_fp + offsetof(Elf64_Ehdr, e_shoff), "%ld", &e_shoff));
-  assert(fscanf(elf_fp + offsetof(Elf64_Ehdr, e_shentsize), "%hd", &e_shentsize));
-  assert(fscanf(elf_fp + offsetof(Elf64_Ehdr, e_shnum), "%hd", &e_shnum));
+  Elf64_Ehdr ehdr;
+  assert(fread(&ehdr, sizeof(ehdr), 1, elf_fp));
+  fseek(elf_fp, ehdr.e_shoff, SEEK_SET);
 
-  uint32_t sh_type;
-  uint64_t sh_flags;
-  Elf64_Off sh_offset;
-  for (int i = 0; i < e_shnum; ++ i) {
-    assert(fscanf(elf_fp + e_shoff + i * e_shentsize + offsetof(Elf64_Shdr, sh_type), "%d", &sh_type));
-    assert(fscanf(elf_fp + e_shoff + i * e_shentsize + offsetof(Elf64_Shdr, sh_flags), "%ld", &sh_flags));
-    assert(fscanf(elf_fp + e_shoff + i * e_shentsize + offsetof(Elf64_Shdr, sh_offset), "%ld", &sh_offset));
+  Elf64_Shdr shdr;
+  for (int i = 0; i < ehdr.e_shnum; ++ i) {
+    assert(fread(&shdr, sizeof(shdr), 1, elf_fp));
 
-    if ((sh_type == SHT_SYMTAB)) {
-      symtab = elf_fp + sh_offset;
-      assert(fscanf(elf_fp + e_shoff + i * e_shentsize + offsetof(Elf64_Shdr, sh_size), "%ld", &symtab_size));
+    if ((shdr.sh_type == SHT_SYMTAB)) {
+      symtab_offset = shdr.sh_offset;
+      symtab_size = shdr.sh_size;
     }
-    else if (sh_type == SHT_STRTAB && (sh_flags & SHF_ALLOC)) {
-      strtab = elf_fp + sh_offset;
-      assert(fscanf(elf_fp + e_shoff + i * e_shentsize + offsetof(Elf64_Shdr, sh_size), "%ld", &strtab_size));
+    else if (shdr.sh_type == SHT_STRTAB && (shdr.sh_flags & SHF_ALLOC)) {
+      strtab_offset = shdr.sh_offset;
+      strtab_offset = shdr.sh_size;
     }
   }
 }
