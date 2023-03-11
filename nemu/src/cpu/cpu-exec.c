@@ -38,16 +38,12 @@ void device_update();
 #define IRING_BUF_SIZE 30
 char iringbuf[IRING_BUF_SIZE][128];
 
-#define SYMTAB_SIZE 30
-#define STRTAB_SIZE 500
-
+FILE *elf_fp;
 Elf64_Shdr symshdr, strshdr;
-Elf64_Sym symtab[SYMTAB_SIZE];
-char strtab[STRTAB_SIZE];
 int stack_depth;
 
 void init_ftrace(const char *elf_file) {
-  FILE *elf_fp = fopen(elf_file, "r");
+  elf_fp = fopen(elf_file, "r");
 
   Elf64_Ehdr ehdr;
   assert(fread(&ehdr, sizeof(ehdr), 1, elf_fp));
@@ -63,13 +59,6 @@ void init_ftrace(const char *elf_file) {
       strshdr = shdr;
     }
   }
-
-  fseek(elf_fp, symshdr.sh_offset, SEEK_SET);
-  assert(fread(&symtab, symshdr.sh_entsize, symshdr.sh_size / symshdr.sh_entsize, elf_fp));
-  fseek(elf_fp, strshdr.sh_offset, SEEK_SET);
-  assert(fread(&strtab, 1, symshdr.sh_size, elf_fp));
-
-  fclose(elf_fp);
 }
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
@@ -90,14 +79,21 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
     else {
       sscanf(_this->logbuf + 36, "%lx", &addr);
     }
-    int id = 0;
-    for (int id = 0; id < symshdr.sh_size / symshdr.sh_entsize; ++ id) {
-      if (ELF32_ST_TYPE(symtab[id].st_info) == STT_FUNC && symtab[id].st_value <= addr && addr < symtab[id].st_value + symtab[id].st_size) {
+    Elf64_Sym symtab;
+    fseek(elf_fp, symshdr.sh_offset, SEEK_SET);
+    for (int i = 0; i < symshdr.sh_size; i += symshdr.sh_entsize) {
+      assert(fread(&symtab, symshdr.sh_entsize, 1, elf_fp));
+      if (ELF32_ST_TYPE(symtab.st_info) == STT_FUNC && symtab.st_value <= addr && addr < symtab.st_value + symtab.st_size) {
         break;
       }
     }
+    fseek(elf_fp, strshdr.sh_offset + symtab.st_name, SEEK_SET);
     if (FTRACE_COND) {
-      log_write("call [%s@%lx]\n", strtab + symtab[id].st_name, addr);
+      log_write("call [");
+      for (char ch = fgetc(elf_fp); ch; ch = fgetc(elf_fp)) {
+        log_write("%c", ch);
+      }
+      log_write("@0x%lx]\n",  addr);
     }
     stack_depth += 2;
   }
