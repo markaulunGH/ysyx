@@ -91,7 +91,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
       sscanf(_this->logbuf + 36, "%lx", &addr);
     }
     int id = 0;
-    for (int id = 0; id < symshdr.sh_size / symshdr.sh_entsize; ++ id) {
+    for (; id < symshdr.sh_size / symshdr.sh_entsize; ++ id) {
       if (ELF32_ST_TYPE(symtab[id].st_info) == STT_FUNC && symtab[id].st_value <= addr && addr < symtab[id].st_value + symtab[id].st_size) {
         break;
       }
