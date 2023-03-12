@@ -11,8 +11,8 @@ class ID_EX extends Bundle
     val alu = Flipped(new alu_in)
     val other = new Bundle
     {
-        val wen = UInt(1.W)
-        val waddr = UInt(5.W)
+        val wen = Output(UInt(1.W))
+        val waddr = Output(UInt(5.W))
     }
 }
 
