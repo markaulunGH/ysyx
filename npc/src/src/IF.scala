@@ -14,7 +14,7 @@ class IF extends Module
     val pc = RegInit(0x80000000L.U(64.W))
     pc := pc + 4.U
     
-    io.top_IF.pc := pc
+    io.pc := pc
 
     io.IF_ID.inst := io.inst
 }
