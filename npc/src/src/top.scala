@@ -45,8 +45,8 @@ class top extends Module
     val EX = Module(new EX)
     val MM = Module(new MM)
     val WB = Module(new WB)
-    io.pc := top.io.pc
-    top.io.inst := inst
+    io.pc := IF.io.pc
+    IF.io.inst := io.inst
     IF.io.IF_ID  <> ID.io.IF_ID
     ID.io.ID_EX  <> EX.io.ID_EX
     EX.io.EX_MM  <> MM.io.EX_MM
