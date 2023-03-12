@@ -18,6 +18,9 @@ class ID extends Module
 
     val inst_addi = decoder7128.io.out(0x13) & decoder38.io.out(0x0)
 
+    io.reg_r.raddr1 := io.IF_ID.inst(19, 15)
+    io.reg_r.raddr2 := io.IF_ID.inst(24, 20)
+
     for (i <- 0 until 19)
     {
         io.ID_EX.alu.alu_op(i) := 0.U
