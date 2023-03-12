@@ -37,10 +37,10 @@ class top extends Module
         val pc = Output(UInt(64.W))
         val inst = Input(UInt(64.W))
 
-        val waddr_reg = Output(UInt(5.W))
-        val wdata_reg = Output(UInt(64.W))
-        // val waddr_mem = Output(UInt(64.W))
-        // val wdata_mem = Output(UInt(64.W))
+        val wreg_addr = Output(UInt(5.W))
+        val wreg_data = Output(UInt(64.W))
+        // val wmem_addr = Output(UInt(64.W))
+        // val wmem_data = Output(UInt(64.W))
     })
     
     val IF = Module(new IF)
@@ -59,6 +59,6 @@ class top extends Module
     rf.io.reg_r <> ID.io.reg_r
     rf.io.reg_w <> WB.io.reg_w
     
-    io.waddr_reg := rf.io.reg_w.waddr
-    io.wdata_reg := rf.io.reg_w.wdata
+    io.wreg_addr := rf.io.reg_w.waddr
+    io.wreg_data := rf.io.reg_w.wdata
 }

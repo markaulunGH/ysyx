@@ -23,13 +23,14 @@ int main(int argc, char** argv, char** env)
     while (1)
     {
         contextp->timeInc(1);
-
+        top->reset = contextp->time() <= 100;
         top->clock = ~top->clock;
+
+        top->eval();
+
         if (top->clock)
         {
-            top->reset = contextp->time() <= 100;
-
-            if (top->io_pc == 0x7ffffffc || top->reset)
+            if (top->io_pc == 0x80000000 || top->reset)
             {
                 top->io_inst = 0x100513;
             }
