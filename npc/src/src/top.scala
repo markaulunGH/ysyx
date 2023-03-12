@@ -27,17 +27,12 @@ class MM_WB extends Bundle
     val alu_result = Output(UInt(64.W))
 }
 
-class WB_top extends Bundle
-{
-
-}
-
 class top extends Module
 {
     val io = IO(new Bundle
     {
-        val top_IF = new top_IF
-        val WB_top = new WB_top
+        val pc = Output(UInt(64.W))
+        val inst = Input(UInt(64.W))
 
         val waddr_reg = Output(UInt(5.W))
         val wdata_reg = Output(UInt(64.W))
@@ -50,12 +45,12 @@ class top extends Module
     val EX = Module(new EX)
     val MM = Module(new MM)
     val WB = Module(new WB)
-    io.top_IF <> IF.io.top_IF
+    io.pc := top.io.pc
+    top.io.inst := inst
     IF.io.IF_ID  <> ID.io.IF_ID
     ID.io.ID_EX  <> EX.io.ID_EX
     EX.io.EX_MM  <> MM.io.EX_MM
     MM.io.MM_WB  <> WB.io.MM_WB
-    WB.io.WB_top <> io.WB_top
     
     val rf = Module(new regfile)
     rf.io.reg_r <> ID.io.reg_r
