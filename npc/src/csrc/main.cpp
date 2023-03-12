@@ -26,6 +26,8 @@ int main(int argc, char** argv, char** env)
         top->reset = contextp->time() <= 100;
         top->clock = ~top->clock;
 
+        top->eval();
+
         if (top->clock)
         {
             if (top->io_pc == 0x80000000 || top->reset)
