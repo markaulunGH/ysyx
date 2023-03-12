@@ -16,8 +16,8 @@ class EX extends Module
     
     val __alu = Module(new alu)
     // io.alu_io <> alu.io
-    __alu.io.alu_op := io.alu_io.alu_op
-    __alu.io.alu_src1 := io.alu_io.alu_src1
-    __alu.io.alu_src2 := io.alu_io.alu_src2
-    io.alu_io.alu_result := __alu.io.alu_result
+    // __alu.io.alu_op := io.alu_io.alu_op
+    // __alu.io.alu_src1 := io.alu_io.alu_src1
+    // __alu.io.alu_src2 := io.alu_io.alu_src2
+    // io.alu_io.alu_result := __alu.io.alu_result
 }
