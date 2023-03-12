@@ -10,4 +10,6 @@ class EX extends Module
     })
     val alu = Module(new alu)
     io.ID_EX.alu <> alu.io.in
+
+    io.EX_MM.alu_result := alu.io.alu_result
 }
