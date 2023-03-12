@@ -1,12 +1,6 @@
 import chisel3._
 import chisel3.util._
 
-class top_IF extends Bundle
-{
-    val pc = Input(UInt(64.W))
-    val inst = Output(UInt(64.W))
-}
-
 class IF_ID extends Bundle
 {
     val inst = Output(UInt(64.W))
@@ -36,8 +30,8 @@ class top extends Module
 
         val waddr_reg = Output(UInt(5.W))
         val wdata_reg = Output(UInt(64.W))
-        val waddr_mem = Output(UInt(64.W))
-        val wdata_mem = Output(UInt(64.W))
+        // val waddr_mem = Output(UInt(64.W))
+        // val wdata_mem = Output(UInt(64.W))
     })
     
     val IF = Module(new IF)
