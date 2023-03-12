@@ -39,6 +39,7 @@ class top extends Module
     val io = IO(new Bundle
     {
         val top_IF = new top_IF
+        val WB_top = new WB_top
 
         val waddr_reg = Output(UInt(5.W))
         val wdata_reg = Output(UInt(64.W))
