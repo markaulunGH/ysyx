@@ -7,7 +7,7 @@ class IF extends Module
     {
         val pc = Output(UInt(64.W))
         val inst = Input(UInt(64.W))
-        
+
         val IF_ID = new IF_ID
     })
 
@@ -15,7 +15,6 @@ class IF extends Module
     pc := pc + 4.U
     
     io.top_IF.pc := pc
-    val inst = io.top_IF.inst
 
-    io.IF_ID.inst := io.top_IF.inst
+    io.IF_ID.inst := io.inst
 }
