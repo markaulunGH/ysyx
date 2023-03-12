@@ -11,8 +11,8 @@ class EX extends Module
     })
 
     io.alu_io.alu_op := io.ID_EX.alu_op
-    io.alu_src1 := io.ID_EX.alu_src1
-    io.alu_src2 := io.ID_EX.alu_src2
+    io.alu_io.alu_src1 := io.ID_EX.alu_src1
+    io.alu_io.alu_src2 := io.ID_EX.alu_src2
     
     val alu = Module(new alu)
     io.alu_io <> alu.io
