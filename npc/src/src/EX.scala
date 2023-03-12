@@ -7,8 +7,7 @@ class EX extends Module
     {
         val ID_EX = Flipped(new ID_EX)
         val EX_MM = Flipped(new EX_MM)
-        val alu_io = Flipped(new alu_io)
-    })    
+    })
     val alu = Module(new alu)
     io.ID_EX.alu <> alu.io.in
 }
