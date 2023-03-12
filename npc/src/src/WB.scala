@@ -12,4 +12,5 @@ class WB extends Module
 
     io.reg_w.wen := io.MM_WB.wen
     io.reg_w.waddr := io.MM_WB.waddr
+    io.reg_w.wdata := io.MM_WB.alu_result
 }
