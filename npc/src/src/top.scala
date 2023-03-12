@@ -1,41 +1,64 @@
 import chisel3._
 import chisel3.util._
 
+class IF_ID extends Bundle
+{
+    val inst = Output(UInt(64.W))
+}
+
+class ID_EX extends Bundle
+{
+    val alu = Flipped(new alu_in)
+    val other = new Bundle
+    {
+        val wen = Output(UInt(1.W))
+        val waddr = Output(UInt(5.W))
+    }
+}
+
+class EX_MM extends Bundle
+{
+    val alu_result = Output(UInt(64.W))
+    val wen = Output(UInt(1.W))
+    val waddr = Output(UInt(5.W))
+}
+
+class MM_WB extends Bundle
+{
+    val alu_result = Output(UInt(64.W))
+    val wen = Output(UInt(1.W))
+    val waddr = Output(UInt(5.W))
+}
+
 class top extends Module
 {
     val io = IO(new Bundle
     {
-        val inst = Input(UInt(64.W))
         val pc = Output(UInt(64.W))
+        val inst = Input(UInt(64.W))
 
-        val result = Output(UInt(64.W))
+        val waddr_reg = Output(UInt(5.W))
+        val wdata_reg = Output(UInt(64.W))
+        // val waddr_mem = Output(UInt(64.W))
+        // val wdata_mem = Output(UInt(64.W))
     })
     
-    val pc = RegInit(0x7ffffffc.U(64.W))
-    pc := pc + 4.U
-    io.pc := pc
-    
-    val decoder7128 = Module(new decoder(7, 128))
-    val decoder38 = Module(new decoder(3, 8))
-    decoder7128.io.in := io.inst(6, 0)
-    decoder38.io.in := io.inst(14, 12)
-    
-    val inst_addi = decoder7128.io.out(0x13) & decoder38.io.out(0x0)
+    val IF = Module(new IF)
+    val ID = Module(new ID)
+    val EX = Module(new EX)
+    val MM = Module(new MM)
+    val WB = Module(new WB)
+    io.pc := IF.io.pc
+    IF.io.inst := io.inst
+    IF.io.IF_ID  <> ID.io.IF_ID
+    ID.io.ID_EX  <> EX.io.ID_EX
+    EX.io.EX_MM  <> MM.io.EX_MM
+    MM.io.MM_WB  <> WB.io.MM_WB
     
     val rf = Module(new regfile)
-    val rs1 = io.inst(19, 15)
-    val rs2 = io.inst(24, 20)
-    val rd = io.inst(11, 7)
-    rf.io.raddr1 := rs1
-    rf.io.raddr2 := rs2
-    rf.io.waddr := rd
-    rf.io.wen := inst_addi
+    rf.io.reg_r <> ID.io.reg_r
+    rf.io.reg_w <> WB.io.reg_w
     
-    val alu = Module(new alu)
-    alu.io.aluOp := decoder38.io.out
-    alu.io.aluSrc1 := rf.io.rdata1
-    alu.io.aluSrc2 := io.inst(31, 20)
-    rf.io.wdata := alu.io.aluResult
-
-    io.result := rf.io.wdata
+    io.waddr_reg := rf.io.reg_w.waddr
+    io.wdata_reg := rf.io.reg_w.wdata
 }
