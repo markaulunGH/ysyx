@@ -14,9 +14,7 @@ class IF_ID extends Bundle
 
 class ID_EX extends Bundle
 {
-    val alu_op = Output(Vec(19, UInt(1.W)))
-    val alu_src1 = Output(UInt(64.W))
-    val alu_src2 = Output(UInt(64.W))
+    val alu = Flipped(new alu_in)
 }
 
 class EX_MM extends Bundle
