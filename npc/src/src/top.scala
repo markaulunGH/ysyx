@@ -19,15 +19,15 @@ class ID_EX extends Bundle
 class EX_MM extends Bundle
 {
     val alu_result = Output(UInt(64.W))
-    val wen = UInt(1.W)
-    val waddr = UInt(5.W)
+    val wen = Output(UInt(1.W))
+    val waddr = Output(UInt(5.W))
 }
 
 class MM_WB extends Bundle
 {
     val alu_result = Output(UInt(64.W))
-    val wen = UInt(1.W)
-    val waddr = UInt(5.W)
+    val wen = Output(UInt(1.W))
+    val waddr = Output(UInt(5.W))
 }
 
 class top extends Module
