@@ -12,6 +12,6 @@ class EX extends Module
     io.ID_EX.alu <> alu.io.in
 
     io.EX_MM.alu_result := alu.io.alu_result
-    io.EX_MM.wen := io.ID_EX.wen
-    io.EX_MM.waddr := io.ID_EX.waddr
+    io.EX_MM.wen := io.ID_EX.other.wen
+    io.EX_MM.waddr := io.ID_EX.other.waddr
 }
