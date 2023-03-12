@@ -13,14 +13,14 @@ class alu extends Module
 {
     val io = IO(new alu_io)
 
-    val op_add = io.alu_op[0]
+    val op_add = io.alu_io.alu_op[0]
 
     when (op_add === 1.U)
     {
-        io.alu_result := alu_src1 + alu_src2
+        io.alu_io.alu_result := io.alu_op.alu_src1 + io.alu_io.alu_src2
     }
     .otherwise
     {
-        io.alu_result := 0.U
+        io.alu_io.alu_result := 0.U
     }
 }
