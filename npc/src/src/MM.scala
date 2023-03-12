@@ -10,6 +10,6 @@ class MM extends Module
     })
 
     io.MM_WB.alu_result := io.EX_MM.alu_result
-    io.MM_WB.wen = io.EX_MM.wen
-    io.MM_WB.waddr = io.EX_MM.waddr
+    io.MM_WB.wen := io.EX_MM.wen
+    io.MM_WB.waddr := io.EX_MM.waddr
 }

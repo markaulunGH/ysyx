@@ -10,6 +10,6 @@ class WB extends Module
         val reg_w = Flipped(new reg_w)
     })
 
-    io.reg_w.wen = io.MM_WB.wen
-    io.reg_w.waddr = io.MM_WB.waddr
+    io.reg_w.wen := io.MM_WB.wen
+    io.reg_w.waddr := io.MM_WB.waddr
 }
