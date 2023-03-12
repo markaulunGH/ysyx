@@ -21,17 +21,17 @@ class regfile extends Module
 {
     val io = IO(new Bundle
     {
-        val r = new reg_r
-        val w = new reg_w
+        val reg_r = new reg_r
+        val reg_w = new reg_w
     })
 
     val rf = Reg(Vec(32, UInt(64.W)))
 
-    when (io.wen === 1.U)
+    when (io.reg_w.wen === 1.U)
     {
-        rf(io.w.waddr) := io.w.wdata
+        rf(io.reg_w.waddr) := io.reg_w.wdata
     }
 
-    io.r.rdata1 := Mux(io.r.raddr1 === 0.U, 0.U, rf(io.r.raddr1))
-    io.r.rdata2 := Mux(io.r.raddr2 === 0.U, 0.U, rf(io.r.raddr2))
+    io.reg_r.rdata1 := Mux(io.reg_r.raddr1 === 0.U, 0.U, rf(io.reg_r.raddr1))
+    io.reg_r.rdata2 := Mux(io.reg_r.raddr2 === 0.U, 0.U, rf(io.reg_r.raddr2))
 }
