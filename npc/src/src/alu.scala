@@ -1,17 +1,15 @@
 import chisel3._
 import chisel3.util._
 
-class alu_io extends Bundle
-{
-    val alu_op = Input(Vec(19, UInt(1.W)))
-    val alu_src1 = Input(UInt(64.W))
-    val alu_src2 = Input(UInt(64.W))
-    val alu_result = Output(UInt(64.W))
-}
-
 class alu extends Module
 {
-    val io = IO(new alu_io)
+    val io = IO(new Bundle
+    {
+        val alu_op = Input(Vec(19, UInt(1.W)))
+        val alu_src1 = Input(UInt(64.W))
+        val alu_src2 = Input(UInt(64.W))
+        val alu_result = Output(UInt(64.W))
+    })
 
     val op_add = io.alu_op(0)
 
