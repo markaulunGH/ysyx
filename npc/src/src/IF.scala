@@ -5,7 +5,9 @@ class IF extends Module
 {
     val io = IO(new Bundle
     {
-        val top_IF = Flipped(new top_IF)
+        val pc = Output(UInt(64.W))
+        val inst = Input(UInt(64.W))
+        
         val IF_ID = new IF_ID
     })
 
