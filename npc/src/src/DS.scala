@@ -11,8 +11,8 @@ class DS extends Module
         val reg_r = Flipped(new reg_r)
     })
 
-    val decoder7128 = Module(new decoder(7, 128))
-    val decoder38 = Module(new decoder(3, 8))
+    val decoder7128 = Module(new Decoder(7, 128))
+    val decoder38 = Module(new Decoder(3, 8))
     decoder7128.io.in := io.fs_ds.inst(6, 0)
     decoder38.io.in := io.fs_ds.inst(14, 12)
 
