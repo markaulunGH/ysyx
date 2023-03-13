@@ -37,6 +37,8 @@ class Top extends Module
         val pc = Output(UInt(64.W))
         val inst = Input(UInt(64.W))
 
+        val immj = Output(UInt(64.W))
+
         val wreg_addr = Output(UInt(5.W))
         val wreg_data = Output(UInt(64.W))
         // val wmem_addr = Output(UInt(64.W))
@@ -54,6 +56,8 @@ class Top extends Module
     ds.io.ds_es  <> es.io.ds_es
     es.io.es_mm  <> ms.io.es_mm
     ms.io.ms_ws  <> ws.io.ms_ws
+
+    io.immj := ds.io.imm_J
     
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
