@@ -12,10 +12,9 @@ class FS extends Module
     })
 
     val pc = RegInit(0x80000000L.U(64.W))
-    pc := pc + 4.U
+    pc := Mux(fs_ds.br_taken, br_target, pc + 4.U)
     
     io.pc := pc
-
     io.fs_ds.inst := io.inst
     io.fs_ds.pc := pc
 }
