@@ -56,6 +56,7 @@ class Top extends Module
     ds.io.ds_es  <> es.io.ds_es
     es.io.es_mm  <> ms.io.es_mm
     ms.io.ms_ws  <> ws.io.ms_ws
+    io.ebreak := ds.io.ebreak
     
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
