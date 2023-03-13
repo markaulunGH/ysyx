@@ -69,7 +69,7 @@ void end_simulation()
 int main(int argc, char** argv, char** env)
 {
     load_image(argv[2]);
-    init_simulation();
+    init_simulation(argc, argv);
     while (1)
     {
         cycle_begin();
