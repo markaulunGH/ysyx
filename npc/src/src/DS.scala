@@ -85,7 +85,7 @@ class DS extends Module
     {
         io.fs_ds.br_target := 0.U
     }
-    io.tmp := Cat(io.reg_r.rdata1(63, 1), 0.U(1.W)
+    io.tmp := Cat(io.reg_r.rdata1(63, 1), 0.U(1.W))
 
     io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
     io.reg_r.raddr2 := rs2
