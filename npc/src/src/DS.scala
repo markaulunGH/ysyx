@@ -38,7 +38,7 @@ class DS extends Module
     val inst_jalr  = dopcode(0x67)
 
     val src1_is_pc = inst_auipc || inst_jal || inst_jalr
-    val src2_is_imm = inst_auipc || inst_addi || inst_lui
+    val src2_is_imm = inst_lui || inst_auipc || inst_jal || inst_jalr || inst_addi
 
     val imm = Wire(UInt(64.W))
     when (inst_jalr || inst_addi)
@@ -63,7 +63,7 @@ class DS extends Module
     }
     .otherwise
     {
-        imm := 0.U(64.W)
+        imm := 4.U(64.W)
     }
 
     io.fs_ds.br_taken := inst_jal || inst_jalr
