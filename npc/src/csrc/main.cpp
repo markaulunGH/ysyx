@@ -1,7 +1,7 @@
 #include <memory>
 #include <verilated.h>
 #include "VTop.h"
-#include "verilated_vcd_c.h"
+#include "verilated_fst_c.h"
 #include <nvboard.h>
 
 const int SIZE = 1 << 20;
@@ -21,14 +21,14 @@ void load_image(char *img_file)
 
 uint32_t ifetch(uint64_t pc)
 {
-    printf("%lx\n", pc);
+    // printf("%lx\n", pc);
     return *(uint32_t*) (img + pc - offset);
     return 0x100513;
 }
 
 const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
-VerilatedVcdC* tfp = new VerilatedVcdC;
+VerilatedFstC* tfp = new VerilatedFstC;
 
 void init_simulation(int argc, char** argv)
 {
@@ -40,7 +40,7 @@ void init_simulation(int argc, char** argv)
     contextp->commandArgs(argc, argv);
 
     top->trace(tfp, 0);
-    tfp->open("logs/dump.vcd");
+    tfp->open("logs/dump.fst");
 }
 
 void cycle_begin()
