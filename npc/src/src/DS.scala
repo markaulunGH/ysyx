@@ -48,19 +48,19 @@ class DS extends Module
     }
     // .elsewhen ()
     // {
-    //     imm := imm_S
+    //     imm := Cat(Fill(52, imm_S(11), imm_S)
     // }
     // .elsewhen ()
     // {
-    //     imm := imm_B
+    //     imm := Cat(Fill(51, imm_B(12), imm_B)
     // }
     .elsewhen (inst_lui || inst_auipc)
     {
-        imm := imm_U
+        imm := Cat(Fill(32, imm_U(31)), imm_U)
     }
     .elsewhen (inst_jal)
     {
-        imm := imm_J
+        imm := Cat(Fill(43, imm_J(20)), imm_J)
     }
     .otherwise
     {
