@@ -42,7 +42,7 @@ class DS extends Module
 
     val imm = Wire(UInt(64.W))
 
-    .when (inst_jalr || inst_addi)
+    .when (inst_jalr === 1.U || inst_addi === 1.U)
         imm := imm_I
     // .elsewhen ()
     //     imm := imm_S
