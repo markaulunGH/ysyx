@@ -78,6 +78,7 @@ uint32_t ifetch(uint64_t pc)
 int main(int argc, char** argv, char** env)
 {
     load_image(argv[argc - 1]);
+    printf("%d\n", size);
     init_simulation(argc - 1, argv);
     while (1)
     {
