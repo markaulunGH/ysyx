@@ -68,7 +68,7 @@ uint32_t ifetch(uint64_t pc)
     if (pc - offset < 0 || pc - offset > size)
     {
         end_simulation();
-        exit(0);
+        exit(-1);
     }
     return *(uint32_t*) (img + pc - offset);
 }
