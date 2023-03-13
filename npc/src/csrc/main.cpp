@@ -14,7 +14,6 @@ void load_image(char *img_file)
     FILE *fp = fopen(img_file, "rb");
     fseek(fp, 0, SEEK_END);
     int size = ftell(fp);
-    printf("%d\n", size);
     fseek(fp, 0, SEEK_SET);
     assert(fread(img, size, 1, fp));
     fclose(fp);
