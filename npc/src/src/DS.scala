@@ -44,7 +44,8 @@ class DS extends Module
 
     when (inst_jalr || inst_addi)
     {
-        imm := Cat(Vec(52, imm_I(12)).asUInt(), imm_I)
+        val sign = Vec(52, 1.U(1.W))
+        imm := Cat(sign.asUInt(), imm_I)
     }
     // .elsewhen ()
     // {
