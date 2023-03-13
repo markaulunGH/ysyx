@@ -43,17 +43,29 @@ class DS extends Module
     val imm = Wire(UInt(64.W))
 
     when (inst_jalr || inst_addi)
-        {imm := imm_I}
+    {
+        imm := imm_I.asSInt()    
+    }
     // .elsewhen ()
+    // {
     //     imm := imm_S
+    // }
     // .elsewhen ()
+    // {
     //     imm := imm_B
+    // }
     .elsewhen (inst_lui || inst_auipc)
-        {imm := imm_U}
+    {
+        imm := imm_U
+    }
     .elsewhen (inst_jal)
-        {imm := imm_J}
+    {
+        imm := imm_J
+    }
     .otherwise
-        {imm := 0.U(64.W)}
+    {
+        imm := 0.U(64.W)
+    }
 
     io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
     io.reg_r.raddr2 := rs2
