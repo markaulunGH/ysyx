@@ -55,7 +55,7 @@ class DS extends Module
     .otherwise
         {imm := 0.U(64.W)}
 
-    io.reg_r.raddr1 := Mux(inst_lui, 0, rs1)
+    io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
     io.reg_r.raddr2 := rs2
 
     for (i <- 0 until 19)
