@@ -7,13 +7,14 @@
 const int SIZE = 1 << 20;
 const long long offset = 0x80000000l;
 
+int size;
 uint8_t img[SIZE];
 
 void load_image(char *img_file)
 {
     FILE *fp = fopen(img_file, "rb");
     fseek(fp, 0, SEEK_END);
-    int size = ftell(fp);
+    size = ftell(fp);
     fseek(fp, 0, SEEK_SET);
     assert(fread(img, size, 1, fp));
     fclose(fp);
@@ -21,9 +22,9 @@ void load_image(char *img_file)
 
 uint32_t ifetch(uint64_t pc)
 {
-    printf("%lx\n", pc);
+    if (pc - offset < 0 || pc - offset > size)
+        goto halt;
     return *(uint32_t*) (img + pc - offset);
-    return 0x100513;
 }
 
 const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
@@ -83,5 +84,6 @@ int main(int argc, char** argv, char** env)
         }
         cycle_end();
     }
+    halt:
     end_simulation();
 }
