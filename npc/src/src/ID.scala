@@ -29,6 +29,6 @@ class ID extends Module
     io.ID_EX.alu.alu_src1 := io.reg_r.rdata1
     io.ID_EX.alu.alu_src2 := io.IF_ID.inst(31, 20)
 
-    io.ID_EX.other.wen := inst_addi
-    io.ID_EX.other.waddr := io.IF_ID.inst(11, 7)
+    io.ID_EX.wen := inst_addi
+    io.ID_EX.waddr := io.IF_ID.inst(11, 7)
 }
