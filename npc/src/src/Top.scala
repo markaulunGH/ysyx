@@ -5,7 +5,7 @@ class FS_DS extends Bundle
 {
     val inst = Output(UInt(64.W))
     val pc = Output(UInt(64.W))
-    val br_taken = Input(UInt(1.W))
+    val br_taken = Input(Bool())
     val br_target = Input(UInt(64.W))
 }
 
