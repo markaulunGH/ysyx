@@ -27,7 +27,7 @@ class MS_WS extends Bundle
     val waddr = Output(UInt(5.W))
 }
 
-class top extends Module
+class Top extends Module
 {
     val io = IO(new Bundle
     {
