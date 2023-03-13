@@ -79,7 +79,7 @@ class DS extends Module
     }
     .elsewhen (inst_jalr)
     {
-        io.fs_ds.br_target := io.fs_ds.pc + Cat(io.reg_r.rdata1(63, 1), 1.U(0.W))
+        io.fs_ds.br_target := io.fs_ds.pc + Cat(io.reg_r.rdata1(63, 1), 1.U(1.W))
     }
     .otherwise
     {
