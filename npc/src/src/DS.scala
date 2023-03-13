@@ -77,7 +77,7 @@ class DS extends Module
     }
     .otherwise
     {
-        io.fs_ds.br_taken := 0
+        io.fs_ds.br_taken := 0.U
     }
 
     io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
