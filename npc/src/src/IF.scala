@@ -8,7 +8,7 @@ class IF extends Module
         val pc = Output(UInt(64.W))
         val inst = Input(UInt(64.W))
 
-        val IF_ID = new IF_ID
+        val IF_ID = new IF_to_ID
     })
 
     val pc = RegInit(0x80000000L.U(64.W))
