@@ -43,9 +43,9 @@ class DS extends Module
     val imm = Wire(UInt(64.W))
 
     when (inst_jalr || inst_addi)
-    // {
+    {
         imm := Cat(Fill(52, imm_I(11)), imm_I)
-    // }
+    }
     // .elsewhen ()
     // {
     //     imm := Cat(Fill(52, imm_S(11), imm_S)
@@ -71,7 +71,9 @@ class DS extends Module
     io.reg_r.raddr2 := rs2
 
     for (i <- 0 until 19)
+    {
         io.ds_es.alu.alu_op(i) := 0.U
+    }
     io.ds_es.alu.alu_op(0) := inst_auipc || inst_addi || inst_lui
     io.ds_es.alu.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, io.reg_r.rdata1)
     io.ds_es.alu.alu_src2 := Mux(src2_is_imm, imm, io.reg_r.rdata2)
