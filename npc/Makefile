@@ -18,7 +18,7 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CFLAGS += $(INCFLAGS)
 LDFLAGS += -lSDL2 -lSDL2_image
 
-VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-UNUSED -Wno-DECLFILENAME --assert --build
+VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-UNUSED -Wno-DECLFILENAME --trace-vcd --assert --build
 # VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --debug
 #VERILATOR_FLAGS += --gdbbt
