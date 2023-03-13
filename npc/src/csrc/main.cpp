@@ -70,10 +70,10 @@ void end_simulation()
 int main(int argc, char** argv, char** env)
 {
     // printf("???");
-    printf("%s\n", argv[2]);
-    load_image(argv[2]);
+    printf("%s\n", argv[argc - 1]);
+    load_image(argv[argc - 1]);
     printf("load image success\n");
-    init_simulation(argc, argv);
+    init_simulation(argc - 1, argv);
     while (1)
     {
         cycle_begin();
