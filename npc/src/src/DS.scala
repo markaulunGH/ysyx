@@ -63,7 +63,7 @@ class DS extends Module
     }
     .otherwise
     {
-        imm := 4.U(64.W)
+        imm := 0.U(64.W)
     }
 
     io.fs_ds.br_taken := inst_jal || inst_jalr
@@ -89,7 +89,7 @@ class DS extends Module
     }
     io.ds_es.alu.alu_op(0) := inst_auipc || inst_addi || inst_lui || inst_jal || inst_jalr
     io.ds_es.alu.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, io.reg_r.rdata1)
-    io.ds_es.alu.alu_src2 := Mux(src2_is_imm, imm, io.reg_r.rdata2)
+    io.ds_es.alu.alu_src2 := Mux(src2_is_imm, Mux(inst_jal || inst_jalr, 4.U, imm), io.reg_r.rdata2)
 
     io.ds_es.wen := inst_auipc || inst_jal || inst_jalr || inst_addi
     io.ds_es.waddr := rd
