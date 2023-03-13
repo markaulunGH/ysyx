@@ -34,6 +34,7 @@ void cycle_begin()
 
 void cycle_end()
 {
+    top->eval();
     tfp->dump(contextp->time());
 }
 
