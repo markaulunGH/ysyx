@@ -11,6 +11,7 @@ uint8_t img[SIZE];
 
 void load_image(char *img_file)
 {
+    printf("%s\n", img_file);
     FILE *fp = fopen(img_file, "rb");
     fseek(fp, 0, SEEK_END);
     int size = ftell(fp);
