@@ -37,7 +37,7 @@ class DS extends Module
     val inst_jal   = dopcode(0x6f)
     val inst_jalr  = dopcode(0x67)
 
-    val src1_is_pc = inst_auipc || inst_jalr
+    val src1_is_pc = inst_auipc || inst_jal || inst_jalr
     val src2_is_imm = inst_auipc || inst_addi || inst_lui
 
     val imm = Wire(UInt(64.W))
@@ -67,19 +67,30 @@ class DS extends Module
     }
 
     io.fs_ds.br_taken := inst_jal || inst_jalr
-    io.fs_ds.br_target := io.fs_ds.pc + imm_J
+    when (inst_jal)
+    {
+        io.fs_ds.br_taken := io.fs_ds.pc + imm_J
+    }
+    .elsewhen (inst_jalr)
+    {
+        io.fs_ds.br_taken := io.fs_ds.pc + (io.reg_r.rdata2 & ~1.U)
+    }
+    .otherwise
+    {
+        io.fs_ds.br_taken := 0
+    }
 
     io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
-    io.reg_r.raddr2 := Mux(inst_jalr, 0.U, rs2)
+    io.reg_r.raddr2 := Mux(inst_jal || inst_jalr, 0.U, rs2)
 
     for (i <- 0 until 19)
     {
         io.ds_es.alu.alu_op(i) := 0.U
     }
-    io.ds_es.alu.alu_op(0) := inst_auipc || inst_addi || inst_lui || inst_jalr
+    io.ds_es.alu.alu_op(0) := inst_auipc || inst_addi || inst_lui || inst_jal || inst_jalr
     io.ds_es.alu.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, io.reg_r.rdata1)
     io.ds_es.alu.alu_src2 := Mux(src2_is_imm, imm, io.reg_r.rdata2)
 
-    io.ds_es.wen := inst_auipc || inst_jalr || inst_addi
+    io.ds_es.wen := inst_auipc || inst_jal || inst_jalr || inst_addi
     io.ds_es.waddr := rd
 }
