@@ -69,15 +69,15 @@ class DS extends Module
     io.fs_ds.br_taken := inst_jal || inst_jalr
     when (inst_jal)
     {
-        io.fs_ds.br_taken := io.fs_ds.pc + imm_J
+        io.fs_ds.br_target := io.fs_ds.pc + imm_J
     }
     .elsewhen (inst_jalr)
     {
-        io.fs_ds.br_taken := io.fs_ds.pc + (io.reg_r.rdata2 & ~1.U)
+        io.fs_ds.br_target := io.fs_ds.pc + (io.reg_r.rdata2 & ~1.U)
     }
     .otherwise
     {
-        io.fs_ds.br_taken := 0.U
+        io.fs_ds.br_target := 0.U
     }
 
     io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
