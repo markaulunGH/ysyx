@@ -17,4 +17,5 @@ class FS extends Module
     io.pc := pc
 
     io.fs_ds.inst := io.inst
+    io.fs_ds.pc := pc
 }
