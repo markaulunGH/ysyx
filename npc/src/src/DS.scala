@@ -43,9 +43,9 @@ class DS extends Module
     val imm = Wire(UInt(64.W))
 
     when (inst_jalr || inst_addi)
-    {
+    // {
         imm := Cat(Fill(52, imm_I(11)), imm_I)
-    }
+    // }
     // .elsewhen ()
     // {
     //     imm := Cat(Fill(52, imm_S(11), imm_S)
