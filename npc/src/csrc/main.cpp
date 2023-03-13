@@ -15,7 +15,7 @@ void load_image(char *img_file)
     fseek(fp, 0, SEEK_END);
     int size = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    fread(img, size, 1, fp);
+    assert(fread(img, size, 1, fp));
     fclose(fp);
 }
 
