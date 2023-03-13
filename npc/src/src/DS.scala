@@ -9,7 +9,6 @@ class DS extends Module
         val ds_es = new DS_ES
 
         val reg_r = Flipped(new reg_r)
-        val imm_J = Output(UInt(64.W))
     })
 
     val inst = io.fs_ds.inst
@@ -67,13 +66,11 @@ class DS extends Module
     {
         imm := 0.U(64.W)
     }
-    io.imm_J := imm
-
 
     io.fs_ds.br_taken := inst_jal || inst_jalr
     when (inst_jal)
     {
-        io.fs_ds.br_target := io.fs_ds.pc + imm_J
+        io.fs_ds.br_target := io.fs_ds.pc + imm
     }
     .elsewhen (inst_jalr)
     {
