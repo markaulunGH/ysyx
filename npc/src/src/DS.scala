@@ -44,7 +44,7 @@ class DS extends Module
 
     when (inst_jalr || inst_addi)
     {
-        imm := imm_I.S   
+        imm := imm_I.asSInt()
     }
     // .elsewhen ()
     // {
