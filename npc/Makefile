@@ -23,7 +23,7 @@ VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-UNUSED -Wno-DECLFILEN
 #VERILATOR_FLAGS += --debug
 #VERILATOR_FLAGS += --gdbbt
 
-VERILATOR_INPUT = build/top.v src/csrc/main.cpp $(NVBOARD_ARCHIVE)
+VERILATOR_INPUT = build/Top.v src/csrc/main.cpp $(NVBOARD_ARCHIVE)
 
 .DEFAULT_GOAL := verilog
 
