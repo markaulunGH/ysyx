@@ -23,7 +23,8 @@ void load_image(char *img_file)
 uint32_t ifetch(uint64_t pc)
 {
     printf("%x\n", pc);
-    return *(uint32_t*) (img + pc - offset);
+    // return *(uint32_t*) (img + pc - offset);
+    return 0x100513;
 }
 
 const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
