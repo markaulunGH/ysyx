@@ -52,7 +52,7 @@ class top extends Module
     es.io.es_mm  <> ms.io.es_mm
     ms.io.ms_ws  <> ws.io.ms_ws
     
-    val rf = Module(new egfile)
+    val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
     rf.io.reg_w <> ws.io.reg_w
     
