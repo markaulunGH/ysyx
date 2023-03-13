@@ -1,6 +1,6 @@
 #include <memory>
 #include <verilated.h>
-#include "Vtop.h"
+#include "VTop.h"
 #include "verilated_fst_c.h"
 #include <nvboard.h>
 
@@ -14,7 +14,7 @@ int main(int argc, char** argv, char** env)
     contextp->traceEverOn(true);
     contextp->commandArgs(argc, argv);
 
-    const std::unique_ptr<Vtop> top{new Vtop{contextp.get(), "TOP"}};
+    const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
     VerilatedFstC* tfp = new VerilatedFstC;
     top->trace(tfp, 0);
     tfp->open("logs/dump.fst");
