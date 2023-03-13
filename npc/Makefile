@@ -60,13 +60,13 @@ sim:
 	@$^
 	@echo
 	@echo "-- VERILATE ----------------"
-	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT) $(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) --bin=$(IMG)
+	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT) $(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS))
 
 	@echo
 	@echo "-- RUN ---------------------"
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/VTop +trace
+	obj_dir/VTop +trace --bin=$(IMG)
 
 #	@echo
 #	@echo "-- COVERAGE ----------------"
