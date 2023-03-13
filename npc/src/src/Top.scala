@@ -37,6 +37,8 @@ class Top extends Module
         val pc = Output(UInt(64.W))
         val inst = Input(UInt(64.W))
 
+        val ebreak = Output(Bool())
+
         val wreg_addr = Output(UInt(5.W))
         val wreg_data = Output(UInt(64.W))
         // val wmem_addr = Output(UInt(64.W))
