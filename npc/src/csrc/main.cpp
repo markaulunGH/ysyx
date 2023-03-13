@@ -76,8 +76,7 @@ int main(int argc, char** argv, char** env)
     while (1)
     {
         cycle_begin();
-        printf("%lx\n", top->io_pc);
-        top->reset = contextp->time() < 100;
+        top->reset = contextp->time() < 10000000;
         top->io_inst = ifetch(top->io_pc);
         if (contextp->time() > 1000) break; 
         cycle_end();
