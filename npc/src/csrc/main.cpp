@@ -26,6 +26,7 @@ void cycle_begin()
     contextp->timeInc(1);
     top->clock = 0;
     top->eval();
+    tfp->dump(contextp->time());
     contextp->timeInc(1);
     top->clock = 1;
     top->eval();
@@ -33,6 +34,7 @@ void cycle_begin()
 
 void cycle_end()
 {
+    top->eval();
     tfp->dump(contextp->time());
 }
 
@@ -67,6 +69,7 @@ uint32_t ifetch(uint64_t pc)
 {
     if (pc - offset < 0 || pc - offset > size)
     {
+        printf("%lx\n", pc);
         end_simulation();
         exit(1);
     }
