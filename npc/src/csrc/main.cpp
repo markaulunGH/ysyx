@@ -28,7 +28,7 @@ const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
 VerilatedFstC* tfp = new VerilatedFstC;
 
-void init_simulation(argc, argv)
+void init_simulation(int argc, char** argv)
 {
     Verilated::mkdir("logs");
 
