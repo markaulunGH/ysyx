@@ -66,8 +66,8 @@ class DS extends Module
         imm := 0.U(64.W)
     }
 
-    io.fs_ds.br_taken = inst_jal || inst_jalr
-    io.fs_ds.br_target = io.fs_ds.pc + imm_J
+    io.fs_ds.br_taken := inst_jal || inst_jalr
+    io.fs_ds.br_target := io.fs_ds.pc + imm_J
 
     io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
     io.reg_r.raddr2 := Mux(inst_jalr, 0.U, rs2)
