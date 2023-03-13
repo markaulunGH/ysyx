@@ -17,7 +17,7 @@ class reg_w extends Bundle
     val wdata = Input(UInt(64.W))
 }
 
-class regfile extends Module
+class Regfile extends Module
 {
     val io = IO(new Bundle
     {

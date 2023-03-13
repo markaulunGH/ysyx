@@ -1,17 +1,17 @@
 import chisel3._
 import chisel3.util._
 
-class EX extends Module
+class ES extends Module
 {
     val io = IO(new Bundle
     {
-        val ID_EX = Flipped(new ID_EX)
-        val EX_MM = new EX_MM
+        val ds_es = Flipped(new DS_ES)
+        val es_mm = new ES_MS
     })
-    val alu = Module(new alu)
-    io.ID_EX.alu <> alu.io.in
+    val alu = Module(new Alu)
+    io.ds_es.alu <> alu.io.in
 
-    io.EX_MM.alu_result := alu.io.alu_result
-    io.EX_MM.wen := io.ID_EX.other.wen
-    io.EX_MM.waddr := io.ID_EX.other.waddr
+    io.es_mm.alu_result := alu.io.alu_result
+    io.es_mm.wen := io.ds_es.wen
+    io.es_mm.waddr := io.ds_es.waddr
 }
