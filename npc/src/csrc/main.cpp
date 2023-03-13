@@ -69,7 +69,7 @@ void end_simulation()
 
 int main(int argc, char** argv, char** env)
 {
-    printf("???");
+    // printf("???");
     load_image(argv[2]);
     printf("load image success\n");
     init_simulation(argc, argv);
