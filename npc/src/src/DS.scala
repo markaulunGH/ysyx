@@ -44,7 +44,7 @@ class DS extends Module
 
     when (inst_jalr || inst_addi)
     {
-        imm := Cat(Vec(52, imm_I(12)), imm_I)
+        imm := Cat(Vec(52, imm_I(12)).asUInt(), imm_I)
     }
     // .elsewhen ()
     // {
