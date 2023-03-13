@@ -24,7 +24,7 @@ class DS extends Module
     val imm_B = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W))
     val imm_U = Cat(inst(31, 12), 0.U(12.W))
     val imm_J = Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U(1.W))
-    io.imm_J := imm_J
+    io.imm_J := inst(31)
 
     val decoder7128 = Module(new Decoder(7, 128))
     val decoder38 = Module(new Decoder(3, 8))
