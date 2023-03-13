@@ -40,11 +40,11 @@ class DS extends Module
     val src1_is_pc = inst_auipc
     val src2_is_imm = inst_auipc || inst_addi || inst_lui
 
-    val imm = Wire(SInt(64.W))
+    val imm = Wire(UInt(64.W))
 
     when (inst_jalr || inst_addi)
     {
-        imm := imm_I.asSInt()
+        imm := imm_I
     }
     // .elsewhen ()
     // {
