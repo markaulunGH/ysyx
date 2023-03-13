@@ -1,26 +1,26 @@
 import chisel3._
 import chisel3.util._
 
-class IF_to_ID extends Bundle
+class FS_DS extends Bundle
 {
     val inst = Output(UInt(64.W))
 }
 
-class ID_to_EX extends Bundle
+class DS_ES extends Bundle
 {
     val alu = Flipped(new alu_in)
     val wen = Output(UInt(1.W))
     val waddr = Output(UInt(5.W))
 }
 
-class EX_to_MM extends Bundle
+class ES_MS extends Bundle
 {
     val alu_result = Output(UInt(64.W))
     val wen = Output(UInt(1.W))
     val waddr = Output(UInt(5.W))
 }
 
-class MM_to_WB extends Bundle
+class MS_WS extends Bundle
 {
     val alu_result = Output(UInt(64.W))
     val wen = Output(UInt(1.W))
@@ -40,21 +40,21 @@ class top extends Module
         // val wmem_data = Output(UInt(64.W))
     })
     
-    val IF = Module(new IF)
-    val ID = Module(new ID)
-    val EX = Module(new EX)
-    val MM = Module(new MM)
-    val WB = Module(new WB)
-    io.pc := IF.io.pc
-    IF.io.inst := io.inst
-    IF.io.IF_ID  <> ID.io.IF_ID
-    ID.io.ID_EX  <> EX.io.ID_EX
-    EX.io.EX_MM  <> MM.io.EX_MM
-    MM.io.MM_WB  <> WB.io.MM_WB
+    val fs = Module(new FS)
+    val ds = Module(new DS)
+    val es = Module(new ES)
+    val ms = Module(new MS)
+    val ws = Module(new WS)
+    io.pc := fs.io.pc
+    fs.io.inst := io.inst
+    fs.io.fs_ds  <> ds.io.fs_ds
+    ds.io.ds_es  <> es.io.ds_es
+    es.io.es_mm  <> ms.io.es_mm
+    ms.io.ms_ws  <> ws.io.ms_ws
     
-    val rf = Module(new regfile)
-    rf.io.reg_r <> ID.io.reg_r
-    rf.io.reg_w <> WB.io.reg_w
+    val rf = Module(new egfile)
+    rf.io.reg_r <> ds.io.reg_r
+    rf.io.reg_w <> ws.io.reg_w
     
     io.wreg_addr := rf.io.reg_w.waddr
     io.wreg_data := rf.io.reg_w.wdata

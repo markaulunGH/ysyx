@@ -1,16 +1,16 @@
 import chisel3._
 import chisel3.util._
 
-class WB extends Module
+class WS extends Module
 {
     val io = IO(new Bundle
     {
-        val MM_WB = Flipped(new MM_to_WB)
+        val ms_ws = Flipped(new MS_WS)
 
         val reg_w = Flipped(new reg_w)
     })
 
-    io.reg_w.wen := io.MM_WB.wen
-    io.reg_w.waddr := io.MM_WB.waddr
-    io.reg_w.wdata := io.MM_WB.alu_result
+    io.reg_w.wen := io.ms_ws.wen
+    io.reg_w.waddr := io.ms_ws.waddr
+    io.reg_w.wdata := io.ms_ws.alu_result
 }

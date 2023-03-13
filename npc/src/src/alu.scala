@@ -8,7 +8,7 @@ class alu_in extends Bundle
     val alu_src2 = Input(UInt(64.W))
 }
 
-class alu extends Module
+class Alu extends Module
 {
     val io = IO(new Bundle
     {
