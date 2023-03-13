@@ -20,8 +20,8 @@ LDFLAGS += -lSDL2 -lSDL2_image
 
 VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-UNUSED -Wno-DECLFILENAME --trace-fst --assert --build
 # VERILATOR_FLAGS += --coverage
-#VERILATOR_FLAGS += --debug
-#VERILATOR_FLAGS += --gdbbt
+# VERILATOR_FLAGS += --debug
+# VERILATOR_FLAGS += --gdbbt
 
 VERILATOR_INPUT = build/Top.v src/csrc/main.cpp $(NVBOARD_ARCHIVE)
 
@@ -52,6 +52,8 @@ checkformat:
 
 .PHONY: test verilog help compile bsp reformat checkformat clean
 
+IMG ?=
+
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
@@ -64,7 +66,7 @@ sim:
 	@echo "-- RUN ---------------------"
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/VTop +trace
+	obj_dir/VTop +trace $(IMG)
 
 #	@echo
 #	@echo "-- COVERAGE ----------------"
