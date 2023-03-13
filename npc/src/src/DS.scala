@@ -9,8 +9,6 @@ class DS extends Module
         val ds_es = new DS_ES
 
         val reg_r = Flipped(new reg_r)
-
-        val ebreak = Output(Bool())
     })
 
     val inst = io.fs_ds.inst
@@ -33,13 +31,11 @@ class DS extends Module
     decoder38.io.in := funct3
     val dfunct3 = decoder38.io.out
 
-    val inst_lui    = dopcode(0x37)
-    val inst_auipc  = dopcode(0x17)
-    val inst_addi   = dopcode(0x13) && dfunct3(0x0)
-    val inst_jal    = dopcode(0x6f)
-    val inst_jalr   = dopcode(0x67)
-    val inst_ebreak = dopcode(0x73) && inst(31, 20) === 0x1.U
-    io.ebreak := inst_ebreak
+    val inst_lui   = dopcode(0x37)
+    val inst_auipc = dopcode(0x17)
+    val inst_addi  = dopcode(0x13) & dfunct3(0x0)
+    val inst_jal   = dopcode(0x6f)
+    val inst_jalr  = dopcode(0x67)
 
     val src1_is_pc = inst_auipc || inst_jal || inst_jalr
     val src2_is_imm = inst_lui || inst_auipc || inst_jal || inst_jalr || inst_addi

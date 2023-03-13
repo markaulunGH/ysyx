@@ -89,10 +89,6 @@ int main(int argc, char** argv, char** env)
             top->io_inst = ifetch(top->io_pc);
         }
         cycle_end();
-        if (top->io_ebreak)
-        {
-            break;
-        }
     }
     end_simulation();
 }
