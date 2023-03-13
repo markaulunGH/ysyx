@@ -74,7 +74,7 @@ class DS extends Module
     }
     .elsewhen (inst_jalr)
     {
-        io.fs_ds.br_target := io.fs_ds.pc + (io.reg_r.rdata2 & ~1.U)
+        io.fs_ds.br_target := imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W))
     }
     .otherwise
     {
@@ -82,7 +82,7 @@ class DS extends Module
     }
 
     io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
-    io.reg_r.raddr2 := Mux(inst_jal || inst_jalr, 0.U, rs2)
+    io.reg_r.raddr2 := rs2
 
     for (i <- 0 until 19)
     {
