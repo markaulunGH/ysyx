@@ -87,6 +87,5 @@ int main(int argc, char** argv, char** env)
         }
         cycle_end();
     }
-    halt:
     end_simulation();
 }
