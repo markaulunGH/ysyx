@@ -66,7 +66,7 @@ sim:
 	@echo "-- RUN ---------------------"
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/VTop +trace --bin=$(IMG)
+	obj_dir/VTop $(IMG) +trace
 
 #	@echo
 #	@echo "-- COVERAGE ----------------"

@@ -6,8 +6,6 @@
 
 int main(int argc, char** argv, char** env)
 {
-    printf("%d\n", argc);
-    printf("%s\n", argv[2]);
     Verilated::mkdir("logs");
 
     const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
