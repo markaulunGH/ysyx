@@ -5,7 +5,7 @@ class WB extends Module
 {
     val io = IO(new Bundle
     {
-        val MM_WB = Flipped(new MM_WB)
+        val MM_WB = Flipped(new MM_to_WB)
 
         val reg_w = Flipped(new reg_w)
     })

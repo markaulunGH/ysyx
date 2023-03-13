@@ -1,26 +1,26 @@
 import chisel3._
 import chisel3.util._
 
-class IF_ID extends Bundle
+class IF_to_ID extends Bundle
 {
     val inst = Output(UInt(64.W))
 }
 
-class ID_EX extends Bundle
+class ID_to_EX extends Bundle
 {
     val alu = Flipped(new alu_in)
     val wen = Output(UInt(1.W))
     val waddr = Output(UInt(5.W))
 }
 
-class EX_MM extends Bundle
+class EX_to_MM extends Bundle
 {
     val alu_result = Output(UInt(64.W))
     val wen = Output(UInt(1.W))
     val waddr = Output(UInt(5.W))
 }
 
-class MM_WB extends Bundle
+class MM_to_WB extends Bundle
 {
     val alu_result = Output(UInt(64.W))
     val wen = Output(UInt(1.W))

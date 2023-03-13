@@ -5,8 +5,8 @@ class ID extends Module
 {
     val io = IO(new Bundle
     {
-        val IF_ID = Flipped(new IF_ID)
-        val ID_EX = new ID_EX
+        val IF_ID = Flipped(new IF_to_ID)
+        val ID_EX = new ID_to_EX
 
         val reg_r = Flipped(new reg_r)
     })
