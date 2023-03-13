@@ -22,6 +22,7 @@ void load_image(char *img_file)
 
 uint32_t ifetch(uint64_t pc)
 {
+    printf("%x\n", pc);
     return *(uint32_t*) (img + pc - offset);
 }
 
