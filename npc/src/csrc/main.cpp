@@ -78,6 +78,7 @@ int main(int argc, char** argv, char** env)
         cycle_begin();
         top->reset = contextp->time() < 100;
         top->io_inst = ifetch(top->io_pc);
+        if (contextp->time() > 1000) break; 
         cycle_end();
     }
     end_simulation();
