@@ -24,7 +24,6 @@ class DS extends Module
     val imm_B = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W))
     val imm_U = Cat(inst(31, 12), 0.U(12.W))
     val imm_J = Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U(1.W))
-    io.imm_J := imm
 
     val decoder7128 = Module(new Decoder(7, 128))
     val decoder38 = Module(new Decoder(3, 8))
@@ -43,6 +42,7 @@ class DS extends Module
     val src2_is_imm = inst_lui || inst_auipc || inst_jal || inst_jalr || inst_addi
 
     val imm = Wire(UInt(64.W))
+    
     when (inst_jalr || inst_addi)
     {
         imm := Cat(Fill(52, imm_I(11)), imm_I)
@@ -67,6 +67,8 @@ class DS extends Module
     {
         imm := 0.U(64.W)
     }
+    io.imm_J := imm
+
 
     io.fs_ds.br_taken := inst_jal || inst_jalr
     when (inst_jal)
