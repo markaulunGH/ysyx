@@ -9,11 +9,8 @@ class IF_ID extends Bundle
 class ID_EX extends Bundle
 {
     val alu = Flipped(new alu_in)
-    val other = new Bundle
-    {
-        val wen = Output(UInt(1.W))
-        val waddr = Output(UInt(5.W))
-    }
+    val wen = Output(UInt(1.W))
+    val waddr = Output(UInt(5.W))
 }
 
 class EX_MM extends Bundle
