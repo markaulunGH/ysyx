@@ -25,7 +25,7 @@ void cycle_begin()
 {
     contextp->timeInc(1);
     top->clock = 0;
-    // top->eval();
+    top->eval();
     tfp->dump(contextp->time());
     contextp->timeInc(1);
     top->clock = 1;
