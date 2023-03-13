@@ -4,28 +4,6 @@
 #include "verilated_fst_c.h"
 #include <nvboard.h>
 
-const int SIZE = 1 << 20;
-const long long offset = 0x80000000l;
-
-uint8_t img[SIZE];
-
-void load_image(char *img_file)
-{
-    FILE *fp = fopen(img_file, "rb");
-    fseek(fp, 0, SEEK_END);
-    int size = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    assert(fread(img, size, 1, fp));
-    fclose(fp);
-}
-
-uint32_t ifetch(uint64_t pc)
-{
-    printf("%lx\n", pc);
-    return *(uint32_t*) (img + pc - offset);
-    return 0x100513;
-}
-
 const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
 VerilatedFstC* tfp = new VerilatedFstC;
@@ -69,6 +47,32 @@ void end_simulation()
 #endif
 }
 
+const int SIZE = 1 << 20;
+const long long offset = 0x80000000l;
+
+int size;
+uint8_t img[SIZE];
+
+void load_image(char *img_file)
+{
+    FILE *fp = fopen(img_file, "rb");
+    fseek(fp, 0, SEEK_END);
+    size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    assert(fread(img, size, 1, fp));
+    fclose(fp);
+}
+
+uint32_t ifetch(uint64_t pc)
+{
+    if (pc - offset < 0 || pc - offset > size)
+    {
+        end_simulation();
+        exit(1);
+    }
+    return *(uint32_t*) (img + pc - offset);
+}
+
 int main(int argc, char** argv, char** env)
 {
     load_image(argv[argc - 1]);
@@ -81,7 +85,6 @@ int main(int argc, char** argv, char** env)
         {
             top->io_inst = ifetch(top->io_pc);
         }
-        if (contextp->time() > 1000) break; 
         cycle_end();
     }
     end_simulation();
