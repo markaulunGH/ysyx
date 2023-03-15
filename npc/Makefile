@@ -13,13 +13,13 @@ VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
 endif
 
 CSRC_DIR = $(abspath src/csrc)
-CSRC += $(CSRC_DIR)/utils/disasm.cc
-CFLAGS += $(shell llvm-config --cxxflags) -fPIE
-LDFLAGS += $(shell llvm-config --libs)
 CSRC += $(shell find $(CSRC_DIR) -name "*.cpp")
 CFLAGS += $(addprefix -I, $(abspath src/csrc/include))
 LDFLAGS += -lreadline
 
+CSRC += $(CSRC_DIR)/utils/disasm.cc
+CFLAGS += $(shell llvm-config --cxxflags) -fPIE
+LDFLAGS += $(shell llvm-config --libs)
 
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 INCFLAGS += $(addprefix -I, $(INC_PATH))
