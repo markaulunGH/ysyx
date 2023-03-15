@@ -35,7 +35,7 @@ void new_wp(char *e, bool *success);
 void free_wp(int NO);
 bool scan_wp();
 
-void init_sdb();
+void init_sdb(bool batch);
 void sdb_mainloop();
 
 #endif
