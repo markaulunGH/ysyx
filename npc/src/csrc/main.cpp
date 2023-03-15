@@ -4,6 +4,8 @@
 #include <paddr.h>
 #include <config.h>
 
+void init_disasm(const char *triple);
+
 int main(int argc, char** argv, char** env)
 {
     init_mem();
