@@ -19,7 +19,7 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
-volatile word_t *gpr[] =
+volatile word_t *gpr[32] =
 {
     &top->io_rf_0,  &top->io_rf_1,  &top->io_rf_2,  &top->io_rf_3,  &top->io_rf_4,  &top->io_rf_5,  &top->io_rf_6,  &top->io_rf_7,
     &top->io_rf_8,  &top->io_rf_9,  &top->io_rf_10, &top->io_rf_11, &top->io_rf_12, &top->io_rf_13, &top->io_rf_14, &top->io_rf_15,
