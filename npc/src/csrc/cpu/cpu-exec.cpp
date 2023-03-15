@@ -179,24 +179,6 @@ static void execute(uint64_t n)
     }
 }
 
-static void statistic()
-{
-//     IFNDEF(CONFIG_TARGET_AM, setlocale(LC_NUMERIC, ""));
-// #define NUMBERIC_FMT MUXDEF(CONFIG_TARGET_AM, "%", "%'") PRIu64
-//     Log("host time spent = " NUMBERIC_FMT " us", g_timer);
-//     Log("total guest instructions = " NUMBERIC_FMT, g_nr_guest_inst);
-//     if (g_timer > 0)
-//         Log("simulation frequency = " NUMBERIC_FMT " inst/s", g_nr_guest_inst * 1000000 / g_timer);
-//     else
-//         Log("Finish running in less than 1 us and can not calculate the simulation frequency");
-}
-
-void assert_fail_msg()
-{
-    reg_display();
-    statistic();
-}
-
 /* Simulate how the CPU works. */
 void cpu_exec(uint64_t n)
 {
@@ -211,12 +193,7 @@ void cpu_exec(uint64_t n)
         npc_state.state = NPC_RUNNING;
     }
 
-    // uint64_t timer_start = get_time();
-
     execute(n);
-
-    // uint64_t timer_end = get_time();
-    // g_timer += timer_end - timer_start;
 
     switch (npc_state.state)
     {
@@ -243,6 +220,6 @@ void cpu_exec(uint64_t n)
 #endif
         // fall through
         case NPC_QUIT:
-            statistic();
+            printf("Quit NPC\n");
     }
 }
