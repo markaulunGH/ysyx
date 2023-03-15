@@ -142,6 +142,13 @@ static void exec_once(Decode *s)
     cycle_begin();
     s->npc.inst.val = top->io_inst = paddr_read(top->io_pc, 4);
     cycle_end();
+    if (top->io_ebreak)
+    {
+        // difftest_skip_ref();
+        npc_state.state = NPC_END;
+        npc_state.halt_pc = top->io_pc;
+        npc_state.halt_ret= top->io_rf_10;
+    }
     s->dnpc = top->io_pc;
     cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
