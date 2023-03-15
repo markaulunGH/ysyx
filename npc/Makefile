@@ -14,7 +14,8 @@ endif
 
 CSRC_DIR = $(abspath src/csrc)
 CSRC += $(shell find $(CSRC_DIR) -name "*.cpp")
-CFLAGS += $(addprefix -I, $(abspath src/csrc/include)) -g
+CFLAGS += $(addprefix -I, $(abspath src/csrc/include))
+CFLAGS += -g
 LDFLAGS += -lreadline
 
 CSRC += $(CSRC_DIR)/utils/disasm.cc
@@ -67,24 +68,21 @@ sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 	@$^
-	@echo
-	@echo "-- VERILATE ----------------"
 	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT) $(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS))
 
-	@echo
-	@echo "-- RUN ---------------------"
 	@rm -rf logs
 	@mkdir -p logs
-	gdb obj_dir/VTop +trace $(IMG) $(ELF)
+	obj_dir/VTop +trace $(IMG)
 
-#	@echo
-#	@echo "-- COVERAGE ----------------"
-#	@rm -rf logs/annotated
-#	$(VERILATOR_COVERAGE) --annotate logs/annotated logs/coverage.dat
+gdb:
+	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
-	@echo
-	@echo "-- DONE --------------------"
-	@echo
+	@$^
+	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT) $(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS))
+
+	@rm -rf logs
+	@mkdir -p logs
+	gdb obj_dir/VTop +trace $(IMG)
 
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::

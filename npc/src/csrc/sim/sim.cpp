@@ -51,9 +51,4 @@ void end_simulation()
 {
     top->final();
     tfp->close();
-
-#if VM_COVERAGE
-    Verilated::mkdir("logs");
-    contextp->coveragep()->write("logs/coverage.dat");
-#endif
 }
