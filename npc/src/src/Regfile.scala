@@ -23,6 +23,8 @@ class Regfile extends Module
     {
         val reg_r = new reg_r
         val reg_w = new reg_w
+
+        val rf = Reg(Vec(32, UInt(64.W)))
     })
 
     val rf = Reg(Vec(32, UInt(64.W)))

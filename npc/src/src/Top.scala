@@ -43,6 +43,8 @@ class Top extends Module
         val wreg_data = Output(UInt(64.W))
         // val wmem_addr = Output(UInt(64.W))
         // val wmem_data = Output(UInt(64.W))
+
+        val rf = Output(Vec(32, UInt(64.W)))
     })
     
     val fs = Module(new FS)
@@ -64,4 +66,5 @@ class Top extends Module
     
     io.wreg_addr := rf.io.reg_w.waddr
     io.wreg_data := rf.io.reg_w.wdata
+    io.rf := rf.io.rf
 }

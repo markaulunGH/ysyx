@@ -4,11 +4,15 @@
 #include <stddef.h>
 #include <config.h>
 #include <sdb.h>
+#include <sim.h>
+#include <paddr.h>
 
 FILE *log_fp = fopen("../../build/log.txt", "w");
 #define log_write(...) \
     fprintf(log_fp, __VA_ARGS__); \
     fflush(log_fp); \
+
+#define concat(x, y) x ## y
 
 void reg_display()
 {
@@ -132,20 +136,20 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
     }
 }
 
-static void exec_once(Decode *s, vaddr_t pc)
+static void exec_once(Decode *s)
 {
-    s->pc = pc;
-    s->snpc = pc;
-
-    //TODO
-
+    s->pc = top->io_pc;
+    cycle_begin();
+    s->npc.inst.val = top->io_inst = paddr_read(top->io_pc, 4);
+    cycle_end();
+    s->dnpc = top->io_pc;
     cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
     char *p = s->logbuf;
     p += snprintf(p, sizeof(s->logbuf), "0x%016lx:", s->pc);
-    int ilen = s->snpc - s->pc;
+    int ilen = 4;
     int i;
-    uint8_t *inst = (uint8_t *)&s->isa.inst.val;
+    uint8_t *inst = (uint8_t *)&s->npc.inst.val;
     for (i = ilen - 1; i >= 0; i--)
     {
         p += snprintf(p, 4, " %02x", inst[i]);
@@ -159,7 +163,7 @@ static void exec_once(Decode *s, vaddr_t pc)
     p += space_len;
 
     void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-    disassemble(p, s->logbuf + sizeof(s->logbuf) - p, s->pc, (uint8_t *)&s->isa.inst.val, ilen);
+    disassemble(p, s->logbuf + sizeof(s->logbuf) - p, s->pc, (uint8_t *)&s->npc.inst.val, ilen);
 #endif
 }
 
@@ -168,7 +172,7 @@ static void execute(uint64_t n)
     Decode s;
     for (; n > 0; n--)
     {
-        exec_once(&s, cpu.pc);
+        exec_once(&s);
         g_nr_guest_inst++;
         trace_and_difftest(&s, cpu.pc);
         if (npc_state.state != NPC_RUNNING)
