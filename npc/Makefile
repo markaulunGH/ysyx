@@ -72,7 +72,7 @@ sim:
 
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/VTop +trace $(IMG)
+	obj_dir/VTop +trace $(IMG) $(ELF)
 
 gdb:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
@@ -82,7 +82,7 @@ gdb:
 
 	@rm -rf logs
 	@mkdir -p logs
-	gdb obj_dir/VTop +trace $(IMG)
+	gdb obj_dir/VTop --args +trace $(IMG) $(ELF)
 
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
