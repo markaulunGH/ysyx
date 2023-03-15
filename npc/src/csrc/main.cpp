@@ -4,6 +4,9 @@
 #include "verilated_fst_c.h"
 #include <nvboard.h>
 #include <paddr.h>
+#include <sdb.h>
+#include <cpu.h>
+#include <config.h>
 
 const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
@@ -61,48 +64,23 @@ void reset()
     top->reset = 0;
 }
 
-const int SIZE = 1 << 20;
-const long long offset = 0x80000000l;
-
-int size;
-uint8_t img[SIZE];
-
-void load_image(char *img_file)
-{
-    FILE *fp = fopen(img_file, "rb");
-    fseek(fp, 0, SEEK_END);
-    size = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    assert(fread(img, size, 1, fp));
-    fclose(fp);
-}
-
 uint32_t ifetch(uint64_t pc)
 {
-    if (pc - offset < 0 || pc - offset > size)
-    {
-        printf("%lx\n", pc);
-        end_simulation();
-        exit(1);
-    }
-    return *(uint32_t*) (img + pc - offset);
+    return paddr_read(pc, 4);
 }
 
 int main(int argc, char** argv, char** env)
 {
+    init_mem();
     load_image(argv[argc - 1]);
+    init_sdb();
+#ifdef CONFIG_FTRACE
+    init_ftrace(argv[argc]);
+#endif
     init_simulation(argc - 1, argv);
 
     reset();
-    for (char *str; )
-    {
-        cycle_begin();
-        top->io_inst = ifetch(top->io_pc);
-        cycle_end();
-        if (top->io_ebreak)
-        {
-            break;
-        }
-    }
+    sdb_mainloop();
+
     end_simulation();
 }

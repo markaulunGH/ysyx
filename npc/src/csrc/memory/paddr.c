@@ -1,17 +1,19 @@
+#include <stdio.h>
 #include <paddr.h>
 
 uint8_t pmem[MEM_SIZE] __attribute((aligned(4096))) = {};
 
-uint8_t *guest_to_host(uint64_t paddr)
+uint8_t *guest_to_host(paddr_t paddr)
 {
     return pmem + paddr - MEM_BASE;
 }
-uint64_t host_to_guest(uint8_t *haddr)
+
+paddr_t host_to_guest(uint8_t *haddr)
 {
     return haddr - pmem + MEM_BASE;
 }
 
-uint64_t host_read(void *addr, int len)
+word_t host_read(void *addr, int len)
 {
     switch (len)
     {
@@ -23,7 +25,7 @@ uint64_t host_read(void *addr, int len)
     }
 }
 
-void host_write(void *addr, int len, uint64_t data)
+void host_write(void *addr, int len, word_t data)
 {
     switch (len)
     {
@@ -35,31 +37,41 @@ void host_write(void *addr, int len, uint64_t data)
     }
 }
 
-uint64_t paddr_read(uint64_t addr, int len)
+word_t paddr_read(paddr_t addr, int len)
 {
     return host_read(guest_to_host(addr), len);
 }
 
-void paddr_write(uint64_t addr, int len, uint64_t data)
+void paddr_write(paddr_t addr, int len, word_t data)
 {
     host_write(guest_to_host(addr), len, data);
 }
 
 void init_mem()
 {
-    uint32_t *p = (uint32_t *) pmem;
-    for (int i = 0; i < (int) (MEM_SIZE / sizeof(p[0])); ++ i)
-    {
-        p[i] = rand();
-    }
+    // uint32_t *p = (uint32_t *) pmem;
+    // for (int i = 0; i < (int) (MEM_SIZE / sizeof(p[0])); ++ i)
+    // {
+    //     p[i] = rand();
+    // }
 }
 
-int in_pmem(uint64_t addr)
+void load_image(char *img_file)
+{
+    FILE *fp = fopen(img_file, "rb");
+    fseek(fp, 0, SEEK_END);
+    int size = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    assert(fread(pmem, size, 1, fp));
+    fclose(fp);
+}
+
+int in_pmem(paddr_t addr)
 {
     return addr - MEM_BASE < MEM_SIZE;
 }
 
-uint64_t paddr_read(uint64_t addr, int len)
+word_t paddr_read(paddr_t addr, int len)
 {
     if (in_pmem(addr))
     {
@@ -71,7 +83,7 @@ uint64_t paddr_read(uint64_t addr, int len)
     }
 }
 
-void paddr_write(uint64_t addr, int len, uint64_t data)
+void paddr_write(paddr_t addr, int len, word_t data)
 {
     if (in_pmem(addr))
     {

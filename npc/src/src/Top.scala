@@ -52,10 +52,10 @@ class Top extends Module
     val ws = Module(new WS)
     io.pc := fs.io.pc
     fs.io.inst := io.inst
-    fs.io.fs_ds  <> ds.io.fs_ds
-    ds.io.ds_es  <> es.io.ds_es
-    es.io.es_mm  <> ms.io.es_mm
-    ms.io.ms_ws  <> ws.io.ms_ws
+    fs.io.fs_ds <> ds.io.fs_ds
+    ds.io.ds_es <> es.io.ds_es
+    es.io.es_mm <> ms.io.es_mm
+    ms.io.ms_ws <> ws.io.ms_ws
     io.ebreak := ds.io.ebreak
     
     val rf = Module(new Regfile)
