@@ -45,6 +45,8 @@ void init_simulation(int argc, char** argv)
     tfp->open("logs/dump.fst");
 
     reset();
+
+    end_simulation();
 }
 
 void end_simulation()
