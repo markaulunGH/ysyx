@@ -11,6 +11,7 @@ int main(int argc, char** argv, char** env)
     init_mem();
     load_image(argv[argc - 2]);
     init_sdb();
+    init_log();
 #ifdef CONFIG_ITRACE
     init_disasm("riscv64-pc-linux-gnu");
 #endif

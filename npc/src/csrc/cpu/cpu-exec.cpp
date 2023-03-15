@@ -7,10 +7,15 @@
 #include <sim.h>
 #include <paddr.h>
 
-FILE *log_fp = fopen("../../build/log.txt", "w");
+FILE *log_fp;
 #define log_write(...) \
     fprintf(log_fp, __VA_ARGS__); \
     fflush(log_fp); \
+
+void init_log()
+{
+    log_fp = fopen("../../build/log.txt", "w");
+}
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -226,12 +231,12 @@ void cpu_exec(uint64_t n)
     g_print_step = (n < MAX_INST_TO_PRINT);
     switch (npc_state.state)
     {
-    case NPC_END:
-    case NPC_ABORT:
-        printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
-        return;
-    default:
-        npc_state.state = NPC_RUNNING;
+        case NPC_END:
+        case NPC_ABORT:
+            printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
+            return;
+        default:
+            npc_state.state = NPC_RUNNING;
     }
 
     execute(n);
@@ -244,7 +249,7 @@ void cpu_exec(uint64_t n)
 
         case NPC_END:
         case NPC_ABORT:
-            // log_write("%s\n", npc_state.state == NPC_ABORT ? "ABORT" : (npc_state.halt_ret == 0 ? "HIT GOOD TRAP" : "HIT BAD TRAP"));
+            log_write("%s\n", npc_state.state == NPC_ABORT ? "ABORT" : (npc_state.halt_ret == 0 ? "HIT GOOD TRAP" : "HIT BAD TRAP"));
 #ifdef CONFIG_ITRACE
             for (int i = 0; i < IRING_BUF_SIZE; ++i)
             {
