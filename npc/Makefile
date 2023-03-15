@@ -15,6 +15,7 @@ endif
 CSRC_DIR = $(abspath src/csrc)
 CSRC = $(CSRC_DIR)/*/*.cpp
 CFLAGS = $(addprefix -I, $(abspath src/csrc/include))
+LDFLAGS = -lreadline
 
 CSRC += $(CSRC_DIR)/utils/*.cc
 CFLAGS += $(shell llvm-config --cxxflags) -fPIE
