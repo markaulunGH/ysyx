@@ -3,6 +3,10 @@
 #include "VTop.h"
 #include "verilated_fst_c.h"
 #include <nvboard.h>
+#include <paddr.h>
+#include <sdb.h>
+#include <cpu.h>
+#include <config.h>
 
 const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
@@ -19,6 +23,17 @@ void init_simulation(int argc, char** argv)
 
     top->trace(tfp, 0);
     tfp->open("logs/dump.fst");
+}
+
+void end_simulation()
+{
+    top->final();
+    tfp->close();
+
+#if VM_COVERAGE
+    Verilated::mkdir("logs");
+    contextp->coveragep()->write("logs/coverage.dat");
+#endif
 }
 
 void cycle_begin()
@@ -38,61 +53,29 @@ void cycle_end()
     tfp->dump(contextp->time());
 }
 
-void end_simulation()
+void reset()
 {
-    top->final();
-    tfp->close();
-
-#if VM_COVERAGE
-    Verilated::mkdir("logs");
-    contextp->coveragep()->write("logs/coverage.dat");
-#endif
-}
-
-const int SIZE = 1 << 20;
-const long long offset = 0x80000000l;
-
-int size;
-uint8_t img[SIZE];
-
-void load_image(char *img_file)
-{
-    FILE *fp = fopen(img_file, "rb");
-    fseek(fp, 0, SEEK_END);
-    size = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    assert(fread(img, size, 1, fp));
-    fclose(fp);
-}
-
-uint32_t ifetch(uint64_t pc)
-{
-    if (pc - offset < 0 || pc - offset > size)
+    top->reset = 1;
+    for (int i = 0; i < 100; ++ i)
     {
-        printf("%lx\n", pc);
-        end_simulation();
-        exit(1);
+        cycle_begin();
+        cycle_end();
     }
-    return *(uint32_t*) (img + pc - offset);
+    top->reset = 0;
 }
 
 int main(int argc, char** argv, char** env)
 {
+    init_mem();
     load_image(argv[argc - 1]);
+    init_sdb();
+#ifdef CONFIG_FTRACE
+    init_ftrace(argv[argc]);
+#endif
     init_simulation(argc - 1, argv);
-    while (1)
-    {
-        cycle_begin();
-        top->reset = contextp->time() < 100;
-        if (!top->reset)
-        {
-            top->io_inst = ifetch(top->io_pc);
-        }
-        cycle_end();
-        if (top->io_ebreak)
-        {
-            break;
-        }
-    }
+
+    reset();
+    sdb_mainloop();
+
     end_simulation();
 }

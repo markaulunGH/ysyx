@@ -12,9 +12,17 @@ VERILATOR = $(VERILATOR_ROOT)/bin/verilator
 VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
 endif
 
+CSRC_DIR = $(abspath src/csrc)
+CSRC += $(shell find $(CSRC_DIR) -name "*.cpp")
+CFLAGS += $(addprefix -I, $(abspath src/csrc/include))
+LDFLAGS += -lreadline
+
+CSRC += $(CSRC_DIR)/utils/disasm.cc
+CFLAGS += $(shell llvm-config --cxxflags) -fPIE
+LDFLAGS += $(shell llvm-config --libs)
+
 include $(NVBOARD_HOME)/scripts/nvboard.mk
-INC_PATH ?=
-INCFLAGS = $(addprefix -I, $(INC_PATH))
+INCFLAGS += $(addprefix -I, $(INC_PATH))
 CFLAGS += $(INCFLAGS)
 LDFLAGS += -lSDL2 -lSDL2_image
 
@@ -23,7 +31,7 @@ VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-UNUSED -Wno-DECLFILEN
 # VERILATOR_FLAGS += --debug
 # VERILATOR_FLAGS += --gdbbt
 
-VERILATOR_INPUT = build/Top.v src/csrc/main.cpp $(NVBOARD_ARCHIVE)
+VERILATOR_INPUT = build/Top.v $(CSRC) $(NVBOARD_ARCHIVE)
 
 .DEFAULT_GOAL := verilog
 
