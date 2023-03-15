@@ -61,6 +61,7 @@ checkformat:
 .PHONY: test verilog help compile bsp reformat checkformat clean
 
 IMG ?=
+ELF ?=
 
 sim:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
@@ -74,7 +75,7 @@ sim:
 	@echo "-- RUN ---------------------"
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/VTop +trace $(IMG)
+	obj_dir/VTop +trace $(IMG) $(ELF)
 
 #	@echo
 #	@echo "-- COVERAGE ----------------"
