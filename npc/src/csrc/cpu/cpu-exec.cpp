@@ -8,9 +8,6 @@
 #include <paddr.h>
 
 FILE *log_fp;
-#define log_write(...) \
-    fprintf(log_fp, __VA_ARGS__); \
-    fflush(log_fp); \
 
 void init_log(const char *log_file)
 {
