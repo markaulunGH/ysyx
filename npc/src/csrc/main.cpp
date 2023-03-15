@@ -3,8 +3,8 @@
 #include "VTop.h"
 #include "verilated_fst_c.h"
 #include <nvboard.h>
-#include <sdb.h>
 #include <paddr.h>
+#include <sdb.h>
 #include <cpu.h>
 #include <config.h>
 
