@@ -17,7 +17,7 @@ int main(int argc, char** argv, char** env)
 #ifdef CONFIG_FTRACE
     init_ftrace(argv[argc - 2]);
 #endif
-    init_log(argv[argc - 1]);
+    // init_log(argv[argc - 1]);
     init_simulation(argc - 4, argv);
     sdb_mainloop();
     end_simulation();
