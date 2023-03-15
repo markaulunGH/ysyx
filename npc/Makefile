@@ -13,7 +13,8 @@ VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
 endif
 
 CSRC_DIR = $(abspath src/csrc)
-CSRC = $(CSRC_DIR)/*/*.cpp
+CSRC = $(CSRC_DIR)/*.cpp
+CSRC += $(CSRC_DIR)/*/*.cpp
 CFLAGS = $(addprefix -I, $(abspath src/csrc/include))
 LDFLAGS = -lreadline
 
