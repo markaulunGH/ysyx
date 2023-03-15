@@ -38,12 +38,6 @@ class Top extends Module
         val inst = Input(UInt(64.W))
 
         val ebreak = Output(Bool())
-
-        // val wreg_addr = Output(UInt(5.W))
-        // val wreg_data = Output(UInt(64.W))
-        // val wmem_addr = Output(UInt(64.W))
-        // val wmem_data = Output(UInt(64.W))
-
         val rf = Output(Vec(32, UInt(64.W)))
     })
     
@@ -58,13 +52,11 @@ class Top extends Module
     ds.io.ds_es <> es.io.ds_es
     es.io.es_mm <> ms.io.es_mm
     ms.io.ms_ws <> ws.io.ms_ws
-    io.ebreak := ds.io.ebreak
     
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
     rf.io.reg_w <> ws.io.reg_w
     
-    // io.wreg_addr := rf.io.reg_w.waddr
-    // io.wreg_data := rf.io.reg_w.wdata
+    io.ebreak := ds.io.ebreak
     io.rf := rf.io.rf
 }
