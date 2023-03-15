@@ -266,6 +266,6 @@ void cpu_exec(uint64_t n)
 #endif
         // fall through
         case NPC_QUIT:
-            printf("Quit NPC\n");
+            return;
     }
 }
