@@ -73,7 +73,7 @@ sim:
 
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/VTop +trace --img=$(IMG) --elf=$(ELF) --log=$(abspath logs/log.txt) ARGS
+	obj_dir/VTop +trace --img=$(IMG) --elf=$(ELF) --log=$(abspath logs/log.txt) $(ARGS)
 
 gdb:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
