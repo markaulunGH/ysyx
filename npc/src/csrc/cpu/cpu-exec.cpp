@@ -249,7 +249,7 @@ void cpu_exec(uint64_t n)
 
         case NPC_END:
         case NPC_ABORT:
-            printf("%s\n", npc_state.state == NPC_ABORT ? "ABORT" : (npc_state.halt_ret == 0 ? "HIT GOOD TRAP" : "HIT BAD TRAP"));
+            fprintf(log_fp, "%s\n", npc_state.state == NPC_ABORT ? "ABORT" : (npc_state.halt_ret == 0 ? "HIT GOOD TRAP" : "HIT BAD TRAP"));
 #ifdef CONFIG_ITRACE
             for (int i = 0; i < IRING_BUF_SIZE; ++i)
             {
