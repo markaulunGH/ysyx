@@ -12,16 +12,41 @@ FILE *log_fp = fopen("../../build/log.txt", "w");
     fprintf(log_fp, __VA_ARGS__); \
     fflush(log_fp); \
 
-#define concat(x, y) x ## y
+const char *regs[] = {
+  "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
+  "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
+  "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
+  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
+};
+
+volatile word_t *gpr[] =
+{
+    &top->io_rf_0,  &top->io_rf_1,  &top->io_rf_2,  &top->io_rf_3,  &top->io_rf_4,  &top->io_rf_5,  &top->io_rf_6,  &top->io_rf_7,
+    &top->io_rf_8,  &top->io_rf_9,  &top->io_rf_10, &top->io_rf_11, &top->io_rf_12, &top->io_rf_13, &top->io_rf_14, &top->io_rf_15,
+    &top->io_rf_16, &top->io_rf_17, &top->io_rf_18, &top->io_rf_19, &top->io_rf_20, &top->io_rf_21, &top->io_rf_22, &top->io_rf_23,
+    &top->io_rf_24, &top->io_rf_25, &top->io_rf_26, &top->io_rf_27, &top->io_rf_28, &top->io_rf_29, &top->io_rf_30, &top->io_rf_31
+};
 
 void reg_display()
 {
 
+    for (int i = 0; i < 32; ++ i)
+    {
+        printf("%-15s0x%-18lx%ld\n", regs[i], *gpr[i], *gpr[i]);
+    }
 }
 
 word_t reg_str2val(const char *name, bool *success)
 {
-
+    for (int i = 0; i < 32; ++ i)
+    {
+        if (strcmp(name, regs[i]) == 0)
+        {
+            return *gpr[i];
+        }
+    }
+    *success = false;
+    return 0;
 }
 
 /* The assembly code of instructions executed is only output to the screen
