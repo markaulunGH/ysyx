@@ -12,9 +12,9 @@ FILE *log_fp;
     fprintf(log_fp, __VA_ARGS__); \
     fflush(log_fp); \
 
-void init_log()
+void init_log(char *log_file)
 {
-    log_fp = fopen("../../build/log.txt", "w");
+    log_fp = fopen(log_file, "w");
 }
 
 const char *regs[] = {
