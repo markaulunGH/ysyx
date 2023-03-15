@@ -82,7 +82,7 @@ gdb:
 
 	@rm -rf logs
 	@mkdir -p logs
-	gdb --args obj_dir/VTop +trace $(IMG) $(ELF)
+	gdb --args obj_dir/VTop +trace $(IMG) $(ELF) $(abspath build/log.txt)
 
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
