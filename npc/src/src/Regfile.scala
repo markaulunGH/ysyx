@@ -36,4 +36,6 @@ class Regfile extends Module
 
     io.reg_r.rdata1 := Mux(io.reg_r.raddr1 === 0.U, 0.U, rf(io.reg_r.raddr1))
     io.reg_r.rdata2 := Mux(io.reg_r.raddr2 === 0.U, 0.U, rf(io.reg_r.raddr2))
+
+    io.rf := rf
 }
