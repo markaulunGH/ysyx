@@ -117,21 +117,21 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 #ifdef CONFIG_ITRACE
     strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
 #ifdef CONFIG_FTRACE
-    if (strncmp("jal", _this->logbuf + 32, 3) == 0)
+    if (strncmp("jal", _this->logbuf + 44, 3) == 0)
     {
         for (int i = 0; i < stack_depth; ++i)
         {
             log_write(" ");
         }
         uint64_t addr;
-        if (*(_this->logbuf + 35) == 'r')
+        if (*(_this->logbuf + 47) == 'r')
         {
             bool success = true;
-            addr = reg_str2val(_this->logbuf + 37, &success);
+            addr = reg_str2val(_this->logbuf + 49, &success);
         }
         else
         {
-            sscanf(_this->logbuf + 36, "%lx", &addr);
+            sscanf(_this->logbuf + 48, "%lx", &addr);
         }
         int id = 0;
         for (; id < symshdr.sh_size / symshdr.sh_entsize; ++id)
@@ -144,7 +144,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
         log_write("call [%s@%lx]\n", strtab + symtab[id].st_name, addr);
         stack_depth += 2;
     }
-    else if (strncmp("ret", _this->logbuf + 32, 3) == 0)
+    else if (strncmp("ret", _this->logbuf + 44, 3) == 0)
     {
         stack_depth -= 2;
         for (int i = 0; i < stack_depth; ++i)
@@ -173,8 +173,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 
 static void exec_once(Decode *s)
 {
-    s->pc = top->io_pc;
     cycle_begin();
+    s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst = paddr_read(top->io_pc, 4);
     cycle_end();
     if (top->io_ebreak)
