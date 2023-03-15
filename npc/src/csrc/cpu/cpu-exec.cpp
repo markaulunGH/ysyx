@@ -144,7 +144,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
         log_write("call [%s@%lx]\n", strtab + symtab[id].st_name, addr);
         stack_depth += 2;
     }
-    else if (strncmp("ret", _this->logbuf + 32, 3) == 0)
+    else if (strncmp("ret", _this->logbuf + 44, 3) == 0)
     {
         stack_depth -= 2;
         for (int i = 0; i < stack_depth; ++i)
