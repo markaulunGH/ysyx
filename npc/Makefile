@@ -74,15 +74,15 @@ sim:
 	@mkdir -p logs
 	obj_dir/VTop +trace $(IMG)
 
-gdb:
-	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
+# gdb:
+# 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
-	@$^
-	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT) $(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS))
+# 	@$^
+# 	$(VERILATOR) $(VERILATOR_FLAGS) $(VERILATOR_INPUT) $(addprefix -CFLAGS , $(CFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS))
 
-	@rm -rf logs
-	@mkdir -p logs
-	gdb obj_dir/VTop +trace $(IMG)
+# 	@rm -rf logs
+# 	@mkdir -p logs
+# 	gdb obj_dir/VTop +trace $(IMG)
 
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
