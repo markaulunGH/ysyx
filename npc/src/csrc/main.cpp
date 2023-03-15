@@ -9,6 +9,9 @@ int main(int argc, char** argv, char** env)
     init_mem();
     load_image(argv[argc - 2]);
     init_sdb();
+#ifdef CONFIG_ITRACE
+    init_disasm("riscv64", "bad-pc-linux-gnu");
+#endif
 #ifdef CONFIG_FTRACE
     init_ftrace(argv[argc - 1]);
 #endif
