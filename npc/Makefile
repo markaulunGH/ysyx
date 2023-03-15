@@ -14,7 +14,7 @@ endif
 
 CSRC_DIR = $(abspath src/csrc)
 CSRC += $(shell find $(CSRC_DIR) -name "*.cpp")
-CFLAGS += $(addprefix -I, $(abspath src/csrc/include))
+CFLAGS += $(addprefix -I, $(abspath src/csrc/include)) -g
 LDFLAGS += -lreadline
 
 CSRC += $(CSRC_DIR)/utils/disasm.cc
@@ -26,7 +26,7 @@ INCFLAGS += $(addprefix -I, $(INC_PATH))
 CFLAGS += $(INCFLAGS)
 LDFLAGS += -lSDL2 -lSDL2_image
 
-VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-UNUSED -Wno-DECLFILENAME --trace-fst --assert --build -g
+VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-UNUSED -Wno-DECLFILENAME --trace-fst --assert --build
 # VERILATOR_FLAGS += --coverage
 # VERILATOR_FLAGS += --debug
 # VERILATOR_FLAGS += --gdbbt
