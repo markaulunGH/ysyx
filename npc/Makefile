@@ -26,7 +26,7 @@ INCFLAGS += $(addprefix -I, $(INC_PATH))
 CFLAGS += $(INCFLAGS)
 LDFLAGS += -lSDL2 -lSDL2_image
 
-VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-UNUSED -Wno-DECLFILENAME --trace-fst --assert --build
+VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-UNUSED -Wno-DECLFILENAME --trace-fst --assert --build -g
 # VERILATOR_FLAGS += --coverage
 # VERILATOR_FLAGS += --debug
 # VERILATOR_FLAGS += --gdbbt
@@ -75,7 +75,7 @@ sim:
 	@echo "-- RUN ---------------------"
 	@rm -rf logs
 	@mkdir -p logs
-	gdb obj_dir/VTop +trace $(IMG) $(ELF)
+	obj_dir/VTop +trace $(IMG) $(ELF)
 
 #	@echo
 #	@echo "-- COVERAGE ----------------"
