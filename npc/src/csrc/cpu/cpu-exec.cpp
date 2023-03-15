@@ -19,30 +19,35 @@ const char *regs[] = {
   "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
 };
 
-volatile word_t *gpr[32] =
-{
-    &top->io_rf_0,  &top->io_rf_1,  &top->io_rf_2,  &top->io_rf_3,  &top->io_rf_4,  &top->io_rf_5,  &top->io_rf_6,  &top->io_rf_7,
-    &top->io_rf_8,  &top->io_rf_9,  &top->io_rf_10, &top->io_rf_11, &top->io_rf_12, &top->io_rf_13, &top->io_rf_14, &top->io_rf_15,
-    &top->io_rf_16, &top->io_rf_17, &top->io_rf_18, &top->io_rf_19, &top->io_rf_20, &top->io_rf_21, &top->io_rf_22, &top->io_rf_23,
-    &top->io_rf_24, &top->io_rf_25, &top->io_rf_26, &top->io_rf_27, &top->io_rf_28, &top->io_rf_29, &top->io_rf_30, &top->io_rf_31
-};
-
 void reg_display()
 {
-
+    word_t gpr[] =
+    {
+        top->io_rf_0,  top->io_rf_1,  top->io_rf_2,  top->io_rf_3,  top->io_rf_4,  top->io_rf_5,  top->io_rf_6,  top->io_rf_7,
+        top->io_rf_8,  top->io_rf_9,  top->io_rf_10, top->io_rf_11, top->io_rf_12, top->io_rf_13, top->io_rf_14, top->io_rf_15,
+        top->io_rf_16, top->io_rf_17, top->io_rf_18, top->io_rf_19, top->io_rf_20, top->io_rf_21, top->io_rf_22, top->io_rf_23,
+        top->io_rf_24, top->io_rf_25, top->io_rf_26, top->io_rf_27, top->io_rf_28, top->io_rf_29, top->io_rf_30, top->io_rf_31
+    };
     for (int i = 0; i < 32; ++ i)
     {
-        printf("%-15s0x%-18lx%ld\n", regs[i], *gpr[i], *gpr[i]);
+        printf("%-15s0x%-18lx%ld\n", regs[i], gpr[i], gpr[i]);
     }
 }
 
 word_t reg_str2val(const char *name, bool *success)
 {
+    word_t gpr[] =
+    {
+        top->io_rf_0,  top->io_rf_1,  top->io_rf_2,  top->io_rf_3,  top->io_rf_4,  top->io_rf_5,  top->io_rf_6,  top->io_rf_7,
+        top->io_rf_8,  top->io_rf_9,  top->io_rf_10, top->io_rf_11, top->io_rf_12, top->io_rf_13, top->io_rf_14, top->io_rf_15,
+        top->io_rf_16, top->io_rf_17, top->io_rf_18, top->io_rf_19, top->io_rf_20, top->io_rf_21, top->io_rf_22, top->io_rf_23,
+        top->io_rf_24, top->io_rf_25, top->io_rf_26, top->io_rf_27, top->io_rf_28, top->io_rf_29, top->io_rf_30, top->io_rf_31
+    };
     for (int i = 0; i < 32; ++ i)
     {
         if (strcmp(name, regs[i]) == 0)
         {
-            return *gpr[i];
+            return gpr[i];
         }
     }
     *success = false;
