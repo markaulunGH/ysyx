@@ -14,7 +14,7 @@ FILE *log_fp;
 
 void init_log(const char *log_file)
 {
-    // log_fp = fopen(log_file, "w");
+    log_fp = fopen(log_file, "w");
 }
 
 const char *regs[] = {
@@ -249,8 +249,7 @@ void cpu_exec(uint64_t n)
 
         case NPC_END:
         case NPC_ABORT:
-            // fprintf(log_fp, "%s\n", npc_state.state == NPC_ABORT ? "ABORT" : (npc_state.halt_ret == 0 ? "HIT GOOD TRAP" : "HIT BAD TRAP"));
-            printf("%s\n", npc_state.state == NPC_ABORT ? "ABORT" : (npc_state.halt_ret == 0 ? "HIT GOOD TRAP" : "HIT BAD TRAP"));
+            log_write("%s\n", npc_state.state == NPC_ABORT ? "ABORT" : (npc_state.halt_ret == 0 ? "HIT GOOD TRAP" : "HIT BAD TRAP"));
 #ifdef CONFIG_ITRACE
             for (int i = 0; i < IRING_BUF_SIZE; ++i)
             {
