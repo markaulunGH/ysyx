@@ -4,20 +4,49 @@
 #include <stddef.h>
 #include <config.h>
 #include <sdb.h>
+#include <sim.h>
+#include <paddr.h>
 
 FILE *log_fp = fopen("../../build/log.txt", "w");
 #define log_write(...) \
     fprintf(log_fp, __VA_ARGS__); \
     fflush(log_fp); \
 
+const char *regs[] = {
+  "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
+  "s0", "s1", "a0", "a1", "a2", "a3", "a4", "a5",
+  "a6", "a7", "s2", "s3", "s4", "s5", "s6", "s7",
+  "s8", "s9", "s10", "s11", "t3", "t4", "t5", "t6"
+};
+
+volatile word_t *gpr[] =
+{
+    &top->io_rf_0,  &top->io_rf_1,  &top->io_rf_2,  &top->io_rf_3,  &top->io_rf_4,  &top->io_rf_5,  &top->io_rf_6,  &top->io_rf_7,
+    &top->io_rf_8,  &top->io_rf_9,  &top->io_rf_10, &top->io_rf_11, &top->io_rf_12, &top->io_rf_13, &top->io_rf_14, &top->io_rf_15,
+    &top->io_rf_16, &top->io_rf_17, &top->io_rf_18, &top->io_rf_19, &top->io_rf_20, &top->io_rf_21, &top->io_rf_22, &top->io_rf_23,
+    &top->io_rf_24, &top->io_rf_25, &top->io_rf_26, &top->io_rf_27, &top->io_rf_28, &top->io_rf_29, &top->io_rf_30, &top->io_rf_31
+};
+
 void reg_display()
 {
 
+    for (int i = 0; i < 32; ++ i)
+    {
+        printf("%-15s0x%-18lx%ld\n", regs[i], *gpr[i], *gpr[i]);
+    }
 }
 
 word_t reg_str2val(const char *name, bool *success)
 {
-
+    for (int i = 0; i < 32; ++ i)
+    {
+        if (strcmp(name, regs[i]) == 0)
+        {
+            return *gpr[i];
+        }
+    }
+    *success = false;
+    return 0;
 }
 
 /* The assembly code of instructions executed is only output to the screen
@@ -132,20 +161,27 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
     }
 }
 
-static void exec_once(Decode *s, vaddr_t pc)
+static void exec_once(Decode *s)
 {
-    s->pc = pc;
-    s->snpc = pc;
-
-    //TODO
-
+    s->pc = top->io_pc;
+    cycle_begin();
+    s->npc.inst.val = top->io_inst = paddr_read(top->io_pc, 4);
+    cycle_end();
+    if (top->io_ebreak)
+    {
+        // difftest_skip_ref();
+        npc_state.state = NPC_END;
+        npc_state.halt_pc = top->io_pc;
+        npc_state.halt_ret= top->io_rf_10;
+    }
+    s->dnpc = top->io_pc;
     cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
     char *p = s->logbuf;
     p += snprintf(p, sizeof(s->logbuf), "0x%016lx:", s->pc);
-    int ilen = s->snpc - s->pc;
+    int ilen = 4;
     int i;
-    uint8_t *inst = (uint8_t *)&s->isa.inst.val;
+    uint8_t *inst = (uint8_t *)&s->npc.inst.val;
     for (i = ilen - 1; i >= 0; i--)
     {
         p += snprintf(p, 4, " %02x", inst[i]);
@@ -159,7 +195,7 @@ static void exec_once(Decode *s, vaddr_t pc)
     p += space_len;
 
     void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
-    disassemble(p, s->logbuf + sizeof(s->logbuf) - p, s->pc, (uint8_t *)&s->isa.inst.val, ilen);
+    disassemble(p, s->logbuf + sizeof(s->logbuf) - p, s->pc, (uint8_t *)&s->npc.inst.val, ilen);
 #endif
 }
 
@@ -168,7 +204,7 @@ static void execute(uint64_t n)
     Decode s;
     for (; n > 0; n--)
     {
-        exec_once(&s, cpu.pc);
+        exec_once(&s);
         g_nr_guest_inst++;
         trace_and_difftest(&s, cpu.pc);
         if (npc_state.state != NPC_RUNNING)

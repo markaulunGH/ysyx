@@ -6,7 +6,6 @@
 
 struct CPU_state
 {
-    word_t gpr[32];
     vaddr_t pc;
 };
 
@@ -21,9 +20,8 @@ struct DecodeInfo
 struct Decode
 {
     vaddr_t pc;
-    vaddr_t snpc; // static next pc
     vaddr_t dnpc; // dynamic next pc
-    DecodeInfo isa;
+    DecodeInfo npc;
 #ifdef CONFIG_ITRACE
     char logbuf[128];
 #endif

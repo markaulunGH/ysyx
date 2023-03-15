@@ -23,6 +23,8 @@ class Regfile extends Module
     {
         val reg_r = new reg_r
         val reg_w = new reg_w
+
+        val rf = Output(Vec(32, UInt(64.W)))
     })
 
     val rf = Reg(Vec(32, UInt(64.W)))
@@ -34,4 +36,6 @@ class Regfile extends Module
 
     io.reg_r.rdata1 := Mux(io.reg_r.raddr1 === 0.U, 0.U, rf(io.reg_r.raddr1))
     io.reg_r.rdata2 := Mux(io.reg_r.raddr2 === 0.U, 0.U, rf(io.reg_r.raddr2))
+
+    io.rf := rf
 }
