@@ -72,7 +72,7 @@ sim:
 
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/VTop +trace $(IMG) $(ELF) $(abspath build/log.txt)
+	obj_dir/VTop +trace $(IMG) $(ELF) $(abspath logs/log.txt)
 
 gdb:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
