@@ -37,12 +37,12 @@ void host_write(void *addr, int len, word_t data)
     }
 }
 
-word_t paddr_read(paddr_t addr, int len)
+word_t pmem_read(paddr_t addr, int len)
 {
     return host_read(guest_to_host(addr), len);
 }
 
-void paddr_write(paddr_t addr, int len, word_t data)
+void pmem_write(paddr_t addr, int len, word_t data)
 {
     host_write(guest_to_host(addr), len, data);
 }
