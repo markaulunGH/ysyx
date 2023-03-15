@@ -52,7 +52,7 @@ void display_wp()
 void new_wp(char *e, bool *success)
 {
     word_t val = expr(e, success);
-    if (success == false)
+    if (*success == false)
     {
         return;
     }
