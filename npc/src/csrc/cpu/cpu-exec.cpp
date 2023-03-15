@@ -138,6 +138,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 
 static void exec_once(Decode *s)
 {
+    printf("fxxk\n");
     s->pc = top->io_pc;
     cycle_begin();
     s->npc.inst.val = top->io_inst = paddr_read(top->io_pc, 4);
