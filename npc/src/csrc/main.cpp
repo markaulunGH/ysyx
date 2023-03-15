@@ -8,17 +8,34 @@ void init_disasm(const char *triple);
 
 int main(int argc, char** argv, char** env)
 {
+    bool batch = 0;
+    for (int i = 1; i < argc; ++ i)
+    {
+        if (strncmp(argv[i], "--img=", 6) == 0)
+        {
+            load_image(argv[i] + 6);
+        }
+#ifdef CONFIG_FTRACE
+        if (strncmp(argv[i], "--elf=", 6) == 0)
+        {
+            init_ftrace(argv[i] + 6);
+        }
+#endif
+        if (strncmp(argv[i], "--log=", 6) == 0)
+        {
+            init_log(argv[i] + 6);
+        }
+        if (strncmp(argv[i], "--batch", 7) == 0)
+        {
+            batch = 1;
+        }
+    }
     init_mem();
-    load_image(argv[argc - 3]);
-    init_sdb();
+    init_sdb(batch);
 #ifdef CONFIG_ITRACE
     init_disasm("riscv64-pc-linux-gnu");
 #endif
-#ifdef CONFIG_FTRACE
-    init_ftrace(argv[argc - 2]);
-#endif
-    init_log(argv[argc - 1]);
-    init_simulation(argc - 4, argv);
+    init_simulation(1, argv);
     sdb_mainloop();
     end_simulation();
 }

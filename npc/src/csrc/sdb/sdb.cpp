@@ -246,8 +246,13 @@ void sdb_mainloop()
     }
 }
 
-void init_sdb()
+void init_sdb(bool batch)
 {
+    if (batch)
+    {
+        sdb_set_batch_mode();
+    }
+
     /* Compile the regular expressions. */
     init_regex();
 
