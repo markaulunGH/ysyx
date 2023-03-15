@@ -7,11 +7,11 @@ VerilatedFstC* tfp = new VerilatedFstC;
 void cycle_begin()
 {
     contextp->timeInc(1);
-    top->clock = 0;
+    top->clock = 1;
     top->eval();
     tfp->dump(contextp->time());
     contextp->timeInc(1);
-    top->clock = 1;
+    top->clock = 0;
     top->eval();
 }
 
@@ -24,7 +24,7 @@ void cycle_end()
 void reset()
 {
     top->reset = 1;
-    for (int i = 0; i <= 100; ++ i)
+    for (int i = 0; i < 100; ++ i)
     {
         cycle_begin();
         cycle_end();
