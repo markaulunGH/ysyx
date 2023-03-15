@@ -14,13 +14,13 @@ endif
 
 CSRC_DIR = $(abspath src/csrc)
 CSRC = $(shell find $(CSRC_DIR) -name "*.cpp")
-LDFLAGS = -lreadline
+CFLAGS = $(addprefix -I, $(abspath src/csrc/include))
 
 CSRC += $(CSRC_DIR)/utils/disasm.cc
 CFLAGS += $(shell llvm-config --cxxflags) -fPIE
-LDFLAGS += $(shell llvm-config --libs)
+LDFLAGS = $(shell llvm-config --libs)
+LDFLAGS += -lreadline
 
-CFLAGS = $(addprefix -I, $(abspath src/csrc/include))
 include $(NVBOARD_HOME)/scripts/nvboard.mk
 INCFLAGS += $(addprefix -I, $(INC_PATH))
 CFLAGS += $(INCFLAGS)
