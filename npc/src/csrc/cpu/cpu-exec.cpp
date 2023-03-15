@@ -168,6 +168,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 
 static void exec_once(Decode *s)
 {
+    printf("exec once\n");
     s->pc = top->io_pc;
     cycle_begin();
     s->npc.inst.val = top->io_inst = paddr_read(top->io_pc, 4);
@@ -209,6 +210,7 @@ static void execute(uint64_t n)
     Decode s;
     for (; n > 0; n--)
     {
+    printf("%d\n", n);
         exec_once(&s);
         g_nr_guest_inst++;
         trace_and_difftest(&s, cpu.pc);
