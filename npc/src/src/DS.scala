@@ -74,7 +74,7 @@ class DS extends Module
     io.fs_ds.br_taken := inst_jal || inst_jalr
     when (inst_jal)
     {
-        io.fs_ds.br_target := io.fs_ds.pc + imm_J
+        io.fs_ds.br_target := io.fs_ds.pc + imm
     }
     .elsewhen (inst_jalr)
     {

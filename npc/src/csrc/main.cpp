@@ -3,6 +3,7 @@
 #include "VTop.h"
 #include "verilated_fst_c.h"
 #include <nvboard.h>
+#include <paddr.h>
 
 const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
@@ -19,6 +20,17 @@ void init_simulation(int argc, char** argv)
 
     top->trace(tfp, 0);
     tfp->open("logs/dump.fst");
+}
+
+void end_simulation()
+{
+    top->final();
+    tfp->close();
+
+#if VM_COVERAGE
+    Verilated::mkdir("logs");
+    contextp->coveragep()->write("logs/coverage.dat");
+#endif
 }
 
 void cycle_begin()
@@ -38,15 +50,15 @@ void cycle_end()
     tfp->dump(contextp->time());
 }
 
-void end_simulation()
+void reset()
 {
-    top->final();
-    tfp->close();
-
-#if VM_COVERAGE
-    Verilated::mkdir("logs");
-    contextp->coveragep()->write("logs/coverage.dat");
-#endif
+    top->reset = 1;
+    for (int i = 0; i < 100; ++ i)
+    {
+        cycle_begin();
+        cycle_end();
+    }
+    top->reset = 0;
 }
 
 const int SIZE = 1 << 20;
@@ -80,14 +92,12 @@ int main(int argc, char** argv, char** env)
 {
     load_image(argv[argc - 1]);
     init_simulation(argc - 1, argv);
-    while (1)
+
+    reset();
+    for (char *str; )
     {
         cycle_begin();
-        top->reset = contextp->time() < 100;
-        if (!top->reset)
-        {
-            top->io_inst = ifetch(top->io_pc);
-        }
+        top->io_inst = ifetch(top->io_pc);
         cycle_end();
         if (top->io_ebreak)
         {
