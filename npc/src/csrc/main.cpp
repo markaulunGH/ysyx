@@ -64,11 +64,6 @@ void reset()
     top->reset = 0;
 }
 
-uint32_t ifetch(uint64_t pc)
-{
-    return paddr_read(pc, 4);
-}
-
 int main(int argc, char** argv, char** env)
 {
     init_mem();
