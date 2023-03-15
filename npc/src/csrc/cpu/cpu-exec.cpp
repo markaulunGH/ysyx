@@ -7,10 +7,15 @@
 #include <sim.h>
 #include <paddr.h>
 
-FILE *log_fp = fopen("../../build/log.txt", "w");
+FILE *log_fp;
 #define log_write(...) \
     fprintf(log_fp, __VA_ARGS__); \
     fflush(log_fp); \
+
+void init_log(const char *log_file)
+{
+    log_fp = fopen(log_file, "w");
+}
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -226,12 +231,12 @@ void cpu_exec(uint64_t n)
     g_print_step = (n < MAX_INST_TO_PRINT);
     switch (npc_state.state)
     {
-    case NPC_END:
-    case NPC_ABORT:
-        printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
-        return;
-    default:
-        npc_state.state = NPC_RUNNING;
+        case NPC_END:
+        case NPC_ABORT:
+            printf("Program execution has ended. To restart the program, exit NEMU and run again.\n");
+            return;
+        default:
+            npc_state.state = NPC_RUNNING;
     }
 
     execute(n);
