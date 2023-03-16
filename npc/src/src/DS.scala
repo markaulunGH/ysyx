@@ -116,12 +116,16 @@ class DS extends Module
     io.reg_r.raddr2 := rs2
     val rs1_value = io.reg_r.rdata1
     val rs2_value = io.reg_r.rdata2
-    val rs1_lt_rs2 = rs1_value.toSInt < rs2_value.toSInt
 
+    val rs1_lt_rs2 = rs1_value.toSInt < rs2_value.toSInt
+    val rs1_ltu_rs2 = rs1_value < rs2_value
     io.fs_ds.br_taken := inst_jal || inst_jalr
-                      || inst_beq && rs1_value === io.rs2_value
-                      || inst_bne && rs1_value =/= io.rs2_value
-                    //   || 
+                      || inst_beq  &&  rs1_value === rs2_value
+                      || inst_bne  &&  rs1_value =/= rs2_value
+                      || inst_blt  &&  rs1_lt_rs2
+                      || inst_bge  && !rs1_lt_rs2
+                      || inst_bltu &&  rs1_ltu_rs2
+                      || inst_bgeu && !rs1_ltu_rs2
 
 
     io.fs_ds.br_target := MuxCase(
