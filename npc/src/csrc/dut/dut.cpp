@@ -1,6 +1,7 @@
 #include <dlfcn.h>
 #include <paddr.h>
 #include <cpu.h>
+#include <log.h>
 #include <difftest.h>
 
 void (*ref_difftest_memcpy)(paddr_t addr, void *buf, size_t n, bool direction) = NULL;
