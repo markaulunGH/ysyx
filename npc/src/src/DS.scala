@@ -107,16 +107,30 @@ class DS extends Module
 
     val imm = Wire(UInt(64.W))
     
-    imm := MuxCase(
-        0.U(64.W),
-        Array(
-            (inst_jal || inst_addi) -> Cat(Fill(52, imm_I(11)), imm_I),
-            false.B -> Cat(Fill(52, imm_S(11)), imm_S),
-            false.B -> Cat(Fill(51, imm_B(12)), imm_B),
-            (inst_lui || inst_auipc) -> Cat(Fill(32, imm_U(31)), imm_U),
-            inst_jal -> Cat(Fill(43, imm_J(20)), imm_J)
-        )
-    )
+    when (inst_jalr || inst_addi)
+    {
+        imm := Cat(Fill(52, imm_I(11)), imm_I)
+    }
+    // .elsewhen ()
+    // {
+    //     imm := Cat(Fill(52, imm_S(11), imm_S)
+    // }
+    // .elsewhen ()
+    // {
+    //     imm := Cat(Fill(51, imm_B(12), imm_B)
+    // }
+    .elsewhen (inst_lui || inst_auipc)
+    {
+        imm := Cat(Fill(32, imm_U(31)), imm_U)
+    }
+    .elsewhen (inst_jal)
+    {
+        imm := Cat(Fill(43, imm_J(20)), imm_J)
+    }
+    .otherwise
+    {
+        imm := 0.U(64.W)
+    }
 
     io.fs_ds.br_taken := inst_jal || inst_jalr
     when (inst_jal)
