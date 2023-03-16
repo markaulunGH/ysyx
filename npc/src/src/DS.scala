@@ -115,45 +115,15 @@ class DS extends Module
             inst_jal -> Cat(Fill(43, imm_J(20)), imm_J)
         )
     )
-    
-    // when (inst_jalr || inst_addi)
-    // {
-    //     imm := Cat(Fill(52, imm_I(11)), imm_I)
-    // }
-    // // .elsewhen ()
-    // // {
-    // //     imm := Cat(Fill(52, imm_S(11), imm_S)
-    // // }
-    // // .elsewhen ()
-    // // {
-    // //     imm := Cat(Fill(51, imm_B(12), imm_B)
-    // // }
-    // .elsewhen (inst_lui || inst_auipc)
-    // {
-    //     imm := Cat(Fill(32, imm_U(31)), imm_U)
-    // }
-    // .elsewhen (inst_jal)
-    // {
-    //     imm := Cat(Fill(43, imm_J(20)), imm_J)
-    // }
-    // .otherwise
-    // {
-    //     imm := 0.U(64.W)
-    // }
 
     io.fs_ds.br_taken := inst_jal || inst_jalr
-    when (inst_jal)
-    {
-        io.fs_ds.br_target := io.fs_ds.pc + imm
-    }
-    .elsewhen (inst_jalr)
-    {
-        io.fs_ds.br_target := imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W))
-    }
-    .otherwise
-    {
-        io.fs_ds.br_target := 0.U
-    }
+    io.fs_ds.br_taken := MuxCase(
+        0.U(64.W),
+        Array(
+            inst_jal -> io.fs_ds.pc + imm,
+            inst_jalr -> imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W))
+        )
+    )
 
     io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
     io.reg_r.raddr2 := rs2
