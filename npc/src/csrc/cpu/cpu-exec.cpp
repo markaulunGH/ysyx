@@ -6,6 +6,7 @@
 #include <sdb.h>
 #include <sim.h>
 #include <paddr.h>
+#include <difftest.h>
 
 FILE *log_fp;
 
@@ -176,7 +177,7 @@ static void exec_once(Decode *s)
     cycle_end();
     if (top->io_ebreak)
     {
-        // difftest_skip_ref();
+        difftest_skip_ref();
         npc_state.state = NPC_END;
         npc_state.halt_pc = top->io_pc;
         npc_state.halt_ret= top->io_rf_10;
