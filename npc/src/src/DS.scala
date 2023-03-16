@@ -117,7 +117,7 @@ class DS extends Module
     val rs1_value = io.reg_r.rdata1
     val rs2_value = io.reg_r.rdata2
 
-    val rs1_lt_rs2 = rs1_value.toSInt < rs2_value.toSInt
+    val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
     io.fs_ds.br_taken := inst_jal || inst_jalr
                       || inst_beq  &&  rs1_value === rs2_value
