@@ -6,6 +6,13 @@ VerilatedFstC* tfp = new VerilatedFstC;
 
 void cycle_begin()
 {
+    // top->clock = 1;
+    // top->eval();
+}
+
+void cycle_end()
+{
+    tfp->dump(contextp->time());
     contextp->timeInc(1);
     top->clock = 0;
     top->eval();
@@ -15,21 +22,16 @@ void cycle_begin()
     top->eval();
 }
 
-void cycle_end()
-{
-    top->eval();
-    tfp->dump(contextp->time());
-}
-
 void reset()
 {
-    top->reset = 1;
+    // top->reset = 1;
     for (int i = 0; i < 100; ++ i)
     {
         cycle_begin();
+        top->reset = i < 99;
         cycle_end();
     }
-    top->reset = 0;
+    // top->reset = 0;
 }
 
 void init_simulation(int argc, char** argv)
