@@ -120,8 +120,8 @@ class DS extends Module
     io.fs_ds.br_taken := MuxCase(
         0.U(64.W),
         Array(
-            inst_jal -> io.fs_ds.pc + imm,
-            inst_jalr -> imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W))
+            inst_jal -> (io.fs_ds.pc + imm),
+            inst_jalr -> (imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W)))
         )
     )
 
