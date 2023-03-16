@@ -111,8 +111,8 @@ class DS extends Module
         0.U(64.W),
         Array(
             (inst_jal || inst_addi) -> Cat(Fill(52, imm_I(11)), imm_I),
-            false.B -> Cat(Fill(52, imm_S(11), imm_S)),
-            false.B -> Cat(Fill(51, imm_B(12), imm_B)),
+            false.B -> Cat(Fill(52, imm_S(11)), imm_S),
+            false.B -> Cat(Fill(51, imm_B(12)), imm_B),
             (inst_lui || inst_auipc) -> Cat(Fill(32, imm_U(31)), imm_U),
             inst_jal -> Cat(Fill(43, imm_J(20)), imm_J)
         )
