@@ -186,7 +186,7 @@ static void exec_once(Decode *s)
     s->npc.inst.val = top->io_inst = paddr_read(top->io_pc, 4);
     cycle_end();
     update_regs();
-    volatile ebreak = top->io_ebreak;
+    volatile int ebreak = top->io_ebreak;
     if (ebreak)
     {
         difftest_skip_ref();
