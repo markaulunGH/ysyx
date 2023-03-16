@@ -6,8 +6,8 @@ VerilatedFstC* tfp = new VerilatedFstC;
 
 void cycle_begin()
 {
-    top->clock = 1;
-    top->eval();
+    // top->clock = 1;
+    // top->eval();
 }
 
 void cycle_end()
