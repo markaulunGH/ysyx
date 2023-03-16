@@ -36,7 +36,7 @@ void init_difftest(char *ref_so_file, int img_size)
     // ref_difftest_regcpy = dlsym(handle, "difftest_regcpy");
     // ref_difftest_exec = dlsym(handle, "difftest_exec");
     // ref_difftest_raise_intr = dlsym(handle, "difftest_raise_intr");
-    void (*ref_difftest_init)() = (void(*)()) dlsym(handle, "difftest_init")();
+    void (*ref_difftest_init)() = (void(*)()) dlsym(handle, "difftest_init");
 
     Log("Differential testing: %s", ANSI_FMT("ON", ANSI_FG_GREEN));
     Log("The result of every instruction will be compared with %s. "
