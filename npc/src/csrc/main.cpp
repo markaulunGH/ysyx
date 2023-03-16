@@ -3,6 +3,7 @@
 #include <sim.h>
 #include <paddr.h>
 #include <config.h>
+#include <log.h>
 #include <difftest.h>
 
 void init_disasm(const char *triple);
