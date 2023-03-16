@@ -2,7 +2,7 @@
 
 FILE *log_fp;
 
-void init_log(char *log_file)
+void init_log(const char *log_file)
 {
     log_fp = fopen(log_file, "w");
 }
