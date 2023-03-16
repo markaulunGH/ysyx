@@ -14,7 +14,6 @@ class DS extends Module
     })
 
     val inst = io.fs_ds.inst
-
     val opcode = inst(6, 0)
     val funct3 = inst(14, 12)
     val funct7 = inst(31, 25)
@@ -113,7 +112,18 @@ class DS extends Module
         )
     )
 
+    io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
+    io.reg_r.raddr2 := rs2
+    val rs1_value = io.reg_r.rdata1
+    val rs2_value = io.reg_r.rdata2
+    val rs1_lt_rs2 = rs1_value.toSInt < rs2_value.toSInt
+
     io.fs_ds.br_taken := inst_jal || inst_jalr
+                      || inst_beq && rs1_value === io.rs2_value
+                      || inst_bne && rs1_value =/= io.rs2_value
+                    //   || 
+
+
     io.fs_ds.br_target := MuxCase(
         0.U(64.W),
         Seq(
@@ -121,9 +131,6 @@ class DS extends Module
             inst_jalr -> (imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W)))
         )
     )
-
-    io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
-    io.reg_r.raddr2 := rs2
 
     for (i <- 0 until 19)
     {
