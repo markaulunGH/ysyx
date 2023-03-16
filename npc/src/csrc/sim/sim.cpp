@@ -24,13 +24,14 @@ void cycle_end()
 
 void reset()
 {
-    top->reset = 1;
+    // top->reset = 1;
     for (int i = 0; i < 100; ++ i)
     {
         cycle_begin();
+        top->reset = i < 99;
         cycle_end();
     }
-    top->reset = 0;
+    // top->reset = 0;
 }
 
 void init_simulation(int argc, char** argv)
