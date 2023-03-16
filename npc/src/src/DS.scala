@@ -106,7 +106,7 @@ class DS extends Module
         Seq(
             (inst_jalr || inst_addi) -> Cat(Fill(52, imm_I(11)), imm_I),
             false.B -> Cat(Fill(52, imm_S(11)), imm_S),
-            false.B -> Cat(Fill(51, imm_B(12)), imm_B),
+            inst_beq || inst_bne -> Cat(Fill(51, imm_B(12)), imm_B),
             (inst_lui || inst_auipc) -> Cat(Fill(32, imm_U(31)), imm_U),
             inst_jal -> Cat(Fill(43, imm_J(20)), imm_J)
         )
@@ -126,13 +126,11 @@ class DS extends Module
                          inst_bge  && !rs1_lt_rs2 ||
                          inst_bltu &&  rs1_ltu_rs2 ||
                          inst_bgeu && !rs1_ltu_rs2
-
-
     io.fs_ds.br_target := MuxCase(
         0.U(64.W),
         Seq(
             inst_jal -> (io.fs_ds.pc + imm),
-            inst_jalr -> (imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W)))
+            inst_jalr -> (imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W))),
         )
     )
 
