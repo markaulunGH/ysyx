@@ -64,6 +64,7 @@ void update_regs()
     {
         cpu.gpr[i] = gpr[i];
     }
+    cpu.pc = top->io_pc;
 }
 
 /* The assembly code of instructions executed is only output to the screen

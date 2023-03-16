@@ -32,7 +32,7 @@ int main(int argc, char** argv, char** env)
         {
             batch = 1;
         }
-        if (strncpy(argv[i], "--diff=", 7) == 0)
+        if (strncmp(argv[i], "--diff=", 7) == 0)
         {
             diff_so_file = i;
         }
@@ -45,7 +45,7 @@ int main(int argc, char** argv, char** env)
 #ifdef CONFIG_DIFFTEST
     init_difftest(argv[diff_so_file] + 7, img_size);
 #endif
-    init_simulation(1, argv);
+    init_simulation(2, argv);
     sdb_mainloop();
     end_simulation();
 }

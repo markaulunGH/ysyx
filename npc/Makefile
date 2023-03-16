@@ -63,6 +63,7 @@ checkformat:
 
 IMG ?=
 ELF ?=
+SO ?=
 ARGS ?=
 
 sim:
@@ -73,7 +74,7 @@ sim:
 
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/VTop +trace --img=$(IMG) --elf=$(ELF) --log=$(abspath logs/log.txt) $(ARGS)
+	obj_dir/VTop +trace --img=$(IMG) --elf=$(ELF) --log=$(abspath logs/log.txt) --diff=$(SO) $(ARGS)
 
 gdb:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
@@ -83,7 +84,7 @@ gdb:
 
 	@rm -rf logs
 	@mkdir -p logs
-	gdb --args obj_dir/VTop +trace --img=$(IMG) --elf=$(ELF) --log=$(abspath logs/log.txt) ARGS
+	gdb --args obj_dir/VTop +trace --img=$(IMG) --elf=$(ELF) --log=$(abspath logs/log.txt) --diff=$(SO) ARGS
 
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::

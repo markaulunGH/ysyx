@@ -22,7 +22,7 @@ image: $(IMAGE).elf
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
 run: image
-	$(MAKE) -C $(NPC_HOME) sim IMG=$(IMAGE).bin ELF=$(IMAGE).elf ARGS=--batch
+	$(MAKE) -C $(NPC_HOME) sim IMG=$(IMAGE).bin ELF=$(IMAGE).elf SO=$(NEMU_HOME)/build/riscv64-nemu-interpreter-so ARGS=--batch
 
 gdb: image
-	$(MAKE) -C $(NPC_HOME) gdb IMG=$(IMAGE).bin ELF=$(IMAGE).elf
+	$(MAKE) -C $(NPC_HOME) gdb IMG=$(IMAGE).bin ELF=$(IMAGE).elf SO=$(NEMU_HOME)/build/riscv64-nemu-interpreter-so
