@@ -117,7 +117,7 @@ class DS extends Module
     )
 
     io.fs_ds.br_taken := inst_jal || inst_jalr
-    io.fs_ds.br_taken := MuxCase(
+    io.fs_ds.br_target := MuxCase(
         0.U(64.W),
         Array(
             inst_jal -> (io.fs_ds.pc + imm),
