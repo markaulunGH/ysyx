@@ -49,4 +49,5 @@ int main(int argc, char** argv, char** env)
     init_simulation(2, argv);
     sdb_mainloop();
     end_simulation();
+    return is_exit_status_bad();
 }

@@ -282,3 +282,8 @@ void cpu_exec(uint64_t n)
             return;
     }
 }
+
+int is_exit_status_bad()
+{
+    return !((npc_state.state == NPC_END && npc_state.halt_ret == 0) || (npc_state.state == NPC_QUIT));
+}
