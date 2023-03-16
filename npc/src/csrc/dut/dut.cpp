@@ -31,7 +31,7 @@ void init_difftest(char *reg_so_file, int img_size)
 {
     void *handle;
     handle = dlopen(reg_so_file, RTLD_LAZY);
-    ref_difftest_memcpy = dlsym(handle, "difftest_memcpy");
+    ref_difftest_memcpy = (void (*)(paddr_t addr, void *buf, size_t n, bool direction)) dlsym(handle, "difftest_memcpy");
     ref_difftest_regcpy = dlsym(handle, "difftest_regcpy");
     ref_difftest_exec = dlsym(handle, "difftest_exec");
     ref_difftest_raise_intr = dlsym(handle, "difftest_raise_intr");
