@@ -6,7 +6,7 @@
 #include <sdb.h>
 #include <sim.h>
 #include <paddr.h>
-#include <log>
+#include <log.h>
 #include <difftest.h>
 
 const char *regs[] = {
