@@ -107,7 +107,9 @@ class DS extends Module
 
     val imm = Wire(UInt(64.W))
     
-    imm := MuxCase(0.U(64.W),
+    imm := MuxCase
+    (
+        0.U(64.W),
         Array
         (
             (inst_jal || inst_addi) -> Cat(Fill(52, imm_I(11)), imm_I),
