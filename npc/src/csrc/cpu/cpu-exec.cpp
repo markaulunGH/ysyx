@@ -6,14 +6,8 @@
 #include <sdb.h>
 #include <sim.h>
 #include <paddr.h>
+#include <log>
 #include <difftest.h>
-
-FILE *log_fp;
-
-void init_log(const char *log_file)
-{
-    log_fp = fopen(log_file, "w");
-}
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
