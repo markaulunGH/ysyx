@@ -107,7 +107,7 @@ class DS extends Module
 
     val imm = MuxCase(
         0.U(64.W),
-        Array(
+        Seq(
             (inst_jalr || inst_addi) -> Cat(Fill(52, imm_I(11)), imm_I),
             false.B -> Cat(Fill(52, imm_S(11)), imm_S),
             false.B -> Cat(Fill(51, imm_B(12)), imm_B),
