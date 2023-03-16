@@ -9,6 +9,8 @@ struct CPU_state
     vaddr_t pc;
 };
 
+extern CPU_state cpu;
+
 struct DecodeInfo
 {
     union
