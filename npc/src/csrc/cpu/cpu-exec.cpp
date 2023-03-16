@@ -55,7 +55,7 @@ void update_regs()
 {
     word_t gpr[] =
     {
-        0,             top->io_rf_1,  top->io_rf_2,  top->io_rf_3,  top->io_rf_4,  top->io_rf_5,  top->io_rf_6,  top->io_rf_7,
+        1,             top->io_rf_1,  top->io_rf_2,  top->io_rf_3,  top->io_rf_4,  top->io_rf_5,  top->io_rf_6,  top->io_rf_7,
         top->io_rf_8,  top->io_rf_9,  top->io_rf_10, top->io_rf_11, top->io_rf_12, top->io_rf_13, top->io_rf_14, top->io_rf_15,
         top->io_rf_16, top->io_rf_17, top->io_rf_18, top->io_rf_19, top->io_rf_20, top->io_rf_21, top->io_rf_22, top->io_rf_23,
         top->io_rf_24, top->io_rf_25, top->io_rf_26, top->io_rf_27, top->io_rf_28, top->io_rf_29, top->io_rf_30, top->io_rf_31
