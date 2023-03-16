@@ -26,14 +26,8 @@ class DS extends Module
     val imm_U = Cat(inst(31, 12), 0.U(12.W))
     val imm_J = Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U(1.W))
 
-    val decoder7128 = Module(new Decoder(7, 128))
-    val decoder38 = Module(new Decoder(3, 8))
-    decoder7128.io.in := opcode
-    // val dopcode = decoder7128.io.out
-    decoder38.io.in := funct3
-    val dfunct3 = decoder38.io.out
-
     val dopcode = UIntToOH(opcode)
+    val dfunct3 = UIntToOH(funct3)
 
     val inst_lui    = dopcode(0x37)
     val inst_auipc  = dopcode(0x17)
