@@ -33,7 +33,7 @@ class DS extends Module
     decoder38.io.in := funct3
     val dfunct3 = decoder38.io.out
 
-    val dopcode = 
+    // val dopcode = 
 
     val inst_lui    = dopcode(0x37)
     val inst_auipc  = dopcode(0x17)
