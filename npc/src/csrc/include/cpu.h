@@ -6,8 +6,11 @@
 
 struct CPU_state
 {
+    word_t gpr[32];
     vaddr_t pc;
 };
+
+extern CPU_state cpu;
 
 struct DecodeInfo
 {
@@ -30,7 +33,6 @@ struct Decode
 void reg_display();
 word_t reg_str2val(const char *name, bool *success);
 
-void init_log(const char *log_file);
 void init_ftrace(const char *elf_file);
 void cpu_exec(uint64_t n);
 

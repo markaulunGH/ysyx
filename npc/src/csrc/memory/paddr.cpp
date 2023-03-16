@@ -56,7 +56,7 @@ void init_mem()
     // }
 }
 
-void load_image(char *img_file)
+int load_image(char *img_file)
 {
     FILE *fp = fopen(img_file, "rb");
     fseek(fp, 0, SEEK_END);
@@ -64,6 +64,7 @@ void load_image(char *img_file)
     fseek(fp, 0, SEEK_SET);
     assert(fread(pmem, size, 1, fp));
     fclose(fp);
+    return size;
 }
 
 int in_pmem(paddr_t addr)
