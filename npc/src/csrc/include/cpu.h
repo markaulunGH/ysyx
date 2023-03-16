@@ -35,5 +35,6 @@ word_t reg_str2val(const char *name, bool *success);
 
 void init_ftrace(const char *elf_file);
 void cpu_exec(uint64_t n);
+void update_regs();
 
 #endif
