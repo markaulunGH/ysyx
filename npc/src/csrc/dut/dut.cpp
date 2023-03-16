@@ -80,7 +80,7 @@ void difftest_step(vaddr_t pc, vaddr_t next_pc)
         if (ref_r.pc == next_pc)
         {
             skip_dut_nr_inst = 0;
-            checkargs(&ref_r, next_pc);
+            checkregs(&ref_r, next_pc);
             return;
         }
         -- skip_dut_nr_inst;
