@@ -42,11 +42,11 @@ int main(int argc, char** argv, char** env)
 #ifdef CONFIG_ITRACE
     init_disasm("riscv64-pc-linux-gnu");
 #endif
-    init_simulation(2, argv);
     cpu.pc = 0x80000000;
 #ifdef CONFIG_DIFFTEST
     init_difftest(argv[diff_so_file] + 7, img_size);
 #endif
+    init_simulation(2, argv);
     sdb_mainloop();
     end_simulation();
 }
