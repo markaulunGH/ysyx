@@ -105,7 +105,9 @@ class DS extends Module
     val src1_is_pc = inst_auipc || inst_jal || inst_jalr
     val src2_is_imm = inst_lui || inst_auipc || inst_jal || inst_jalr || inst_addi
 
-    val imm = MuxCase
+    val imm = Wire(UInt(64.W))
+    
+    imm := MuxCase
     (
         0.U(64.W),
         Array
