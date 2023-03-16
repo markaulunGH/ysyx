@@ -109,7 +109,8 @@ class DS extends Module
     
     imm := MuxCase(
         0.U(64.W),
-        Array((inst_jal || inst_addi) -> Cat(Fill(52, imm_I(11)), imm_I),
+        Array(
+            inst_jal || inst_addi -> Cat(Fill(52, imm_I(11)), imm_I),
             // False.Bool -> Cat(Fill(52, imm_S(11), imm_S)),
             // False -> Cat(Fill(51, imm_B(12), imm_B)),
             (inst_lui || inst_auipc) -> Cat(Fill(32, imm_U(31)), imm_U),
