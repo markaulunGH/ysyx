@@ -29,11 +29,11 @@ class DS extends Module
     val decoder7128 = Module(new Decoder(7, 128))
     val decoder38 = Module(new Decoder(3, 8))
     decoder7128.io.in := opcode
-    val dopcode = decoder7128.io.out
+    // val dopcode = decoder7128.io.out
     decoder38.io.in := funct3
     val dfunct3 = decoder38.io.out
 
-    // val dopcode = 
+    val dopcode = UIntToOH(opcode)
 
     val inst_lui    = dopcode(0x37)
     val inst_auipc  = dopcode(0x17)
