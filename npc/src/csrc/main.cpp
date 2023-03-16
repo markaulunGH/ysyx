@@ -32,7 +32,7 @@ int main(int argc, char** argv, char** env)
         {
             batch = 1;
         }
-        if (strncpy(argv[i], "--diff=", 7) == 0)
+        if (strncmp(argv[i], "--diff=", 7) == 0)
         {
             diff_so_file = i;
         }
