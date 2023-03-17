@@ -25,7 +25,6 @@ class ES_MS extends Bundle
     val alu_result = Output(UInt(64.W))
     val rf_wen = Output(UInt(1.W))
     val rf_waddr = Output(UInt(5.W))
-    val mm_waddr = Output(UInt(64.W))
     val res_from_mem = Output(Bool())
 }
 
