@@ -13,5 +13,5 @@ class MS extends Module
 
     io.ms_ws.rf_wen := io.es_mm.rf_wen
     io.ms_ws.rf_waddr := io.es_mm.rf_waddr
-    io.ms_ws.rf_wdata := Mux(io.es_mm.res_from_mem, io.mm_rdata, io.es_mm.alu_result)
+    io.ms_ws.rf_wdata := Mux(io.es_mm.res_from_mem === 1.U, io.mm_rdata, io.es_mm.alu_result)
 }
