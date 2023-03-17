@@ -20,7 +20,7 @@ class ES extends Module
     io.mm_ren := io.ds_es.mm_ren
     io.mm_raddr := alu.io.alu_result
     io.mm_wen := io.ds_es.mm_wen
-    io.mm_raddr := alu.alu_result
+    io.mm_raddr := alu.io.alu_result
     io.mm_wdata := io.ds_es.mm_wdata
 
     io.es_mm.alu_result := alu.io.alu_result
