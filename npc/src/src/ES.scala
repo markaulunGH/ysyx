@@ -30,5 +30,6 @@ class ES extends Module
     io.es_ms.rf_wen := io.ds_es.rf_wen
     io.es_ms.rf_waddr := io.ds_es.rf_waddr
     io.es_ms.mm_mask := io.ds_es.mm_mask
+    io.es_ms.mm_unsigned := io.ds_es.mm_unsigned
     io.es_ms.res_from_mem := io.ds_es.res_from_mem
 }
