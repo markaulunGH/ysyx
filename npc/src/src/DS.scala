@@ -14,9 +14,9 @@ class DS extends Module
     })
 
     val inst = io.fs_ds.inst
-
     val opcode = inst(6, 0)
     val funct3 = inst(14, 12)
+    val funct7 = inst(31, 25)
     val rs1 = inst(19, 15)
     val rs2 = inst(24, 20)
     val rd = inst(11, 7)
@@ -28,6 +28,7 @@ class DS extends Module
 
     val dopcode = UIntToOH(opcode)
     val dfunct3 = UIntToOH(funct3)
+    val dfunct7 = UIntToOH(funct7)
 
     val inst_lui    = dopcode(0x37)
     val inst_auipc  = dopcode(0x17)
@@ -59,77 +60,114 @@ class DS extends Module
     val inst_slli   = dopcode(0x13) && dfunct3(0x1)
     val inst_srli   = dopcode(0x13) && dfunct3(0x5) && !inst(30)
     val inst_srai   = dopcode(0x13) && dfunct3(0x5) &&  inst(30)
-    // val inst_addiw  = dopcode()
-    // val inst_slliw  = dopcode()
-    // val inst_srliw  = dopcode()
-    // val inst_sraiw  = dopcode()
-    // val inst_add    = dopcode()
-    // val inst_sub    = dopcode()
-    // val inst_sll    = dopcode()
-    // val inst_slt    = dopcode()
-    // val inst_sltu   = dopcode()
-    // val inst_xor    = dopcode()
-    // val inst_srl    = dopcode()
-    // val inst_sra    = dopcode()
-    // val inst_or     = dopcode()
-    // val inst_and    = dopcode()
-    // val inst_addw   = dopcode()
-    // val inst_subw   = dopcode()
-    // val inst_sllw   = dopcode()
-    // val inst_srlw   = dopcode()
-    // val inst_sraw   = dopcode()
+    val inst_addiw  = dopcode(0x1b) && dfunct3(0x0)
+    val inst_slliw  = dopcode(0x1b) && dfunct3(0x1)
+    val inst_srliw  = dopcode(0x1b) && dfunct3(0x5) && !inst(30)
+    val inst_sraiw  = dopcode(0x1b) && dfunct3(0x5) &&  inst(30)
+    val inst_add    = dopcode(0x33) && dfunct3(0x0) && dfunct7(0x0)
+    val inst_sub    = dopcode(0x33) && dfunct3(0x0) && dfunct7(0x20)
+    val inst_sll    = dopcode(0x33) && dfunct3(0x1) && dfunct7(0x0)
+    val inst_slt    = dopcode(0x33) && dfunct3(0x2) && dfunct7(0x0)
+    val inst_sltu   = dopcode(0x33) && dfunct3(0x3) && dfunct7(0x0)
+    val inst_xor    = dopcode(0x33) && dfunct3(0x4) && dfunct7(0x0)
+    val inst_srl    = dopcode(0x33) && dfunct3(0x5) && dfunct7(0x0)
+    val inst_sra    = dopcode(0x33) && dfunct3(0x5) && dfunct7(0x20)
+    val inst_or     = dopcode(0x33) && dfunct3(0x6) && dfunct7(0x0)
+    val inst_and    = dopcode(0x33) && dfunct3(0x7) && dfunct7(0x0)
+    val inst_addw   = dopcode(0x3b) && dfunct3(0x0) && dfunct7(0x0)
+    val inst_subw   = dopcode(0x3b) && dfunct3(0x0) && dfunct7(0x20)
+    val inst_sllw   = dopcode(0x3b) && dfunct3(0x1) && dfunct7(0x0)
+    val inst_srlw   = dopcode(0x3b) && dfunct3(0x5) && dfunct7(0x0)
+    val inst_sraw   = dopcode(0x3b) && dfunct3(0x5) && dfunct7(0x20)
+    val inst_ecall  = dopcode(0x73) && !inst(20)
+    val inst_ebreak = dopcode(0x73) &&  inst(20)
 
-    // val inst_mul    = dopcode()
-    // val inst_mulh   = dopcode()
-    // val inst_mulhsu = dopcode()
-    // val inst_mulhu  = dopcode()
-    // val inst_div    = dopcode()
-    // val inst_divu   = dopcode()
-    // val inst_rem    = dopcode()
-    // val inst_remu   = dopcode()
-    // val inst_mulw   = dopcode()
-    // val inst_divw   = dopcode()
-    // val inst_divuw  = dopcode()
-    // val inst_remw   = dopcode()
-    // val inst_remuw  = dopcode()
+    val inst_mul    = dopcode(0x33) && dfunct3(0x0) && dfunct7(0x1)
+    val inst_mulh   = dopcode(0x33) && dfunct3(0x1) && dfunct7(0x1)
+    val inst_mulhsu = dopcode(0x33) && dfunct3(0x2) && dfunct7(0x1)
+    val inst_mulhu  = dopcode(0x33) && dfunct3(0x3) && dfunct7(0x1)
+    val inst_div    = dopcode(0x33) && dfunct3(0x4) && dfunct7(0x1)
+    val inst_divu   = dopcode(0x33) && dfunct3(0x5) && dfunct7(0x1)
+    val inst_rem    = dopcode(0x33) && dfunct3(0x6) && dfunct7(0x1)
+    val inst_remu   = dopcode(0x33) && dfunct3(0x7) && dfunct7(0x1)
+    val inst_mulw   = dopcode(0x3b) && dfunct3(0x0) && dfunct7(0x1)
+    val inst_divw   = dopcode(0x3b) && dfunct3(0x4) && dfunct7(0x1)
+    val inst_divuw  = dopcode(0x3b) && dfunct3(0x5) && dfunct7(0x1)
+    val inst_remw   = dopcode(0x3b) && dfunct3(0x6) && dfunct7(0x1)
+    val inst_remuw  = dopcode(0x3b) && dfunct3(0x7) && dfunct7(0x1)
+
+    val inst_load = inst_lb || inst_lh || inst_lw || inst_lbu || inst_lhu || inst_lwu || inst_ld
+    val inst_store = inst_sb || inst_sh || inst_sw || inst_sd
+    val mm_mask = MuxCase(
+        0.U(8.W),
+        Seq(
+            (inst_lb || inst_lbu || inst_sb) -> 0x1.U(8.W),
+            (inst_lh || inst_lhu || inst_sh) -> 0x3.U(8.W),
+            (inst_lw || inst_lwu || inst_sw) -> 0xf.U(8.W),
+            (inst_ld || inst_sd) -> 0xff.U(8.W)
+        )
+    )
     
-    val inst_ebreak = dopcode(0x73) && inst(31, 20) === 0x1.U
     io.ebreak := inst_ebreak
 
     val src1_is_pc = inst_auipc || inst_jal || inst_jalr
-    val src2_is_imm = inst_lui || inst_auipc || inst_jal || inst_jalr || inst_addi
+    val src2_is_imm = inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi
 
     val imm = MuxCase(
         0.U(64.W),
         Seq(
             (inst_jalr || inst_addi) -> Cat(Fill(52, imm_I(11)), imm_I),
             false.B -> Cat(Fill(52, imm_S(11)), imm_S),
-            false.B -> Cat(Fill(51, imm_B(12)), imm_B),
+            (inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> Cat(Fill(51, imm_B(12)), imm_B),
             (inst_lui || inst_auipc) -> Cat(Fill(32, imm_U(31)), imm_U),
             inst_jal -> Cat(Fill(43, imm_J(20)), imm_J)
         )
     )
 
-    io.fs_ds.br_taken := inst_jal || inst_jalr
+    io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
+    io.reg_r.raddr2 := rs2
+    val rs1_value = io.reg_r.rdata1
+    val rs2_value = io.reg_r.rdata2
+
+    val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
+    val rs1_ltu_rs2 = rs1_value < rs2_value
+    io.fs_ds.br_taken := inst_jal || inst_jalr ||
+                         inst_beq  &&  rs1_value === rs2_value ||
+                         inst_bne  &&  rs1_value =/= rs2_value ||
+                         inst_blt  &&  rs1_lt_rs2 ||
+                         inst_bge  && !rs1_lt_rs2 ||
+                         inst_bltu &&  rs1_ltu_rs2 ||
+                         inst_bgeu && !rs1_ltu_rs2
     io.fs_ds.br_target := MuxCase(
         0.U(64.W),
         Seq(
-            inst_jal -> (io.fs_ds.pc + imm),
-            inst_jalr -> (imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W)))
+            (inst_jal || inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> (io.fs_ds.pc + imm),
+            inst_jalr -> (imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W))),
         )
     )
 
-    io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
-    io.reg_r.raddr2 := rs2
-
     for (i <- 0 until 19)
     {
-        io.ds_es.alu.alu_op(i) := 0.U
+        io.ds_es.alu_in.alu_op(i) := 0.U
     }
-    io.ds_es.alu.alu_op(0) := inst_auipc || inst_addi || inst_lui || inst_jal || inst_jalr
-    io.ds_es.alu.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, io.reg_r.rdata1)
-    io.ds_es.alu.alu_src2 := Mux(src2_is_imm, Mux(inst_jal || inst_jalr, 4.U, imm), io.reg_r.rdata2)
+    io.ds_es.alu_in.alu_op(0) := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi
+    io.ds_es.alu_in.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, io.reg_r.rdata1)
+    io.ds_es.alu_in.alu_src2 := Mux(src2_is_imm, Mux(inst_jal || inst_jalr, 4.U, imm), io.reg_r.rdata2)
 
-    io.ds_es.wen := inst_auipc || inst_jal || inst_jalr || inst_addi
-    io.ds_es.waddr := rd
+    io.ds_es.rf_wen := inst_auipc || inst_jal || inst_jalr || inst_load || inst_addi
+    io.ds_es.rf_waddr := rd
+    io.ds_es.mm_ren := inst_load
+    io.ds_es.mm_wen := inst_store
+    io.ds_es.mm_wdata := MuxCase(
+        0.U(64.W),
+        Seq(
+            inst_sb -> rs2_value(7, 0),
+            inst_sh -> rs2_value(15, 0),
+            inst_sw -> rs2_value(31, 0),
+            inst_sd -> rs2_value
+        )
+    )
+    io.ds_es.mm_mask := mm_mask
+    io.ds_es.mm_unsigned := inst_lbu || inst_lhu || inst_lwu
+    io.ds_es.res_from_mem := inst_load
 }
