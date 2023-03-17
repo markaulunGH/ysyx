@@ -12,5 +12,5 @@ class WS extends Module
 
     io.reg_w.wen := io.ms_ws.rf_wen
     io.reg_w.waddr := io.ms_ws.rf_waddr
-    io.reg_w.wdata := io.ms_ws.wdata
+    io.reg_w.wdata := io.ms_ws.rf_wdata
 }
