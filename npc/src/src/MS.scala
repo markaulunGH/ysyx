@@ -11,13 +11,6 @@ class MS extends Module
         val mm_rdata = Input(UInt(64.W))
     })
 
-    val mask_rdata = MuxCase(
-        0.U(64.W),
-        Seq(
-            es_ms.mm_mask == 0x1.U -> Cat()
-        )
-    )
-
     val mm_rdata = MuxCase(
         0.U(64.W),
         Seq(
