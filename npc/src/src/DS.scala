@@ -168,6 +168,6 @@ class DS extends Module
         )
     )
     io.ds_es.mm_mask := mm_mask
-    io.ds_es.mm_unsign := inst_lbu || inst_lhu || inst_lwu
+    io.ds_es.mm_unsigned := inst_lbu || inst_lhu || inst_lwu
     io.ds_es.res_from_mem := inst_load
 }
