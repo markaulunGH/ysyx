@@ -37,7 +37,7 @@ class Top extends Module
         val pc = Output(UInt(64.W))
         val inst = Input(UInt(64.W))
 
-        val 
+        // val 
 
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
