@@ -11,23 +11,23 @@ class FS_DS extends Bundle
 
 class DS_ES extends Bundle
 {
-    val alu = Flipped(new alu_in)
-    val wen = Output(UInt(1.W))
-    val waddr = Output(UInt(5.W))
+    val alu_in = Flipped(new Alu_in)
+    val rf_wen = Output(UInt(1.W))
+    val rf_waddr = Output(UInt(5.W))
 }
 
 class ES_MS extends Bundle
 {
     val alu_result = Output(UInt(64.W))
-    val wen = Output(UInt(1.W))
-    val waddr = Output(UInt(5.W))
+    val rf_wen = Output(UInt(1.W))
+    val rf_waddr = Output(UInt(5.W))
 }
 
 class MS_WS extends Bundle
 {
     val alu_result = Output(UInt(64.W))
-    val wen = Output(UInt(1.W))
-    val waddr = Output(UInt(5.W))
+    val rf_wen = Output(UInt(1.W))
+    val rf_waddr = Output(UInt(5.W))
 }
 
 class Top extends Module
@@ -36,6 +36,8 @@ class Top extends Module
     {
         val pc = Output(UInt(64.W))
         val inst = Input(UInt(64.W))
+
+        val 
 
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))

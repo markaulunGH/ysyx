@@ -106,7 +106,7 @@ class DS extends Module
         Seq(
             (inst_jalr || inst_addi) -> Cat(Fill(52, imm_I(11)), imm_I),
             false.B -> Cat(Fill(52, imm_S(11)), imm_S),
-            inst_beq || inst_bne -> Cat(Fill(51, imm_B(12)), imm_B),
+            (inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> Cat(Fill(51, imm_B(12)), imm_B),
             (inst_lui || inst_auipc) -> Cat(Fill(32, imm_U(31)), imm_U),
             inst_jal -> Cat(Fill(43, imm_J(20)), imm_J)
         )
@@ -129,7 +129,7 @@ class DS extends Module
     io.fs_ds.br_target := MuxCase(
         0.U(64.W),
         Seq(
-            inst_jal -> (io.fs_ds.pc + imm),
+            (inst_jal || inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> (io.fs_ds.pc + imm),
             inst_jalr -> (imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W))),
         )
     )
@@ -138,10 +138,10 @@ class DS extends Module
     {
         io.ds_es.alu.alu_op(i) := 0.U
     }
-    io.ds_es.alu.alu_op(0) := inst_auipc || inst_addi || inst_lui || inst_jal || inst_jalr
+    io.ds_es.alu.alu_op(0) := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_addi
     io.ds_es.alu.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, io.reg_r.rdata1)
     io.ds_es.alu.alu_src2 := Mux(src2_is_imm, Mux(inst_jal || inst_jalr, 4.U, imm), io.reg_r.rdata2)
 
-    io.ds_es.wen := inst_auipc || inst_jal || inst_jalr || inst_addi
-    io.ds_es.waddr := rd
+    io.ds_es.rf_wen := inst_auipc || inst_jal || inst_jalr || inst_addi
+    io.ds_es.rf_waddr := rd
 }
