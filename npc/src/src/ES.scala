@@ -6,7 +6,7 @@ class ES extends Module
     val io = IO(new Bundle
     {
         val ds_es = Flipped(new DS_ES)
-        val es_mm = new ES_MS
+        val es_ms = new ES_MS
 
         val mm_ren = Output(UInt(1.W))
         val mm_raddr = Output(UInt(64.W))
