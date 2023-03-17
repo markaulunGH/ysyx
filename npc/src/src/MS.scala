@@ -7,9 +7,11 @@ class MS extends Module
     {
         val es_mm = Flipped(new ES_MS)
         val ms_ws = new MS_WS
+
+        val mm_rdata = Input(UInt(64.W))
     })
 
-    io.ms_ws.alu_result := io.es_mm.alu_result
     io.ms_ws.rf_wen := io.es_mm.rf_wen
     io.ms_ws.rf_waddr := io.es_mm.rf_waddr
+    io.ms_ws.rf_wdata := Mux(io.es_mm.res_from_mem, io.mm_rdata, io.es_mm.alu_result)
 }

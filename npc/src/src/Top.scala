@@ -14,6 +14,10 @@ class DS_ES extends Bundle
     val alu_in = Flipped(new Alu_in)
     val rf_wen = Output(UInt(1.W))
     val rf_waddr = Output(UInt(5.W))
+    val mm_ren = Output(UInt(1.W))
+    val mm_wen = Output(UInt(1.W))
+    val mm_wdata = Output(UInt(64.W))
+    val res_from_mem = Output(UInt(1.W))
 }
 
 class ES_MS extends Bundle
@@ -21,13 +25,15 @@ class ES_MS extends Bundle
     val alu_result = Output(UInt(64.W))
     val rf_wen = Output(UInt(1.W))
     val rf_waddr = Output(UInt(5.W))
+    val mm_waddr = Output(UInt(64.W))
+    val res_from_mem = Output(UInt(1.W))
 }
 
 class MS_WS extends Bundle
 {
-    val alu_result = Output(UInt(64.W))
     val rf_wen = Output(UInt(1.W))
     val rf_waddr = Output(UInt(5.W))
+    val rf_wdata = Output(UInt(64.W))
 }
 
 class Top extends Module
@@ -38,9 +44,11 @@ class Top extends Module
         val inst = Input(UInt(64.W))
 
         val mm_ren = Output(UInt(1.W))
-        val mm_raddr = Output(UInt(1.W))
+        val mm_raddr = Output(UInt(64.W))
+        val mm_rdata = Input(UInt(64.W))
         val mm_wen = Output(UInt(1.W))
         val mm_waddr = Output(UInt(64.W))
+        val mm_wdata = Output(UInt(64.W))
 
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
@@ -56,12 +64,19 @@ class Top extends Module
     es.io.es_mm <> ms.io.es_mm
     ms.io.ms_ws <> ws.io.ms_ws
     
+    io.pc := fs.io.pc
+    fs.io.inst := io.inst
+    
+    io.mm_ren := es.mm_ren
+    io.mm_raddr := es.mm_raddr
+    ms.mm_rdata := io.mm_rdata
+    io.mm_wen := es.mm_wen
+    io.mm_waddr := es.mm_waddr
+    io.mm_wdata := es.mm_wdata
+
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
     rf.io.reg_w <> ws.io.reg_w
-    
-    io.pc := fs.io.pc
-    fs.io.inst := io.inst
     
     io.ebreak := ds.io.ebreak
     io.rf := rf.io.rf

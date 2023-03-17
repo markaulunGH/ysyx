@@ -95,11 +95,14 @@ class DS extends Module
     val inst_divuw  = dopcode(0x3b) && dfunct3(0x5) && dfunct7(0x1)
     val inst_remw   = dopcode(0x3b) && dfunct3(0x6) && dfunct7(0x1)
     val inst_remuw  = dopcode(0x3b) && dfunct3(0x7) && dfunct7(0x1)
+
+    val inst_load = inst_lb || inst_lh || inst_lw || inst_lbu || inst_lhu || inst_lwu
+    val inst_store = inst_sb || inst_sh || inst_sw || inst_sd
     
     io.ebreak := inst_ebreak
 
     val src1_is_pc = inst_auipc || inst_jal || inst_jalr
-    val src2_is_imm = inst_lui || inst_auipc || inst_jal || inst_jalr || inst_addi
+    val src2_is_imm = inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi
 
     val imm = MuxCase(
         0.U(64.W),
@@ -138,10 +141,14 @@ class DS extends Module
     {
         io.ds_es.alu_in.alu_op(i) := 0.U
     }
-    io.ds_es.alu_in.alu_op(0) := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_addi
+    io.ds_es.alu_in.alu_op(0) := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi
     io.ds_es.alu_in.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, io.reg_r.rdata1)
     io.ds_es.alu_in.alu_src2 := Mux(src2_is_imm, Mux(inst_jal || inst_jalr, 4.U, imm), io.reg_r.rdata2)
 
-    io.ds_es.rf_wen := inst_auipc || inst_jal || inst_jalr || inst_addi
+    io.ds_es.rf_wen := inst_auipc || inst_jal || inst_jalr || inst_load || inst_addi
     io.ds_es.rf_waddr := rd
+    io.ds_es.mm_ren := inst_load
+    io.ds_es.mm_wen := inst_store
+    io.ds_es.wdata := rs2_value
+    io.ds_es.res_from_mem := inst_load
 }
