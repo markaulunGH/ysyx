@@ -61,7 +61,7 @@ class Top extends Module
     val ws = Module(new WS)
     fs.io.fs_ds <> ds.io.fs_ds
     ds.io.ds_es <> es.io.ds_es
-    es.io.es_mm <> ms.io.es_mm
+    es.io.es_ms <> ms.io.es_ms
     ms.io.ms_ws <> ws.io.ms_ws
     
     io.pc := fs.io.pc
