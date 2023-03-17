@@ -24,8 +24,8 @@ class ES extends Module
     io.mm_raddr := alu_result
     io.mm_wdata := io.ds_es.mm_wdata
 
-    io.es_mm.alu_result := alu_result
-    io.es_mm.rf_wen := io.ds_es.rf_wen
-    io.es_mm.rf_waddr := io.ds_es.rf_waddr
-    io.es_mm.res_from_mem := io.ds_es.res_from_mem
+    io.es_ms.alu_result := alu_result
+    io.es_ms.rf_wen := io.ds_es.rf_wen
+    io.es_ms.rf_waddr := io.ds_es.rf_waddr
+    io.es_ms.res_from_mem := io.ds_es.res_from_mem
 }
