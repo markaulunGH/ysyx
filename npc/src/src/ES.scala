@@ -9,7 +9,7 @@ class ES extends Module
         val es_mm = new ES_MS
     })
     val alu = Module(new Alu)
-    io.ds_es.alu <> alu.io.in
+    io.ds_es.alu_in <> alu.io.in
 
     io.es_mm.alu_result := alu.io.alu_result
     io.es_mm.rf_wen := io.ds_es.rf_wen
