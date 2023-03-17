@@ -161,15 +161,13 @@ class DS extends Module
     io.ds_es.mm_wdata := MuxCase(
         0.U(64.W),
         Seq(
-            inst_lb  -> Cat(0.U(56.W),               rs2_value(7, 0)),
-            inst_lbu -> Cat(Fill(56, rs1_value(7)),  rs2_value(7, 0)),
-            inst_lh  -> Cat(0.U(48.W),               rs2_value(15, 0)),
-            inst_lhu -> Cat(Fill(48, rs2_value(15)), rs2_value(15, 0)),
-            inst_lw  -> Cat(0.U(32.W),               rs2_value(31, 0)),
-            inst_lbu -> Cat(Fill(32, rs2_value(31)), rs2_value(31, 0)),
-            inst_ld  -> rs2_value
+            inst_sb -> rs2_value(7, 0),
+            inst_sh -> rs2_value(15, 0),
+            inst_sw -> rs2_value(31, 0),
+            inst_sd -> rs2_value
         )
     )
     io.ds_es.mm_mask := mm_mask
+    io.ds_es.mm_unsign := inst_lbu || inst_lhu || inst_lwu
     io.ds_es.res_from_mem := inst_load
 }

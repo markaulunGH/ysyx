@@ -18,6 +18,7 @@ class DS_ES extends Bundle
     val mm_wen = Output(UInt(1.W))
     val mm_wdata = Output(UInt(64.W))
     val mm_mask = Output(UInt(8.W))
+    val mm_unsigned = Output(Bool())
     val res_from_mem = Output(Bool())
 }
 
@@ -27,6 +28,7 @@ class ES_MS extends Bundle
     val rf_wen = Output(UInt(1.W))
     val rf_waddr = Output(UInt(5.W))
     val mm_mask = Output(UInt(8.W))
+    val mm_unsigned = Output(UInt(Bool()))
     val res_from_mem = Output(Bool())
 }
 
