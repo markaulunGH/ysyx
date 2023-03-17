@@ -13,6 +13,7 @@ class ES extends Module
         val mm_wen = Output(UInt(1.W))
         val mm_waddr = Output(UInt(64.W))
         val mm_wdata = Output(UInt(64.W))
+        val mm_mask = Output(UInt(64.W))
     })
     val alu = Module(new Alu)
     io.ds_es.alu_in <> alu.io.in
@@ -23,6 +24,7 @@ class ES extends Module
     io.mm_wen := io.ds_es.mm_wen
     io.mm_waddr := alu_result
     io.mm_wdata := io.ds_es.mm_wdata
+    io.mm_mask := io.ds_es.mm_mask
 
     io.es_ms.alu_result := alu_result
     io.es_ms.rf_wen := io.ds_es.rf_wen

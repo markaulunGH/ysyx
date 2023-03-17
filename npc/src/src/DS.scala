@@ -96,8 +96,17 @@ class DS extends Module
     val inst_remw   = dopcode(0x3b) && dfunct3(0x6) && dfunct7(0x1)
     val inst_remuw  = dopcode(0x3b) && dfunct3(0x7) && dfunct7(0x1)
 
-    val inst_load = inst_lb || inst_lh || inst_lw || inst_lbu || inst_lhu || inst_lwu
+    val inst_load = inst_lb || inst_lh || inst_lw || inst_lbu || inst_lhu || inst_lwu || inst_ld
     val inst_store = inst_sb || inst_sh || inst_sw || inst_sd
+    val mm_mask = MuxCase(
+        0.U(8.W),
+        Seq(
+            (inst_lb || inst_lbu || inst_sb) -> 0x1.U(8.W),
+            (inst_lh || inst_lhu || inst_sh) -> 0x3.U(8.W),
+            (inst_lw || inst_lwu || inst_sw) -> 0xf.U(8.W),
+            (inst_ld || inst_sd) -> 0xff.U(8.W)
+        )
+    )
     
     io.ebreak := inst_ebreak
 
@@ -149,6 +158,18 @@ class DS extends Module
     io.ds_es.rf_waddr := rd
     io.ds_es.mm_ren := inst_load
     io.ds_es.mm_wen := inst_store
-    io.ds_es.mm_wdata := rs2_value
+    io.ds_es.mm_wdata := MuxCase(
+        0.U(64.W),
+        Seq(
+            inst_lb  -> Cat(0.U(56.W),               rs2_value(7, 0)),
+            inst_lbu -> Cat(Fill(56, rs1_value(7)),  rs2_value(7, 0)),
+            inst_lh  -> Cat(0.U(48.W),               rs2_value(15, 0)),
+            inst_lhu -> Cat(Fill(48, rs2_value(15)), rs2_value(15, 0)),
+            inst_lw  -> Cat(0.U(32.W),               rs2_value(31, 0)),
+            inst_lbu -> Cat(Fill(32, rs2_value(31)), rs2_value(31, 0)),
+            inst_ld  -> rs2_value
+        )
+    )
+    io.ds_es.mm_mask := mm_mask
     io.ds_es.res_from_mem := inst_load
 }
