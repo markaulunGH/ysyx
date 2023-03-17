@@ -136,11 +136,11 @@ class DS extends Module
 
     for (i <- 0 until 19)
     {
-        io.ds_es.alu.alu_op(i) := 0.U
+        io.ds_es.alu_in.alu_op(i) := 0.U
     }
-    io.ds_es.alu.alu_op(0) := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_addi
-    io.ds_es.alu.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, io.reg_r.rdata1)
-    io.ds_es.alu.alu_src2 := Mux(src2_is_imm, Mux(inst_jal || inst_jalr, 4.U, imm), io.reg_r.rdata2)
+    io.ds_es.alu_in.alu_op(0) := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_addi
+    io.ds_es.alu_in.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, io.reg_r.rdata1)
+    io.ds_es.alu_in.alu_src2 := Mux(src2_is_imm, Mux(inst_jal || inst_jalr, 4.U, imm), io.reg_r.rdata2)
 
     io.ds_es.rf_wen := inst_auipc || inst_jal || inst_jalr || inst_addi
     io.ds_es.rf_waddr := rd
