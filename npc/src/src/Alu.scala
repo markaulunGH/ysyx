@@ -12,7 +12,7 @@ class Alu extends Module
 {
     val io = IO(new Bundle
     {
-        val in = new alu_in
+        val in = new Alu_in
         val alu_result = Output(UInt(64.W))
     })
 
