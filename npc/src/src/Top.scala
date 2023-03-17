@@ -37,7 +37,10 @@ class Top extends Module
         val pc = Output(UInt(64.W))
         val inst = Input(UInt(64.W))
 
-        // val 
+        val mm_ren = Output(UInt(1.W))
+        val mm_raddr = Output(UInt(1.W))
+        val mm_wen = Output(UInt(1.W))
+        val mm_waddr = Output(UInt(64.W))
 
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
@@ -48,8 +51,6 @@ class Top extends Module
     val es = Module(new ES)
     val ms = Module(new MS)
     val ws = Module(new WS)
-    io.pc := fs.io.pc
-    fs.io.inst := io.inst
     fs.io.fs_ds <> ds.io.fs_ds
     ds.io.ds_es <> es.io.ds_es
     es.io.es_mm <> ms.io.es_mm
@@ -58,6 +59,9 @@ class Top extends Module
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
     rf.io.reg_w <> ws.io.reg_w
+    
+    io.pc := fs.io.pc
+    fs.io.inst := io.inst
     
     io.ebreak := ds.io.ebreak
     io.rf := rf.io.rf
