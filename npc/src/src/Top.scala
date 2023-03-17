@@ -17,7 +17,7 @@ class DS_ES extends Bundle
     val mm_ren = Output(UInt(1.W))
     val mm_wen = Output(UInt(1.W))
     val mm_wdata = Output(UInt(64.W))
-    val res_from_mem = Output(UInt(1.W))
+    val res_from_mem = Output(Bool())
 }
 
 class ES_MS extends Bundle
