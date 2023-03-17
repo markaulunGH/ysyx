@@ -67,12 +67,12 @@ class Top extends Module
     io.pc := fs.io.pc
     fs.io.inst := io.inst
     
-    io.mm_ren := es.mm_ren
-    io.mm_raddr := es.mm_raddr
-    ms.mm_rdata := io.mm_rdata
-    io.mm_wen := es.mm_wen
-    io.mm_waddr := es.mm_waddr
-    io.mm_wdata := es.mm_wdata
+    io.mm_ren := es.io.mm_ren
+    io.mm_raddr := es.io.mm_raddr
+    ms.io.mm_rdata := io.mm_rdata
+    io.mm_wen := es.io.mm_wen
+    io.mm_waddr := es.io.mm_waddr
+    io.mm_wdata := es.io.mm_wdata
 
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
