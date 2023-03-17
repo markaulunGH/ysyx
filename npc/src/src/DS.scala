@@ -149,6 +149,6 @@ class DS extends Module
     io.ds_es.rf_waddr := rd
     io.ds_es.mm_ren := inst_load
     io.ds_es.mm_wen := inst_store
-    io.ds_es.wdata := rs2_value
+    io.ds_es.mm_wdata := rs2_value
     io.ds_es.res_from_mem := inst_load
 }
