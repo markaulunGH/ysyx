@@ -12,6 +12,6 @@ class ES extends Module
     io.ds_es.alu <> alu.io.in
 
     io.es_mm.alu_result := alu.io.alu_result
-    io.es_mm.wen := io.ds_es.wen
-    io.es_mm.waddr := io.ds_es.waddr
+    io.es_mm.rf_wen := io.ds_es.rf_wen
+    io.es_mm.rf_waddr := io.ds_es.rf_waddr
 }
