@@ -10,6 +10,6 @@ class MS extends Module
     })
 
     io.ms_ws.alu_result := io.es_mm.alu_result
-    io.ms_ws.wen := io.es_mm.wen
-    io.ms_ws.waddr := io.es_mm.waddr
+    io.ms_ws.rf_wen := io.es_mm.rf_wen
+    io.ms_ws.rf_waddr := io.es_mm.rf_waddr
 }
