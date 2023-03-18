@@ -75,14 +75,14 @@ int in_pmem(paddr_t addr)
 
 word_t paddr_read(paddr_t addr, int len)
 {
-    if (in_pmem(addr))
-    {
+    // if (in_pmem(addr))
+    // {
         return pmem_read(addr, len);
-    }
-    else
-    {
-        assert(0);
-    }
+    // }
+    // else
+    // {
+    //     assert(0);
+    // }
 }
 
 void paddr_write(paddr_t addr, int len, word_t data)
