@@ -21,8 +21,8 @@ class Alu extends Module
     val src2 = io.in.alu_src2
 
     val adder_a = src1
-    val adder_b = MuxCase((alu_op(1) || alu_op(2) || alu_op(3)), ~src2, src2)
-    val adder_cin = MuxCase(alu_op(1) || alu_op(2) || alu_op(3), 1.U(1.W), 0.U(1.W))
+    val adder_b = Mux(alu_op(1) || alu_op(2) || alu_op(3), ~src2, src2)
+    val adder_cin = Mux(alu_op(1) || alu_op(2) || alu_op(3), 1.U(1.W), 0.U(1.W))
     val adder_cout_result = adder_a + adder_b + adder_cin
     val adder_result = adder_cout_result(63, 0)
     val adder_cout = adder_cout_result(64)
