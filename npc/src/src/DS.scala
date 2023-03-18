@@ -120,7 +120,7 @@ class DS extends Module
             (inst_jalr || inst_load || inst_addi || inst_slti || inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_addiw || inst_slliw || inst_srliw || inst_sraiw) -> Cat(Fill(52, imm_I(11)), imm_I),
             inst_store -> Cat(Fill(52, imm_S(11)), imm_S),
             (inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> Cat(Fill(51, imm_B(12)), imm_B),
-            (inst_lui || inst_auipc) -> Cat(Fill(32, imm_U(31)), imm_U),
+            (inst_lui || inst_auipc) -> Cat(Fill(32, imm_U(31)), imm_U, 0.U(12.W)),
             inst_jal -> Cat(Fill(43, imm_J(20)), imm_J)
         )
     )
