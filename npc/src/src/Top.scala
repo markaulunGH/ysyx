@@ -78,7 +78,7 @@ class Top extends Module
     io.mm_wen := es.io.mm_wen
     io.mm_waddr := es.io.mm_waddr
     io.mm_wdata := es.io.mm_wdata
-    io.mm_wmask := es.io.mm_wmask
+    io.mm_wmask := es.io.mm_mask
 
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
