@@ -195,7 +195,8 @@ class DS extends Module
     )
     io.ds_es.inst_word := inst_addiw || inst_slliw || inst_srliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_sraw || inst_mulw || inst_divw || inst_divuw || inst_remw || inst_remuw
 
-    io.ds_es.rf_wen := inst_auipc || inst_jal || inst_jalr || inst_load ||
+    io.ds_es.rf_wen := inst_lui || inst_auipc || inst_jal || inst_jalr ||
+                       inst_load ||
                        inst_addi || inst_slti | inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_srai || inst_addiw || inst_slliw || inst_srliw || inst_sraiw ||
                        inst_add || inst_sub || inst_sll || inst_slt || inst_sltu || inst_xor || inst_srl || inst_sra || inst_or || inst_and ||
                        inst_addw || inst_subw || inst_sllw || inst_srlw || inst_sraw ||
