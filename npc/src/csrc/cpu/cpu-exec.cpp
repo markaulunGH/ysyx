@@ -187,7 +187,7 @@ static void exec_once(Decode *s)
     // top->eval();
     if (top->io_mm_ren)
     {
-        top->io_rdata = paddr_read(top->io_mm_raddr, 8);
+        top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
     }
     if (top->io_mm_wen)
     {
