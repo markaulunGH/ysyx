@@ -193,7 +193,7 @@ class DS extends Module
             )
         )
     )
-    io.ds_es.word := inst_addiw || inst_slliw || inst_srliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_sraw || 
+    io.ds_es.inst_word := inst_addiw || inst_slliw || inst_srliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_sraw || 
 
     io.ds_es.rf_wen := inst_auipc || inst_jal || inst_jalr || inst_load || inst_addi
     io.ds_es.rf_waddr := rd
