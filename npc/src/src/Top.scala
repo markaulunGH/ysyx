@@ -53,6 +53,7 @@ class Top extends Module
         val mm_wen = Output(UInt(1.W))
         val mm_waddr = Output(UInt(64.W))
         val mm_wdata = Output(UInt(64.W))
+        val mm_mask = Output(UInt(8.W))
 
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
@@ -77,6 +78,7 @@ class Top extends Module
     io.mm_wen := es.io.mm_wen
     io.mm_waddr := es.io.mm_waddr
     io.mm_wdata := es.io.mm_wdata
+    io.mm_mask := es.io.mm_mask
 
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
