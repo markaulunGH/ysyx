@@ -187,20 +187,16 @@ static void exec_once(Decode *s)
     top->eval();
     if (top->io_mm_ren)
     {
-        // top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
+        top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
     }
     if (top->io_mm_wen)
     {
-        // switch (top->io_mm_mask)
-        // {
-        //     case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata);
-        //     case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata);
-        //     case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata);
-        //     case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata);
-        // }
-        if (top->io_mm_mask == 0xff)
+        switch (top->io_mm_mask)
         {
-            paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata);
+            case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata);
+            case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata);
+            case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata);
+            case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata);
         }
     }
     cycle_end();
