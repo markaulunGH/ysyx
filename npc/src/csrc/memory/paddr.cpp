@@ -89,7 +89,7 @@ void paddr_write(paddr_t addr, int len, word_t data)
 {
     if (in_pmem(addr))
     {
-        paddr_write(addr, len, data);
+        pmem_write(addr, len, data);
     }
     else
     {
