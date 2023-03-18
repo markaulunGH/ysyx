@@ -69,6 +69,7 @@ int load_image(char *img_file)
 
 int in_pmem(paddr_t addr)
 {
+    printf("fxxk\n");
     return addr - MEM_BASE < MEM_SIZE;
 }
 
