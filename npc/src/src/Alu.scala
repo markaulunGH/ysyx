@@ -39,7 +39,7 @@ class Alu extends Module
             alu_op(6)  -> (src1 & src2),
             alu_op(7)  -> (src1 << src2),
             alu_op(8)  -> (src1 >> src2),
-            alu_op(9)  -> (Cat(Fill(64, src1(63)), src1)) >> src2),
+            alu_op(9)  -> (Cat(Fill(64, src1(63)), src1) >> src2),
             alu_op(10) -> src1 * src2,
             alu_op(11) -> (src1.asSInt() * src2.asSInt())(63, 0),
             alu_op(12) -> (src1 * src2)(63, 0),
