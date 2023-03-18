@@ -184,21 +184,21 @@ static void exec_once(Decode *s)
     cycle_begin();
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst = paddr_read(top->io_pc, 4);
-    top->eval();
-    if (top->io_mm_ren)
-    {
-        top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
-    }
-    if (top->io_mm_wen)
-    {
-        switch (top->io_mm_mask)
-        {
-            case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata);
-            case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata);
-            case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata);
-            case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata);
-        }
-    }
+    // top->eval();
+    // if (top->io_mm_ren)
+    // {
+    //     top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
+    // }
+    // if (top->io_mm_wen)
+    // {
+    //     switch (top->io_mm_mask)
+    //     {
+    //         case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata);
+    //         case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata);
+    //         case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata);
+    //         case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata);
+    //     }
+    // }
     cycle_end();
     update_regs();
     if (top->io_ebreak)
