@@ -126,7 +126,7 @@ class DS extends Module
     )
 
     io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
-    io.reg_r.raddr2 := rs2
+    io.reg_r.raddr2 := Mux(inst_lui, 0.U, rs2)
     val rs1_value = io.reg_r.rdata1
     val rs2_value = io.reg_r.rdata2
 
