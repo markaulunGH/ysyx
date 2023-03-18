@@ -3,7 +3,7 @@ import chisel3.util._
 
 class Alu_in extends Bundle
 {
-    val alu_op = Input(Vec(18, UInt(1.W)))
+    val alu_op = Input(Vec(18, Bool()))
     val alu_src1 = Input(UInt(64.W))
     val alu_src2 = Input(UInt(64.W))
 }
