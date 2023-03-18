@@ -191,12 +191,16 @@ static void exec_once(Decode *s)
     }
     if (top->io_mm_wen)
     {
-        switch (top->io_mm_mask)
+        // switch (top->io_mm_mask)
+        // {
+        //     case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata);
+        //     case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata);
+        //     case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata);
+        //     case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata);
+        // }
+        if (top->io_mm_mase == 0xff)
         {
-            case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata); break;
-            case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata); break;
-            case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
-            case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
+            paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata);
         }
     }
     cycle_end();
