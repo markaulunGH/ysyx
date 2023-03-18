@@ -198,7 +198,7 @@ static void exec_once(Decode *s)
         //     case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata);
         //     case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata);
         // }
-        if (top->io_mm_mase == 0xff)
+        if (top->io_mm_mask == 0xff)
         {
             paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata);
         }
