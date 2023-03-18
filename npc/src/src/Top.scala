@@ -12,6 +12,7 @@ class FS_DS extends Bundle
 class DS_ES extends Bundle
 {
     val alu_in = Flipped(new Alu_in)
+    val inst_word = Output(Bool())
     val rf_wen = Output(UInt(1.W))
     val rf_waddr = Output(UInt(5.W))
     val mm_ren = Output(UInt(1.W))

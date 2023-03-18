@@ -17,7 +17,7 @@ class ES extends Module
     })
     val alu = Module(new Alu)
     io.ds_es.alu_in <> alu.io.in
-    val alu_result = alu.io.alu_result
+    val alu_result = Mux(io.inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)
 
     io.mm_ren := io.ds_es.mm_ren
     io.mm_raddr := alu_result

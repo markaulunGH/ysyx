@@ -57,13 +57,13 @@ class DS extends Module
     val inst_xori   = dopcode(0x13) && dfunct3(0x4)
     val inst_ori    = dopcode(0x13) && dfunct3(0x6)
     val inst_andi   = dopcode(0x13) && dfunct3(0x7)
-    val inst_slli   = dopcode(0x13) && dfunct3(0x1)
-    val inst_srli   = dopcode(0x13) && dfunct3(0x5) && !inst(30)
-    val inst_srai   = dopcode(0x13) && dfunct3(0x5) &&  inst(30)
+    val inst_slli   = dopcode(0x13) && dfunct3(0x1) && (inst(31, 26) === 0x0.U)
+    val inst_srli   = dopcode(0x13) && dfunct3(0x5) && (inst(30, 26) === 0x0.U)
+    val inst_srai   = dopcode(0x13) && dfunct3(0x5) && (inst(30, 26) === 0x10.U)
     val inst_addiw  = dopcode(0x1b) && dfunct3(0x0)
-    val inst_slliw  = dopcode(0x1b) && dfunct3(0x1)
-    val inst_srliw  = dopcode(0x1b) && dfunct3(0x5) && !inst(30)
-    val inst_sraiw  = dopcode(0x1b) && dfunct3(0x5) &&  inst(30)
+    val inst_slliw  = dopcode(0x1b) && dfunct3(0x1) && (inst(31, 25) === 0x0.U)
+    val inst_srliw  = dopcode(0x1b) && dfunct3(0x5) && (inst(30, 25) === 0x0.U)
+    val inst_sraiw  = dopcode(0x1b) && dfunct3(0x5) && (inst(30, 25) === 0x20.U)
     val inst_add    = dopcode(0x33) && dfunct3(0x0) && dfunct7(0x0)
     val inst_sub    = dopcode(0x33) && dfunct3(0x0) && dfunct7(0x20)
     val inst_sll    = dopcode(0x33) && dfunct3(0x1) && dfunct7(0x0)
@@ -79,8 +79,8 @@ class DS extends Module
     val inst_sllw   = dopcode(0x3b) && dfunct3(0x1) && dfunct7(0x0)
     val inst_srlw   = dopcode(0x3b) && dfunct3(0x5) && dfunct7(0x0)
     val inst_sraw   = dopcode(0x3b) && dfunct3(0x5) && dfunct7(0x20)
-    val inst_ecall  = dopcode(0x73) && !inst(20)
-    val inst_ebreak = dopcode(0x73) &&  inst(20)
+    val inst_ecall  = inst === 0x73.U
+    val inst_ebreak = inst === 0x100073.U
 
     val inst_mul    = dopcode(0x33) && dfunct3(0x0) && dfunct7(0x1)
     val inst_mulh   = dopcode(0x33) && dfunct3(0x1) && dfunct7(0x1)
@@ -107,17 +107,18 @@ class DS extends Module
             (inst_ld || inst_sd) -> 0xff.U(8.W)
         )
     )
-    
-    io.ebreak := inst_ebreak
 
     val src1_is_pc = inst_auipc || inst_jal || inst_jalr
-    val src2_is_imm = inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi
+    val src2_is_imm = inst_lui || inst_auipc ||
+                      inst_jal || inst_jalr ||
+                      inst_load || inst_store ||
+                      inst_addi || inst_slti || inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_addiw || inst_slliw || inst_srliw || inst_sraiw
 
     val imm = MuxCase(
         0.U(64.W),
         Seq(
-            (inst_jalr || inst_addi) -> Cat(Fill(52, imm_I(11)), imm_I),
-            false.B -> Cat(Fill(52, imm_S(11)), imm_S),
+            (inst_jalr || inst_load || inst_addi || inst_slti || inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_addiw || inst_slliw || inst_srliw || inst_sraiw) -> Cat(Fill(52, imm_I(11)), imm_I),
+            inst_store -> Cat(Fill(52, imm_S(11)), imm_S),
             (inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> Cat(Fill(51, imm_B(12)), imm_B),
             (inst_lui || inst_auipc) -> Cat(Fill(32, imm_U(31)), imm_U),
             inst_jal -> Cat(Fill(43, imm_J(20)), imm_J)
@@ -146,13 +147,53 @@ class DS extends Module
         )
     )
 
-    for (i <- 0 until 19)
-    {
-        io.ds_es.alu_in.alu_op(i) := 0.U
-    }
-    io.ds_es.alu_in.alu_op(0) := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi
-    io.ds_es.alu_in.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, io.reg_r.rdata1)
-    io.ds_es.alu_in.alu_src2 := Mux(src2_is_imm, Mux(inst_jal || inst_jalr, 4.U, imm), io.reg_r.rdata2)
+    val alu_op = Wire(Vec(18, UInt(1.W)))
+    alu_op(0)  := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi || inst_addiw || inst_add || inst_addw
+    alu_op(1)  := inst_sub || inst_subw
+    alu_op(2)  := inst_slti || inst_sll || inst_slt
+    alu_op(3)  := inst_sltiu || inst_sltu
+    alu_op(4)  := inst_xori || inst_xor
+    alu_op(5)  := inst_ori || inst_or
+    alu_op(6)  := inst_andi || inst_and
+    alu_op(7)  := inst_slli || inst_sll
+    alu_op(8)  := inst_srli || inst_srliw || inst_srl || inst_srlw
+    alu_op(9)  := inst_srai || inst_sraiw || inst_sra || inst_sraw
+    alu_op(10) := inst_mul || inst_mulw
+    alu_op(11) := inst_mulh
+    alu_op(12) := inst_mulhsu
+    alu_op(13) := inst_mulhu
+    alu_op(14) := inst_div || inst_divw
+    alu_op(15) := inst_divu || inst_divuw
+    alu_op(16) := inst_rem || inst_remw
+    alu_op(17) := inst_remu || inst_remuw
+    io.ds_es.alu_in.alu_op := alu_op
+    io.ds_es.alu_in.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, 
+        MuxCase(
+            rs1_value,
+            Seq(
+                (inst_addiw || inst_slliw || inst_srliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_sraw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs1_value(31)), rs1_value(31, 0)),
+                (inst_divuw || inst_remuw) -> Cat(0.U(32.W), rs1_value(31, 0))
+            )
+        )
+    )
+    io.ds_es.alu_in.alu_src2 := Mux(src2_is_imm,
+        MuxCase(
+            imm,
+            Seq(
+                (inst_jal || inst_jalr) -> 4.U,
+                (inst_slli || inst_srli || inst_srai) -> (imm(5, 0)),
+                (inst_slliw || inst_srliw || inst_sraiw) -> (imm(4, 0))
+            )
+        ),
+        MuxCase(
+            rs2_value,
+            Seq(
+                (inst_addw || inst_subw || inst_sllw || inst_sraw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs2_value(31)), rs2_value(31, 0)),
+                (inst_divuw || inst_remuw) -> Cat(0.U(32.W), rs2_value(31, 0))
+            )
+        )
+    )
+    io.ds_es.word := inst_addiw || inst_slliw || inst_srliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_sraw || 
 
     io.ds_es.rf_wen := inst_auipc || inst_jal || inst_jalr || inst_load || inst_addi
     io.ds_es.rf_waddr := rd
@@ -170,4 +211,6 @@ class DS extends Module
     io.ds_es.mm_mask := mm_mask
     io.ds_es.mm_unsigned := inst_lbu || inst_lhu || inst_lwu
     io.ds_es.res_from_mem := inst_load
+
+    io.ebreak := inst_ebreak
 }
