@@ -184,7 +184,7 @@ static void exec_once(Decode *s)
     cycle_begin();
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst = paddr_read(top->io_pc, 4);
-    top->eval();
+    // top->eval();
     if (top->io_mm_ren)
     {
         top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
