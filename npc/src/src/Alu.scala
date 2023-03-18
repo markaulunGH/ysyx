@@ -47,7 +47,7 @@ class Alu extends Module
             alu_op(14) -> src1.asSInt() / src2.asSInt,
             alu_op(15) -> src1 / src2,
             alu_op(16) -> src1.asSInt() % src2.asSInt,
-            alu_op(17) -> src1 % src2,
+            alu_op(17) -> src1 % src2
         )
     )
 }
