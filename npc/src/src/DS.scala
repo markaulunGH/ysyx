@@ -112,7 +112,7 @@ class DS extends Module
     val src2_is_imm = inst_lui || inst_auipc ||
                       inst_jal || inst_jalr ||
                       inst_load || inst_store ||
-                      inst_addi || inst_slti || inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_addiw || inst_slliw || inst_srliw || inst_sraiw
+                      inst_addi || inst_slti || inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_addiw || inst_slliw || inst_srliw || inst_srai || inst_sraiw
 
     val imm = MuxCase(
         0.U(64.W),
