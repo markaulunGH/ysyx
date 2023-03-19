@@ -112,12 +112,12 @@ class DS extends Module
     val src2_is_imm = inst_lui || inst_auipc ||
                       inst_jal || inst_jalr ||
                       inst_load || inst_store ||
-                      inst_addi || inst_slti || inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_addiw || inst_slliw || inst_srliw || inst_sraiw
+                      inst_addi || inst_slti || inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_srai || inst_addiw || inst_slliw || inst_srliw || inst_sraiw
 
     val imm = MuxCase(
         0.U(64.W),
         Seq(
-            (inst_jalr || inst_load || inst_addi || inst_slti || inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_addiw || inst_slliw || inst_srliw || inst_sraiw) -> Cat(Fill(52, imm_I(11)), imm_I),
+            (inst_jalr || inst_load || inst_addi || inst_slti || inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_srai || inst_addiw || inst_slliw || inst_srliw || inst_sraiw) -> Cat(Fill(52, imm_I(11)), imm_I),
             inst_store -> Cat(Fill(52, imm_S(11)), imm_S),
             (inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> Cat(Fill(51, imm_B(12)), imm_B),
             (inst_lui || inst_auipc) -> Cat(Fill(32, imm_U(31)), imm_U),
