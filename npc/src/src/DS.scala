@@ -150,12 +150,12 @@ class DS extends Module
     val alu_op = Wire(Vec(18, UInt(1.W)))
     alu_op(0)  := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi || inst_addiw || inst_add || inst_addw
     alu_op(1)  := inst_sub || inst_subw
-    alu_op(2)  := inst_slti || inst_sll || inst_slt
+    alu_op(2)  := inst_slti || inst_slt
     alu_op(3)  := inst_sltiu || inst_sltu
     alu_op(4)  := inst_xori || inst_xor
     alu_op(5)  := inst_ori || inst_or
     alu_op(6)  := inst_andi || inst_and
-    alu_op(7)  := inst_slli || inst_sll
+    alu_op(7)  := inst_slli || inst_slliw || inst_sll || inst_sllw
     alu_op(8)  := inst_srli || inst_srliw || inst_srl || inst_srlw
     alu_op(9)  := inst_srai || inst_sraiw || inst_sra || inst_sraw
     alu_op(10) := inst_mul || inst_mulw
