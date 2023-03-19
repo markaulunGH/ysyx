@@ -171,8 +171,8 @@ class DS extends Module
         MuxCase(
             rs1_value,
             Seq(
-                (inst_addiw || inst_slliw || inst_srliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_sraw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs1_value(31)), rs1_value(31, 0)),
-                (inst_divuw || inst_remuw) -> Cat(0.U(32.W), rs1_value(31, 0))
+                (inst_addiw || inst_slliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_sraw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs1_value(31)), rs1_value(31, 0)),
+                (inst_srlw || inst_srliw || inst_divuw || inst_remuw) -> Cat(0.U(32.W), rs1_value(31, 0))
             )
         )
     )
@@ -189,7 +189,7 @@ class DS extends Module
             rs2_value,
             Seq(
                 (inst_addw || inst_subw || inst_sllw || inst_sraw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs2_value(31)), rs2_value(31, 0)),
-                (inst_divuw || inst_remuw) -> Cat(0.U(32.W), rs2_value(31, 0))
+                (inst_srlw || inst_divuw || inst_remuw) -> Cat(0.U(32.W), rs2_value(31, 0))
             )
         )
     )
