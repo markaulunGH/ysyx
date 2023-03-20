@@ -27,17 +27,14 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
       case 's':
         char *s = va_arg(ap, char *);
         while (*s) {
-          putch(*s);
           *out ++ = *s ++;
-          
         }
         break;
 
       case 'c':
         char ch = va_arg(ap, int);
         putch(ch);
-        *out ++ = ch;
-        // *out ++ = va_arg(arg, int);
+        *out ++ = va_arg(ap, int);
         break;
 
       case 'd':
