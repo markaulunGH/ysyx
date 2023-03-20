@@ -11,9 +11,9 @@ int printf(const char *fmt, ...) {
   va_start(arg, fmt);
   sprintf(buf, fmt, arg);
   va_end(arg);
-  for (int i = 0; buf[i]; ++ i) {
-    putch(buf[i]);
-  }
+  // for (int i = 0; buf[i]; ++ i) {
+  //   putch(buf[i]);
+  // }
   return 1;
 }
 
