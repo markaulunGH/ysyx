@@ -9,7 +9,7 @@ int printf(const char *fmt, ...) {
   char buf[1024];
   va_list _fmt;
   va_start(_fmt, fmt);
-  sprintf(buf, _fmt);
+  sprintf(buf, fmt, _fmt);
   va_end(_fmt);
   for (int i = 0; buf[i]; ++ i) {
     putch(buf[i]);
@@ -26,7 +26,7 @@ int sprintf(char *out, const char *fmt, ...) {
 
   va_start (arg, fmt);
   for (; *fmt; ++ fmt) {
-    putch(*fmt);
+    // putch(*fmt);
     switch (*fmt) {
     case '%':
       ++ fmt;
