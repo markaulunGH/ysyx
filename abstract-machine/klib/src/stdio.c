@@ -6,82 +6,18 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 int printf(const char *fmt, ...) {
-  // char buf[1024];
-  // va_list arg;
-  // va_start(arg, fmt);
-  // sprintf(buf, fmt, arg);
-  // va_end(arg);
-  // // for (int i = 0; buf[i]; ++ i) {
-  // //   putch(buf[i]);
-  // // }
-
-
-  va_list arg;
-
-  // for (int i = 0; fmt[i]; ++ i)
-  //   putch(fmt[i]);
-
-  va_start (arg, fmt);
-  for (; *fmt; ++ fmt) {
-    switch (*fmt) {
-    case '%':
-      ++ fmt;
-      switch (*fmt)
-      {
-      case 's':
-        char *s = va_arg(arg, char *);
-        while (*s) {
-          putch(*s ++);
-        }
-        break;
-
-      case 'c':
-        putch(va_arg(arg, int));
-        break;
-
-      case 'd':
-        int d = va_arg(arg, int);
-        char tmp[20];
-        int ptr = 0;
-        while (d) {
-          tmp[ptr ++] = d % 10 + '0';
-          d /= 10;
-        }
-        while (ptr) {
-          putch(tmp[-- ptr]);
-        }
-        break;
-      }
-    case '\\':
-      ++ fmt;
-      switch (*fmt)
-      {
-      case 'n':
-        putch('\n');
-        break;
-      }
-    
-    default:
-      putch(*fmt);
-      break;
-    }
+  char buf[1024];
+  va_list ap;
+  va_start(ap, fmt);
+  vsprintf(buf, fmt, ap);
+  va_end(ap);
+  for (int i = 0; buf[i]; ++ i) {
+    putch(buf[i]);
   }
-  va_end(arg);
-
   return 1;
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
-  panic("Not implemented");
-}
-
-int sprintf(char *out, const char *fmt, ...) {
-  va_list arg;
-
-  // for (int i = 0; fmt[i]; ++ i)
-  //   putch(fmt[i]);
-
-  va_start (arg, fmt);
   for (; *fmt; ++ fmt) {
     switch (*fmt) {
     case '%':
@@ -89,7 +25,7 @@ int sprintf(char *out, const char *fmt, ...) {
       switch (*fmt)
       {
       case 's':
-        char *s = va_arg(arg, char *);
+        char *s = va_arg(ap, char *);
         while (*s) {
           putch(*s);
           *out ++ = *s ++;
@@ -98,14 +34,14 @@ int sprintf(char *out, const char *fmt, ...) {
         break;
 
       case 'c':
-        char ch = va_arg(arg, int);
+        char ch = va_arg(ap, int);
         putch(ch);
         *out ++ = ch;
         // *out ++ = va_arg(arg, int);
         break;
 
       case 'd':
-        int d = va_arg(arg, int);
+        int d = va_arg(ap, int);
         char tmp[20];
         int ptr = 0;
         while (d) {
@@ -131,9 +67,15 @@ int sprintf(char *out, const char *fmt, ...) {
       break;
     }
   }
-  va_end(arg);
   *out = '\0';
+  return 1;
+}
 
+int sprintf(char *out, const char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  vsprintf(out, fmt, ap);
+  va_end(ap);
   return 1;
 }
 
