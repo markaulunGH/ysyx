@@ -7,10 +7,10 @@
 
 int printf(const char *fmt, ...) {
   char buf[1024];
-  va_list _fmt;
-  va_start(_fmt, fmt);
-  sprintf(buf, fmt, _fmt);
-  va_end(_fmt);
+  va_list arg;
+  va_start(arg, fmt);
+  sprintf(buf, fmt, arg);
+  va_end(arg);
   for (int i = 0; buf[i]; ++ i) {
     putch(buf[i]);
   }
@@ -24,9 +24,11 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 int sprintf(char *out, const char *fmt, ...) {
   va_list arg;
 
+  for (int i = 0; fmt[i]; ++ i)
+    putch(fmt[i]);
+
   va_start (arg, fmt);
   for (; *fmt; ++ fmt) {
-    putch(*fmt);
     switch (*fmt) {
     case '%':
       ++ fmt;
