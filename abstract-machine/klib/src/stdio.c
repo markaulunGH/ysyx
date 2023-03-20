@@ -55,14 +55,14 @@ int sprintf(char *out, const char *fmt, ...) {
         }
         break;
       }
-    case '\\':
-      ++ fmt;
-      switch (*fmt)
-      {
-      // case 'n':
-      //   *out ++ = '\n';
-      //   break;
-      }
+    // case '\\':
+    //   ++ fmt;
+    //   switch (*fmt)
+    //   {
+    //   case 'n':
+    //     *out ++ = '\n';
+    //     break;
+    //   }
     
     default:
       *out ++ = *fmt;
