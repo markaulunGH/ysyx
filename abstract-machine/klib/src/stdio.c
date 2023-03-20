@@ -26,7 +26,6 @@ int sprintf(char *out, const char *fmt, ...) {
 
   va_start (arg, fmt);
   for (; *fmt; ++ fmt) {
-    // putch(*fmt);
     switch (*fmt) {
     case '%':
       ++ fmt;
@@ -60,9 +59,9 @@ int sprintf(char *out, const char *fmt, ...) {
       ++ fmt;
       switch (*fmt)
       {
-      case 'n':
-        *out ++ = '\n';
-        break;
+      // case 'n':
+      //   *out ++ = '\n';
+      //   break;
       }
     
     default:
