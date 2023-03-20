@@ -37,7 +37,9 @@ int sprintf(char *out, const char *fmt, ...) {
       case 's':
         char *s = va_arg(arg, char *);
         while (*s) {
+          putch(*s);
           *out ++ = *s ++;
+          
         }
         break;
 
