@@ -6,37 +6,14 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 int printf(const char *fmt, ...) {
-  va_list arg;
-
-  va_start (arg, fmt);
-  for (; *fmt; ++ fmt) {
-    if (*fmt == '%') {
-      ++ fmt;
-      if (*fmt == 'd') {
-        int d = va_arg(arg, int);
-        char tmp[20];
-        int ptr = 0;
-        while (d) {
-          tmp[ptr ++] = d % 10 + '0';
-          d /= 10;
-        }
-        while (ptr) {
-          putch(tmp[-- ptr]);
-        }
-      }
-      else if (*fmt == 's') {
-        char *s = va_arg(arg, char *);
-        while (*s) {
-          putch(*s ++);
-        }
-      }
-    }
-    else {
-      putch(*fmt);
-    }
+  char buf[1024];
+  va_list _fmt;
+  va_start(_fmt, fmt);
+  sprintf(buf, _fmt);
+  va_end(_fmt);
+  for (int i = 0; buf[i]; ++ i) {
+    putch(buf[i]);
   }
-  va_end(arg);
-
   return 1;
 }
 
@@ -49,9 +26,22 @@ int sprintf(char *out, const char *fmt, ...) {
 
   va_start (arg, fmt);
   for (; *fmt; ++ fmt) {
-    if (*fmt == '%') {
-      ++ fmt;
-      if (*fmt == 'd') {
+    switch (*fmt) {
+    case '%':
+      switch (*fmt)
+      {
+      case 's':
+        char *s = va_arg(arg, char *);
+        while (*s) {
+          *out ++ = *s ++;
+        }
+        break;
+
+      case 'c':
+        *out ++ = va_arg(arg, int);
+        break;
+
+      case 'd':
         int d = va_arg(arg, int);
         char tmp[20];
         int ptr = 0;
@@ -62,16 +52,20 @@ int sprintf(char *out, const char *fmt, ...) {
         while (ptr) {
           *out ++ = tmp[-- ptr];
         }
+        break;
       }
-      else if (*fmt == 's') {
-        char *s = va_arg(arg, char *);
-        while (*s) {
-          *out ++ = *s ++;
-        }
+    case '\\':
+      ++ fmt;
+      switch (*fmt)
+      {
+      case 'n':
+        *out ++ = '\n';
+        break;
       }
-    }
-    else {
+    
+    default:
       *out ++ = *fmt;
+      break;
     }
   }
   va_end(arg);
