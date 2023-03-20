@@ -28,6 +28,7 @@ int sprintf(char *out, const char *fmt, ...) {
   for (; *fmt; ++ fmt) {
     switch (*fmt) {
     case '%':
+      ++ fmt;
       switch (*fmt)
       {
       case 's':
