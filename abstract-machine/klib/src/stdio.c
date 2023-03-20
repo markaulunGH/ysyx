@@ -26,6 +26,7 @@ int sprintf(char *out, const char *fmt, ...) {
 
   va_start (arg, fmt);
   for (; *fmt; ++ fmt) {
+    putch(*fmt);
     switch (*fmt) {
     case '%':
       ++ fmt;
