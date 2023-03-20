@@ -6,39 +6,38 @@
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
 int printf(const char *fmt, ...) {
-  // va_list arg;
+  va_list arg;
 
-  // va_start (arg, fmt);
-  // for (; *fmt; ++ fmt) {
-  //   if (*fmt == '%') {
-  //     ++ fmt;
-  //     if (*fmt == 'd') {
-  //       int d = va_arg(arg, int);
-  //       char tmp[20];
-  //       int ptr = 0;
-  //       while (d) {
-  //         tmp[ptr ++] = d % 10 + '0';
-  //         d /= 10;
-  //       }
-  //       while (ptr) {
-  //         putch(tmp[-- ptr]);
-  //       }
-  //     }
-  //     else if (*fmt == 's') {
-  //       char *s = va_arg(arg, char *);
-  //       while (*s) {
-  //         putch(*s ++);
-  //       }
-  //     }
-  //   }
-  //   else {
-  //     putch(*fmt);
-  //   }
-  // }
-  // va_end(arg);
+  va_start (arg, fmt);
+  for (; *fmt; ++ fmt) {
+    if (*fmt == '%') {
+      ++ fmt;
+      if (*fmt == 'd') {
+        int d = va_arg(arg, int);
+        char tmp[20];
+        int ptr = 0;
+        while (d) {
+          tmp[ptr ++] = d % 10 + '0';
+          d /= 10;
+        }
+        while (ptr) {
+          putch(tmp[-- ptr]);
+        }
+      }
+      else if (*fmt == 's') {
+        char *s = va_arg(arg, char *);
+        while (*s) {
+          putch(*s ++);
+        }
+      }
+    }
+    else {
+      putch(*fmt);
+    }
+  }
+  va_end(arg);
 
-  // return 1;
-  panic("Not implemented");
+  return 1;
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
