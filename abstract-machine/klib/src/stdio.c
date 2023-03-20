@@ -43,11 +43,11 @@ int sprintf(char *out, const char *fmt, ...) {
         }
         break;
 
-      case 'c':
-        *out ++ = va_arg(arg, int);
-        break;
+      // case 'c':
+      //   *out ++ = va_arg(arg, int);
+      //   break;
 
-      case 'd':
+      case 'd': case 'c':
         int d = va_arg(arg, int);
         char tmp[20];
         int ptr = 0;
