@@ -2,8 +2,8 @@
 #include <nemu.h>
 
 #define SYNC_ADDR (VGACTL_ADDR + 4)
-#define SCREEN_W 400
-#define SCREEN_H 300
+#define SCREEN_W 800
+#define SCREEN_H 600
 
 void __am_gpu_init() {
   int i;
