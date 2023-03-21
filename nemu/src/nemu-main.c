@@ -14,11 +14,15 @@
 ***************************************************************************************/
 
 #include <common.h>
+#include <signal.h>
 
 void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
+
+void signal_handler(int sig) {
+}
 
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
@@ -31,5 +35,6 @@ int main(int argc, char *argv[]) {
   /* Start engine. */
   engine_start();
 
+  signal(SIGSEGV, signal_handler);
   return is_exit_status_bad();
 }
