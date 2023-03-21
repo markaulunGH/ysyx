@@ -37,6 +37,6 @@ int main(int argc, char *argv[]) {
 
 
   // SDL_Window *window = NULL;
-  // SDL_Init(SDL_INIT_VIDEO);
+  SDL_Init(SDL_INIT_VIDEO);
   return 0;
 }
