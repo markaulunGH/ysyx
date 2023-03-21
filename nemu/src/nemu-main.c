@@ -38,6 +38,6 @@ int main(int argc, char *argv[]) {
   /* Start engine. */
   engine_start();
 
-  signal(SIGSEGV, signal_handler);
-  return is_exit_status_bad();
+  // signal(SIGSEGV, signal_handler);
+  exit( is_exit_status_bad());
 }
