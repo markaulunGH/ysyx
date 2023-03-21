@@ -22,9 +22,7 @@ void engine_start();
 int is_exit_status_bad();
 
 void signal_handler(int sig) {
-  if (sig == SIGSEGV) {
-    // exit(0);
-  }
+  
 }
 
 int main(int argc, char *argv[]) {
