@@ -8,7 +8,6 @@
 #include <paddr.h>
 #include <log.h>
 #include <difftest.h>
-#include <utils.h>
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -180,9 +179,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
     }
 }
 
-#define SERIAL_PORT 0xa00003f8
-#define RTC_ADDR    0xa0000048
-
 static void exec_once(Decode *s)
 {
     cycle_begin();
@@ -191,25 +187,17 @@ static void exec_once(Decode *s)
     top->eval();
     if (top->io_mm_ren)
     {
-        if (top->io_mm_raddr == RTC_ADDR) {
-            top->io_mm_rdata = get_time();
-        } else {
-            top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
-        }
+        top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
         top->eval();
     }
     if (top->io_mm_wen)
     {
-        if (top->io_mm_waddr == SERIAL_PORT) {
-            putchar(top->io_mm_wdata);
-        } else {
-            switch (top->io_mm_mask)
-            {
-                case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata); break;
-                case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata); break;
-                case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
-                case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
-            }
+        switch (top->io_mm_mask)
+        {
+            case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata); break;
+            case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata); break;
+            case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
+            case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
         }
     }
     cycle_end();
@@ -256,14 +244,10 @@ static void execute(uint64_t n)
         trace_and_difftest(&s, cpu.pc);
         if (npc_state.state != NPC_RUNNING)
             break;
+#ifdef CONFIG_DEVICE
+        device_update();
+#endif
     }
-}
-
-static void statistic() {
-  Log("host time spent = %lu us", g_timer);
-  Log("total guest instructions = %lu", g_nr_guest_inst);
-  if (g_timer > 0) Log("simulation frequency = %lu inst/s", g_nr_guest_inst * 1000000 / g_timer);
-  else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
 }
 
 /* Simulate how the CPU works. */
@@ -280,12 +264,7 @@ void cpu_exec(uint64_t n)
             npc_state.state = NPC_RUNNING;
     }
 
-    uint64_t timer_start = get_time();
-
     execute(n);
-
-    uint64_t timer_end = get_time();
-    g_timer += timer_end - timer_start;
 
     switch (npc_state.state)
     {
@@ -315,7 +294,8 @@ void cpu_exec(uint64_t n)
             }
 #endif
         // fall through
-        case NPC_QUIT: statistic();
+        case NPC_QUIT:
+            return;
     }
 }
 
