@@ -56,12 +56,11 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
         char tmp[20];
         int ptr = 0;
         if (d < 0) {
-          *out ++ = '-';
+          tmp[ptr ++] = '-';
           d = -d;
         }
         else if (d == 0) {
-          *out ++ = '0';
-          break;
+          tmp[ptr ++] = '0';
         }
         while (d) {
           tmp[ptr ++] = d % 10 + '0';
