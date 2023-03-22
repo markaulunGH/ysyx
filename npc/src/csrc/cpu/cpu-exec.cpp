@@ -180,6 +180,10 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
     }
 }
 
+uint64_t get_time() {
+    return 1;
+}
+
 #define SERIAL_PORT 0xa00003f8
 #define RTC_ADDR    0xa0000048
 
