@@ -28,11 +28,9 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
         blank = '0';
         ++ fmt;
       }
-      if ('0' <= *fmt && *fmt <= '9') {
-        while ('0' <= *fmt && *fmt <= '9') {
-          width = width * 10 + *fmt - '0';
-          ++ fmt;
-        }
+      while ('0' <= *fmt && *fmt <= '9') {
+        width = width * 10 + *fmt - '0';
+        ++ fmt;
       }
       switch (*fmt) {
       case 's':
