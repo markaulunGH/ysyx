@@ -190,7 +190,7 @@ class DS extends Module
             Seq(
                 (inst_addw || inst_subw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs2_value(31)), rs2_value(31, 0)),
                 (inst_divuw || inst_remuw) -> Cat(0.U(32.W), rs2_value(31, 0)),
-                (inst_sllw || inst_sraw || inst_srlw) -> rs2_value(4, 0)
+                (inst_sllw || inst_sraw || inst_srlw) -> Cat(0.U(59.W), rs2_value(4, 0))
             )
         )
     )
