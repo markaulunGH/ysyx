@@ -22,16 +22,34 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
     switch (*fmt) {
     case '%':
       ++ fmt;
-      switch (*fmt)
-      {
+      int width = 0;
+      char blank = ' ';
+      if (*fmt == '0') {
+        blank = '0';
+        ++ fmt;
+      }
+      if ('0' <= *fmt && *fmt <= '9') {
+        while ('0' <= *fmt && *fmt <= '9') {
+          width = width * 10 + *fmt - '0';
+          ++ fmt;
+        }
+      }
+      switch (*fmt) {
       case 's':
         char *s = va_arg(ap, char *);
+        int len = strlen(s);
+        for (int i = 0; i < width - len; ++ i) {
+          *out ++ = blank;
+        }
         while (*s) {
           *out ++ = *s ++;
         }
         break;
 
       case 'c':
+        for (int i = 0; i < width - 1; ++ i) {
+          *out ++ = blank;
+        }
         *out ++ = va_arg(ap, int);
         break;
 
@@ -42,6 +60,9 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
         while (d) {
           tmp[ptr ++] = d % 10 + '0';
           d /= 10;
+        }
+        for (int i = 0; i < width - ptr; ++ i) {
+          *out ++ = blank;
         }
         while (ptr) {
           *out ++ = tmp[-- ptr];
