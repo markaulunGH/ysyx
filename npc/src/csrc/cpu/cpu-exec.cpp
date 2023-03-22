@@ -187,8 +187,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
     }
 }
 
-#define UART 0xa00003f8
-#define RTC  0xa0000048
+#define SERIAL_PORT 0xa00003f8
+#define RTC         0xa0000048
 
 static void exec_once(Decode *s)
 {
@@ -199,7 +199,6 @@ static void exec_once(Decode *s)
     if (top->io_mm_ren)
     {
         if (top->io_mm_raddr == RTC) {
-            printf("read RTC");
             top->io_mm_rdata = get_time();
         } else {
             top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
@@ -208,8 +207,7 @@ static void exec_once(Decode *s)
     }
     if (top->io_mm_wen)
     {
-        if (top->io_mm_waddr == UART) {
-            printf("write UART");
+        if (top->io_mm_waddr == SERIAL_PORT) {
             putchar(top->io_mm_wdata);
         } else {
             switch (top->io_mm_mask)
