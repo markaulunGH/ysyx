@@ -324,8 +324,7 @@ void cpu_exec(uint64_t n)
             }
 #endif
         // fall through
-        case NPC_QUIT:
-            return;
+        case NPC_QUIT: statistic();
     }
 }
 
