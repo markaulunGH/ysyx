@@ -53,7 +53,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 
       case 'd':
         int d = va_arg(ap, int);
-        char tmp[20];
+        char tmp[50];
         int ptr = 0;
         if (d < 0) {
           tmp[ptr ++] = '-';
