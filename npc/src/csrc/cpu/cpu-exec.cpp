@@ -199,6 +199,7 @@ static void exec_once(Decode *s)
     if (top->io_mm_ren)
     {
         if (top->io_mm_raddr == RTC) {
+            printf("read RTC");
             top->io_mm_rdata = get_time();
         } else {
             top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
@@ -208,6 +209,7 @@ static void exec_once(Decode *s)
     if (top->io_mm_wen)
     {
         if (top->io_mm_waddr == UART) {
+            printf("write UART");
             putchar(top->io_mm_wdata);
         } else {
             switch (top->io_mm_mask)
