@@ -1,5 +1,5 @@
-#ifndef __UTILS_H__
-#define __UTILS_H__
+#ifndef __TIMER_H__
+#define __TIMER_H__
 
 #include <common.h>
 
