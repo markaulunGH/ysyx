@@ -8,7 +8,7 @@
 #include <paddr.h>
 #include <log.h>
 #include <difftest.h>
-// #include <timer.h>
+#include <utils.h>
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -178,10 +178,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
     {
         npc_state.state = NPC_STOP;
     }
-}
-
-uint64_t get_time() {
-    return 1;
 }
 
 #define SERIAL_PORT 0xa00003f8
