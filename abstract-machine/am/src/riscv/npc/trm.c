@@ -18,7 +18,6 @@ static const char mainargs[] = MAINARGS;
 #define SERIAL_PORT 0xa00003f8
 
 void putch(char ch) {
-  
   outb(SERIAL_PORT, ch);
 }
 
