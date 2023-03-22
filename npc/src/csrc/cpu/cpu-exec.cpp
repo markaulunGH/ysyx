@@ -271,7 +271,7 @@ static void execute(uint64_t n)
 static void statistic() {
   Log("host time spent = %u us", g_timer);
   Log("total guest instructions = %u", g_nr_guest_inst);
-  if (g_timer > 0) Log("simulation frequency = %u inst/s", g_nr_guest_inst * 1000000 / g_timer);
+  if (g_timer > 0) Log("simulation frequency = %lu inst/s", g_nr_guest_inst * 1000000 / g_timer);
   else Log("Finish running in less than 1 us and can not calculate the simulation frequency");
 }
 
