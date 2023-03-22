@@ -8,8 +8,7 @@
 #include <paddr.h>
 #include <log.h>
 #include <difftest.h>
-#include <time.h>
-#include <sys/time.h>
+#include <timer.h>
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -67,18 +66,6 @@ void update_regs()
         cpu.gpr[i] = gpr[i];
     }
     cpu.pc = top->io_pc;
-}
-
-uint64_t get_time() {
-    static uint64_t boot_time = 0;
-    if (boot_time == 0) {
-        struct timeval tv;
-        gettimeofday(&tv, NULL);
-        boot_time = tv.tv_sec * 1000000 + tv.tv_usec;
-    }
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec * 1000000 + tv.tv_usec;
 }
 
 /* The assembly code of instructions executed is only output to the screen
