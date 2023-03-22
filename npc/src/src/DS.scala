@@ -181,8 +181,8 @@ class DS extends Module
             imm,
             Seq(
                 (inst_jal || inst_jalr) -> 4.U,
-                (inst_slli || inst_srli || inst_srai) -> (imm(5, 0)),
-                (inst_slliw || inst_srliw || inst_sraiw) -> (imm(4, 0))
+                (inst_slli || inst_srli || inst_srai) -> imm(5, 0),
+                (inst_slliw || inst_srliw || inst_sraiw) -> imm(4, 0)
             )
         ),
         MuxCase(
