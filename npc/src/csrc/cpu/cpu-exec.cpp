@@ -188,7 +188,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 }
 
 #define SERIAL_PORT 0xa00003f8
-#define RTC         0xa0000048
+#define RTC_ADDR    0xa0000048
 
 static void exec_once(Decode *s)
 {
@@ -198,7 +198,7 @@ static void exec_once(Decode *s)
     top->eval();
     if (top->io_mm_ren)
     {
-        if (top->io_mm_raddr == RTC) {
+        if (top->io_mm_raddr == RTC_ADDR) {
             top->io_mm_rdata = get_time();
         } else {
             top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
