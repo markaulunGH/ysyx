@@ -21,9 +21,6 @@ void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
-void signal_handler(int sig) {
-}
-
 int main(int argc, char *argv[]) {
   /* Initialize the monitor. */
 #ifdef CONFIG_TARGET_AM
@@ -35,6 +32,5 @@ int main(int argc, char *argv[]) {
   /* Start engine. */
   engine_start();
 
-  signal(SIGSEGV, signal_handler);
   return is_exit_status_bad();
 }
