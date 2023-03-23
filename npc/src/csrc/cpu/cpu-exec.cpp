@@ -191,18 +191,26 @@ static void exec_once(Decode *s)
     top->eval();
     if (top->io_mm_ren)
     {
-        if (top->io_mm_raddr == RTC_ADDR) {
+        if (top->io_mm_raddr == RTC_ADDR)
+        {
             top->io_mm_rdata = get_time();
-        } else {
+            difftest_skip_ref();
+        }
+        else
+        {
             top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
         }
         top->eval();
     }
     if (top->io_mm_wen)
     {
-        if (top->io_mm_waddr == SERIAL_PORT) {
+        if (top->io_mm_waddr == SERIAL_PORT)
+        {
             putchar(top->io_mm_wdata);
-        } else {
+            difftest_skip_ref();
+        }
+        else
+        {
             switch (top->io_mm_mask)
             {
                 case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata); break;
