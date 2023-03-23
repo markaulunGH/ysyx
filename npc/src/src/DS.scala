@@ -172,7 +172,7 @@ class DS extends Module
             rs1_value,
             Seq(
                 (inst_addiw || inst_slliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_sraw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs1_value(31)), rs1_value(31, 0)),
-                (inst_srlw || inst_srliw || inst_divuw || inst_remuw) -> Cat(0.U(32.W), rs1_value(31, 0))
+                (inst_srlw || inst_srliw || inst_divuw || inst_remuw) -> rs1_value(31, 0)
             )
         )
     )
@@ -181,19 +181,20 @@ class DS extends Module
             imm,
             Seq(
                 (inst_jal || inst_jalr) -> 4.U,
-                (inst_slli || inst_srli || inst_srai) -> (imm(5, 0)),
-                (inst_slliw || inst_srliw || inst_sraiw) -> (imm(4, 0))
+                (inst_slli || inst_srli || inst_srai) -> imm(5, 0),
+                (inst_slliw || inst_srliw || inst_sraiw) -> imm(4, 0)
             )
         ),
         MuxCase(
             rs2_value,
             Seq(
-                (inst_addw || inst_subw || inst_sllw || inst_sraw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs2_value(31)), rs2_value(31, 0)),
-                (inst_srlw || inst_divuw || inst_remuw) -> Cat(0.U(32.W), rs2_value(31, 0))
+                (inst_addw || inst_subw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs2_value(31)), rs2_value(31, 0)),
+                (inst_divuw || inst_remuw) -> rs2_value(31, 0),
+                (inst_sllw || inst_sraw || inst_srlw) -> rs2_value(4, 0)
             )
         )
     )
-    io.ds_es.inst_word := inst_addiw || inst_slliw || inst_srliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_sraw || inst_mulw || inst_divw || inst_divuw || inst_remw || inst_remuw
+    io.ds_es.inst_word := inst_addiw || inst_slliw || inst_srliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_srlw || inst_sraw || inst_mulw || inst_divw || inst_divuw || inst_remw || inst_remuw
 
     io.ds_es.rf_wen := inst_lui || inst_auipc || inst_jal || inst_jalr ||
                        inst_load ||

@@ -32,8 +32,8 @@ class Alu extends Module
         Seq(
             alu_op(0)  -> adder_result,
             alu_op(1)  -> adder_result,
-            alu_op(2)  -> Cat(0.U(63.W), (src1(63) & ~src2(63)) | (~(src1(63) ^ src2(31)) & adder_result(63))),
-            alu_op(3)  -> Cat(0.U(63.W), ~adder_cout),
+            alu_op(2)  -> ((src1(63) & ~src2(63)) | (~(src1(63) ^ src2(31)) & adder_result(63))),
+            alu_op(3)  -> (~adder_cout),
             alu_op(4)  -> (src1 ^ src2),
             alu_op(5)  -> (src1 | src2),
             alu_op(6)  -> (src1 & src2),
