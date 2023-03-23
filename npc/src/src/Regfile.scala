@@ -12,7 +12,7 @@ class reg_r extends Bundle
 
 class reg_w extends Bundle
 {
-    val wen = Input(UInt(1.W))
+    val wen = Input(Bool())
     val waddr = Input(UInt(5.W))
     val wdata = Input(UInt(64.W))
 }
@@ -29,7 +29,7 @@ class Regfile extends Module
 
     val rf = Reg(Vec(32, UInt(64.W)))
 
-    when (io.reg_w.wen === 1.U)
+    when (io.reg_w.wen)
     {
         rf(io.reg_w.waddr) := io.reg_w.wdata
     }
