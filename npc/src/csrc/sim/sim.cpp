@@ -4,12 +4,6 @@ const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
 VerilatedFstC* tfp = new VerilatedFstC;
 
-void cycle_begin()
-{
-    // top->clock = 1;
-    // top->eval();
-}
-
 void cycle_end()
 {
     tfp->dump(contextp->time());
@@ -24,14 +18,11 @@ void cycle_end()
 
 void reset()
 {
-    // top->reset = 1;
     for (int i = 0; i < 100; ++ i)
     {
-        cycle_begin();
         top->reset = i < 99;
         cycle_end();
     }
-    // top->reset = 0;
 }
 
 void init_simulation(int argc, char** argv)

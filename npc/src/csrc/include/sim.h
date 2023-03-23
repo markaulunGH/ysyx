@@ -12,7 +12,6 @@ extern VerilatedFstC* tfp;
 
 void init_simulation(int argc, char** argv);
 void end_simulation();
-void cycle_begin();
 void cycle_end();
 
 #endif
