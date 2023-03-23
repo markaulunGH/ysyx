@@ -14,13 +14,20 @@
 ***************************************************************************************/
 
 #include <isa.h>
+#include <../local-include/reg.h>
 
 word_t isa_raise_intr(word_t NO, vaddr_t epc) {
-  /* TODO: Trigger an interrupt/exception with ``NO''.
-   * Then return the address of the interrupt/exception vector.
-   */
+  csr_mstatus = (SEXT(BITS(csr_mstatus, 63, 13), 51) << 13) | (3 << 11) | (BITS(csr_mstatus, 10, 8) << 8) |
+                (BITS(csr_mstatus, 3, 3) << 7) | (BITS(csr_mstatus, 6, 4) << 4) | (BITS(csr_mstatus, 2, 0));
+  csr_mepc = epc;
+  csr_mcause = NO;
+  return csr_mtvec;
+}
 
-  return 0;
+word_t isa_mret() {
+  csr_mstatus = (SEXT(BITS(csr_mstatus, 63, 13), 51) << 13) | (BITS(csr_mstatus, 10, 8) << 8) | (1 << 7) |
+                (BITS(csr_mstatus, 6, 4) << 4) | (BITS(csr_mstatus, 7, 7) << 3) | (BITS(csr_mstatus, 2, 0));
+  return csr_mepc + 4;
 }
 
 word_t isa_query_intr() {
