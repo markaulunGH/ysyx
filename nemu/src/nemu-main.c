@@ -20,21 +20,16 @@ void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
 
-#include <SDL2/SDL.h>
-
 int main(int argc, char *argv[]) {
-//   /* Initialize the monitor. */
-// #ifdef CONFIG_TARGET_AM
-//   am_init_monitor();
-// #else
-//   init_monitor(argc, argv);
-// #endif
+  /* Initialize the monitor. */
+#ifdef CONFIG_TARGET_AM
+  am_init_monitor();
+#else
+  init_monitor(argc, argv);
+#endif
 
-//   /* Start engine. */
-//   engine_start();
+  /* Start engine. */
+  engine_start();
 
-//   return is_exit_status_bad();
-
-  SDL_Init(SDL_INIT_VIDEO);
-  return 0;
+  return is_exit_status_bad();
 }
