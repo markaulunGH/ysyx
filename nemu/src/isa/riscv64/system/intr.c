@@ -20,6 +20,7 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
   csr_mstatus = (SEXT(BITS(csr_mstatus, 63, 13), 51) << 13) | (3 << 11) | (BITS(csr_mstatus, 10, 8) << 8) |
                 (BITS(csr_mstatus, 3, 3) << 7) | (BITS(csr_mstatus, 6, 4) << 4) | (BITS(csr_mstatus, 2, 0));
   csr_mepc = epc;
+  printf("%ld\n", NO);
   csr_mcause = NO;
   return csr_mtvec;
 }
