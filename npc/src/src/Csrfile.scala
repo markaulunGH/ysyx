@@ -10,7 +10,7 @@ class Csrfile extends Module {
         val wen = Input(Bool())
     })
 
-    val mstatus = RegInit(0xa00001800.U(64.W))
+    val mstatus = RegInit(0xa00001800L.U(64.W))
     val mtvec = RegInit(0.U(64.W))
     val mepc = RegInit(0.U(64.W))
     val mcause = RegInit(0.U(64.W))
