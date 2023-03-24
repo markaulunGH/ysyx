@@ -32,7 +32,7 @@ class Csrfile extends Module {
         mcause := io.wdata
     }
 
-    io.rdata := MuxCase(0.U, Array(
+    io.rdata := MuxCase(0.U, Seq(
         (io.addr === 0x300.U) -> mstatus,
         (io.addr === 0x305.U) -> mtvec,
         (io.addr === 0x341.U) -> mepc,
