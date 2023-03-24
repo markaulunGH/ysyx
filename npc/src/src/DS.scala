@@ -96,6 +96,13 @@ class DS extends Module
     val inst_remw   = dopcode(0x3b) && dfunct3(0x6) && dfunct7(0x1)
     val inst_remuw  = dopcode(0x3b) && dfunct3(0x7) && dfunct7(0x1)
 
+    val inst_valid = inst_lui || inst_auipc || inst_jal || inst_jalr ||
+                     inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu ||
+                     inst_lb || inst_lh || inst_lw || inst_lbu || inst_lhu || inst_lwu || inst_ld || inst_sb || inst_sh || inst_sw || inst_sd ||
+                     inst_addi || inst_slti || inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_srai || inst_addiw || inst_slliw || inst_srliw || inst_sraiw ||
+                     inst_add || inst_sub || inst_sll || inst_slt || inst_sltu || inst_xor || inst_srl || inst_sra || inst_or || inst_and || inst_addw || inst_subw || inst_sllw || inst_srlw || inst_sraw ||
+                     inst_ecall || inst_ebreak ||
+                     inst_mul || inst_mulh || inst_mulhsu || inst_mulhu || inst_div || inst_divu || inst_rem || inst_remu || inst_mulw || inst_divw || inst_divuw || inst_remw || inst_remuw
     val inst_load = inst_lb || inst_lh || inst_lw || inst_lbu || inst_lhu || inst_lwu || inst_ld
     val inst_store = inst_sb || inst_sh || inst_sw || inst_sd
     val mm_mask = MuxCase(
