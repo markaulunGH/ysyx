@@ -8,7 +8,7 @@ class DS extends Module
         val fs_ds = Flipped(new FS_DS)
         val ds_es = new DS_ES
 
-        val reg_r = Flipped(new reg_r)
+        val Reg_r = Flipped(new Reg_r)
 
         val ebreak = Output(Bool())
     })
@@ -25,6 +25,8 @@ class DS extends Module
     val imm_B = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W))
     val imm_U = Cat(inst(31, 12), 0.U(12.W))
     val imm_J = Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U(1.W))
+    val csr = inst(31, 20)
+    val uimm = inst(19, 15)
 
     val dopcode = UIntToOH(opcode)
     val dfunct3 = UIntToOH(funct3)
@@ -82,6 +84,13 @@ class DS extends Module
     val inst_ecall  = inst === 0x73.U
     val inst_ebreak = inst === 0x100073.U
 
+    val inst_csrrw  = dopcode(0x73) && dfunct3(0x1)
+    val inst_csrrs  = dopcode(0x73) && dfunct3(0x2)
+    val inst_csrrc  = dopcode(0x73) && dfunct3(0x3)
+    val inst_csrrwi = dopcode(0x73) && dfunct3(0x5)
+    val inst_csrrsi = dopcode(0x73) && dfunct3(0x6)
+    val inst_csrrci = dopcode(0x73) && dfunct3(0x7)
+
     val inst_mul    = dopcode(0x33) && dfunct3(0x0) && dfunct7(0x1)
     val inst_mulh   = dopcode(0x33) && dfunct3(0x1) && dfunct7(0x1)
     val inst_mulhsu = dopcode(0x33) && dfunct3(0x2) && dfunct7(0x1)
@@ -102,6 +111,7 @@ class DS extends Module
                      inst_addi || inst_slti || inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_srai || inst_addiw || inst_slliw || inst_srliw || inst_sraiw ||
                      inst_add || inst_sub || inst_sll || inst_slt || inst_sltu || inst_xor || inst_srl || inst_sra || inst_or || inst_and || inst_addw || inst_subw || inst_sllw || inst_srlw || inst_sraw ||
                      inst_ecall || inst_ebreak ||
+                     inst_csrrw || inst_csrrs || inst_csrrc || inst_csrrwi || inst_csrrsi || inst_csrrci ||
                      inst_mul || inst_mulh || inst_mulhsu || inst_mulhu || inst_div || inst_divu || inst_rem || inst_remu || inst_mulw || inst_divw || inst_divuw || inst_remw || inst_remuw
     val inst_load = inst_lb || inst_lh || inst_lw || inst_lbu || inst_lhu || inst_lwu || inst_ld
     val inst_store = inst_sb || inst_sh || inst_sw || inst_sd
@@ -132,10 +142,10 @@ class DS extends Module
         )
     )
 
-    io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
-    io.reg_r.raddr2 := rs2
-    val rs1_value = io.reg_r.rdata1
-    val rs2_value = io.reg_r.rdata2
+    io.Reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
+    io.Reg_r.raddr2 := rs2
+    val rs1_value = io.Reg_r.rdata1
+    val rs2_value = io.Reg_r.rdata2
 
     val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
@@ -150,7 +160,7 @@ class DS extends Module
         0.U(64.W),
         Seq(
             (inst_jal || inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> (io.fs_ds.pc + imm),
-            inst_jalr -> (imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W))),
+            inst_jalr -> (imm + Cat(io.Reg_r.rdata1(63, 1), 0.U(1.W))),
         )
     )
 
@@ -225,6 +235,8 @@ class DS extends Module
     io.ds_es.mm_mask := mm_mask
     io.ds_es.mm_unsigned := inst_lbu || inst_lhu || inst_lwu
     io.ds_es.res_from_mem := inst_load
+
+    
 
     io.ebreak := inst_ebreak
 }
