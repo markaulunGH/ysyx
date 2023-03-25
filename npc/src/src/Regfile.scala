@@ -29,13 +29,13 @@ class Regfile extends Module
 
     val rf = Reg(Vec(32, UInt(64.W)))
 
-    when (io.Reg_w.wen)
+    when (io.reg_w.wen)
     {
-        rf(io.Reg_w.waddr) := io.Reg_w.wdata
+        rf(io.reg_w.waddr) := io.reg_w.wdata
     }
 
-    io.Reg_r.rdata1 := Mux(io.Reg_r.raddr1 === 0.U, 0.U, rf(io.Reg_r.raddr1))
-    io.Reg_r.rdata2 := Mux(io.Reg_r.raddr2 === 0.U, 0.U, rf(io.Reg_r.raddr2))
+    io.reg_r.rdata1 := Mux(io.reg_r.raddr1 === 0.U, 0.U, rf(io.reg_r.raddr1))
+    io.reg_r.rdata2 := Mux(io.reg_r.raddr2 === 0.U, 0.U, rf(io.reg_r.raddr2))
 
     io.rf := rf
 }
