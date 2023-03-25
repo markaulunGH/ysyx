@@ -142,10 +142,10 @@ class DS extends Module
         )
     )
 
-    io.Reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
-    io.Reg_r.raddr2 := rs2
-    val rs1_value = io.Reg_r.rdata1
-    val rs2_value = io.Reg_r.rdata2
+    io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
+    io.reg_r.raddr2 := rs2
+    val rs1_value = io.reg_r.rdata1
+    val rs2_value = io.reg_r.rdata2
 
     val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
@@ -160,7 +160,7 @@ class DS extends Module
         0.U(64.W),
         Seq(
             (inst_jal || inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> (io.fs_ds.pc + imm),
-            inst_jalr -> (imm + Cat(io.Reg_r.rdata1(63, 1), 0.U(1.W))),
+            inst_jalr -> (imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W))),
         )
     )
 
