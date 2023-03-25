@@ -7,7 +7,7 @@ class WS extends Module
     {
         val ms_ws = Flipped(new MS_WS)
 
-        val reg_w = Flipped(new reg_w)
+        val reg_w = Flipped(new Reg_write)
     })
 
     io.reg_w.wen := io.ms_ws.rf_wen
