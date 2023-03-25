@@ -81,8 +81,8 @@ class Top extends Module
     io.mm_mask := es.io.mm_mask
 
     val rf = Module(new Regfile)
-    rf.io.reg_read  <> ds.io.reg_read
-    rf.io.reg_write <> ws.io.reg_write
+    rf.io.reg_r <> ds.io.reg_r
+    rf.io.reg_w <> ws.io.reg_w
     
     io.ebreak := ds.io.ebreak
     io.rf := rf.io.rf
