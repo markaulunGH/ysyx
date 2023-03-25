@@ -8,7 +8,7 @@ class DS extends Module
         val fs_ds = Flipped(new FS_DS)
         val ds_es = new DS_ES
 
-        val Reg_r = Flipped(new Reg_read)
+        val reg_r = Flipped(new Reg_r)
 
         val ebreak = Output(Bool())
     })
