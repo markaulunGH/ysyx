@@ -113,6 +113,6 @@ class Csr extends Module
         0x341.U -> mepc,
         0x342.U -> mcause
     ))
-    io.csr_pc.mtvec := mtvec
-    io.csr_pc.mepc := mepc
+    io.csr_pc.mtvec := 0.U
+    io.csr_pc.mepc := 0.U
 }
