@@ -48,7 +48,7 @@ class Csr extends Module
         mstatus_mpie := 0.U
         mstatus_mie := mstatus_mpie
     }
-    .elsewhen (io.csr_wen && io.addr === 0x300.U)
+    .elsewhen (io.wen && io.addr === 0x300.U)
     {
         mstatus_uie  := io.wdata(0)
         mstatus_sie  := io.wdata(1)
