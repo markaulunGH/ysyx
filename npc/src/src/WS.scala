@@ -8,18 +8,18 @@ class WS extends Module
         val ms_ws = Flipped(new MS_WS)
 
         val reg_w = Flipped(new Reg_w)
-        val csr = Flipped(new Csr_io)
+        val csr_rw = Flipped(new Csr_rw)
     })
 
     io.reg_w.wen := io.ms_ws.rf_wen
     io.reg_w.waddr := io.ms_ws.rf_waddr
     io.reg_w.wdata := Mux(io.ms_ws.csr_wen, io.csr.rdata, io.ms_ws.rf_wdata)
 
-    io.csr.addr := io.ms_ws.csr_addr
-    io.csr.wen := io.ms_ws.csr_wen
-    io.csr.wdata := (io.ms_ws.csr_wdata & io.ms_ws.csr_wmask) | (io.csr.rdata & ~io.ms_ws.csr_wmask)
-    io.csr.pc := io.ms_ws.pc
-    io.csr.exc := io.ms_ws.exc
-    io.csr.exc_cause := io.ms_ws.exc_cause
-    io.csr.mret := io.ms_ws.mret
+    io.csr_rw.addr := io.ms_ws.csr_addr
+    io.csr_rw.wen := io.ms_ws.csr_wen
+    io.csr_rw.wdata := (io.ms_ws.csr_wdata & io.ms_ws.csr_wmask) | (io.csr.rdata & ~io.ms_ws.csr_wmask)
+    io.csr_rw.pc := io.ms_ws.pc
+    io.csr_rw.exc := io.ms_ws.exc
+    io.csr_rw.exc_cause := io.ms_ws.exc_cause
+    io.csr_rw.mret := io.ms_ws.mret
 }

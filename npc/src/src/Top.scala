@@ -109,7 +109,8 @@ class Top extends Module
     rf.io.reg_w <> ws.io.reg_w
 
     val csr = Module(new Csr)
-    csr.io <> ws.io.csr
+    csr.io.csr_pc <> ds.io.csr_pc
+    csr.io.csr_rw <> ws.io.csr_rw
     
     io.ebreak := ds.io.ebreak
     io.rf := rf.io.rf

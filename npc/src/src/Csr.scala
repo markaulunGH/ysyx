@@ -1,7 +1,7 @@
 import chisel3._
 import chisel3.util._
 
-class Csr_io extends Bundle
+class Csr_rw extends Bundle
 {
     val addr = Input(UInt(12.W))
     val rdata = Output(UInt(64.W))
@@ -13,9 +13,18 @@ class Csr_io extends Bundle
     val mret = Input(Bool())
 }
 
+class Csr_pc extends Bundle
+{
+    val mtvec = Output(UInt(64.W))
+    val mepc = Output(UInt(64.W))
+}
+
 class Csr extends Module
 {
-    val io = IO(new Csr_io)
+    val io = IO(
+        val csr_rw = new Csr_io,
+        val csr_pc = new Csr_pc
+    )
 
     val mstatus_uie  = RegInit(0.U(1.W))
     val mstatus_sie  = RegInit(0.U(1.W))
@@ -71,6 +80,12 @@ class Csr extends Module
         mstatus_sd   := io.wdata(63)
     }
 
+    val mtvec = RegInit(0.U(64.W))
+    when (io.wen && io.addr === 0x305.U)
+    {
+        mtvec := io.wdata
+    }
+
     val mepc = RegInit(0.U(64.W))
     when (io.exc)
     {
@@ -93,6 +108,7 @@ class Csr extends Module
 
     io.rdata := MuxLookup(io.addr, 0.U, Seq(
         0x300.U -> Cat(mstatus_sd, 0.U(27.W), mstatus_sxl, mstatus_uxl, 0.U(9.W), mstatus_tsr, mstatus_tw, mstatus_tvm, mstatus_mxr, mstatus_sum, mstatus_mprv, mstatus_xs, mstatus_fs, mstatus_mpp, 0.U(2.W), mstatus_spp, mstatus_mpie, 0.U(1.W), mstatus_spie, mstatus_upie, mstatus_mie, 0.U(1.W), mstatus_sie, mstatus_uie),
+        0x305.U -> mtvec,
         0x341.U -> mepc,
         0x342.U -> mcause
     ))

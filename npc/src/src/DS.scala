@@ -9,6 +9,7 @@ class DS extends Module
         val ds_es = new DS_ES
 
         val reg_r = Flipped(new Reg_r)
+        val csr_pc = Flipped(new Csr_pc)
 
         val ebreak = Output(Bool())
     })
@@ -159,12 +160,15 @@ class DS extends Module
                          inst_blt  &&  rs1_lt_rs2 ||
                          inst_bge  && !rs1_lt_rs2 ||
                          inst_bltu &&  rs1_ltu_rs2 ||
-                         inst_bgeu && !rs1_ltu_rs2
+                         inst_bgeu && !rs1_ltu_rs2 ||
+                         inst_ecall || inst_mret
     io.fs_ds.br_target := MuxCase(
         0.U(64.W),
         Seq(
             (inst_jal || inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> (io.fs_ds.pc + imm),
             inst_jalr -> (imm + Cat(io.reg_r.rdata1(63, 1), 0.U(1.W))),
+            inst_ecall -> io.csr_pc.mtvec,
+            inst_mret -> io.csr_pc.mepc
         )
     )
 
