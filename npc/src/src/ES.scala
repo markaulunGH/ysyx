@@ -26,7 +26,7 @@ class ES extends Module
     io.mm_wdata := io.ds_es.mm_wdata
     io.mm_mask := io.ds_es.mm_mask
 
-    io.es_ms.pc := io.es_ms.pc
+    io.es_ms.pc := io.ds_es.pc
 
     io.es_ms.alu_result := alu_result
     io.es_ms.rf_wen := io.ds_es.rf_wen
