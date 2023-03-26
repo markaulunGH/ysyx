@@ -21,6 +21,10 @@ class DS_ES extends Bundle
     val mm_mask = Output(UInt(8.W))
     val mm_unsigned = Output(Bool())
     val res_from_mem = Output(Bool())
+    val csr_wen = Output(Bool())
+    val csr_addr = Output(UInt(12.W))
+    val csr_wmask = Output(UInt(64.W))
+    val csr_wdata = Output(UInt(64.W))
 }
 
 class ES_MS extends Bundle
@@ -31,6 +35,10 @@ class ES_MS extends Bundle
     val mm_mask = Output(UInt(8.W))
     val mm_unsigned = Output(Bool())
     val res_from_mem = Output(Bool())
+    val csr_wen = Output(Bool())
+    val csr_addr = Output(UInt(64.W))
+    val csr_wmask = Output(UInt(64.W))
+    val csr_wdata = Output(UInt(64.W))
 }
 
 class MS_WS extends Bundle
@@ -38,6 +46,10 @@ class MS_WS extends Bundle
     val rf_wen = Output(UInt(1.W))
     val rf_waddr = Output(UInt(5.W))
     val rf_wdata = Output(UInt(64.W))
+    val csr_wen = Output(Bool())
+    val csr_addr = Output(UInt(64.W))
+    val csr_wmask = Output(UInt(64.W))
+    val csr_wdata = Output(UInt(64.W))
 }
 
 class Top extends Module
@@ -83,6 +95,9 @@ class Top extends Module
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
     rf.io.reg_w <> ws.io.reg_w
+
+    val csr = Module(new Csr)
+    csr.io <> ws.io.csr
     
     io.ebreak := ds.io.ebreak
     io.rf := rf.io.rf
