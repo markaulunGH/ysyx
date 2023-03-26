@@ -21,10 +21,11 @@ class Csr_pc extends Bundle
 
 class Csr extends Module
 {
-    val io = IO(
+    val io = IO(new Bundle
+    {
         val csr_rw = new Csr_io,
         val csr_pc = new Csr_pc
-    )
+    })
 
     val mstatus_uie  = RegInit(0.U(1.W))
     val mstatus_sie  = RegInit(0.U(1.W))
