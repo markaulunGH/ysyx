@@ -46,10 +46,10 @@ class MS_WS extends Bundle
     val rf_wen = Output(UInt(1.W))
     val rf_waddr = Output(UInt(5.W))
     val rf_wdata = Output(UInt(64.W))
+    val csr_wen = Output(Bool())
     val csr_addr = Output(UInt(64.W))
     val csr_wmask = Output(UInt(64.W))
     val csr_wdata = Output(UInt(64.W))
-    val res_from_csr = Output(Bool())
 }
 
 class Top extends Module
