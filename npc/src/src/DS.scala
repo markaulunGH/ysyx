@@ -92,7 +92,7 @@ class DS extends Module
     val inst_csrrsi = dopcode(0x73) && dfunct3(0x6)
     val inst_csrrci = dopcode(0x73) && dfunct3(0x7)
 
-    val inst_mret   = inst === 0x18100033.U
+    val inst_mret   = inst === 0x30200073.U
 
     val inst_mul    = dopcode(0x33) && dfunct3(0x0) && dfunct7(0x1)
     val inst_mulh   = dopcode(0x33) && dfunct3(0x1) && dfunct7(0x1)
