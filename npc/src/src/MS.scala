@@ -21,6 +21,8 @@ class MS extends Module
         )
     )
 
+    io.ms_ws.pc := io.es_ms.pc
+
     io.ms_ws.rf_wen := io.es_ms.rf_wen
     io.ms_ws.rf_waddr := io.es_ms.rf_waddr
     io.ms_ws.rf_wdata := Mux(io.es_ms.res_from_mem, mm_rdata, io.es_ms.alu_result)
@@ -29,4 +31,7 @@ class MS extends Module
     io.ms_ws.csr_addr := io.es_ms.csr_addr
     io.ms_ws.csr_wdata := io.es_ms.csr_wdata
     io.ms_ws.csr_wmask := io.es_ms.csr_wmask
+    io.ms_ws.exc := io.es_ms.exc
+    io.ms_ws.exc_cause := io.es_ms.exc_cause
+    io.ms_ws.mret := io.es_ms.mret
 }
