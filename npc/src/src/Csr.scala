@@ -80,7 +80,7 @@ class Csr extends Module
         mcause := io.wdata
     }
 
-    io.rdata := MuxLookup(io.addr, 0.U, Array(
+    io.rdata := MuxLookup(io.addr, 0.U, Seq(
         0x300.U -> Cat(mstatus_sd, 0.U(27.W), mstatus_sxl, mstatus_uxl, 0.U(9.W), mstatus_tsr, mstatus_tw, mstatus_tvm, mstatus_mxr, mstatus_sum, mstatus_mprv, mstatus_xs, mstatus_fs, mstatus_mpp, 0.U(2.W), mstatus_spp, mstatus_mpie, 0.U(1.W), mstatus_spie, mstatus_upie, mstatus_mie, 0.U(1.W), mstatus_sie, mstatus_uie),
         0x305.U -> mtvec,
         0x341.U -> mepc,
