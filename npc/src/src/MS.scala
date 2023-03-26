@@ -21,6 +21,8 @@ class MS extends Module
         )
     )
 
+    io.ms_ws.pc := io.es_ms.pc
+
     io.ms_ws.rf_wen := io.es_ms.rf_wen
     io.ms_ws.rf_waddr := io.es_ms.rf_waddr
     io.ms_ws.rf_wdata := Mux(io.es_ms.res_from_mem, mm_rdata, io.es_ms.alu_result)

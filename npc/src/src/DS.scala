@@ -187,6 +187,9 @@ class DS extends Module
     alu_op(15) := inst_divu || inst_divuw
     alu_op(16) := inst_rem || inst_remw
     alu_op(17) := inst_remu || inst_remuw
+
+    io.ds_es.pc := io.fs_ds.pc
+
     io.ds_es.alu_in.alu_op := alu_op
     io.ds_es.alu_in.alu_src1 := Mux(src1_is_pc, io.fs_ds.pc, 
         MuxCase(
