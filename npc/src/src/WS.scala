@@ -18,4 +18,7 @@ class WS extends Module
     io.csr.addr := io.ms_ws.csr_addr
     io.csr.wen := io.ms_ws.csr_wen
     io.csr.wdata := (io.ms_ws.csr_wdata & io.ms_ws.csr_wmask) | (io.csr.rdata & ~io.ms_ws.csr_wmask)
+    io.csr.exc := io.ms_ws.exc
+    io.csr.exc_cause := io.ms_ws.exc_cause
+    io.csr.mret := io.ms_ws.mret
 }

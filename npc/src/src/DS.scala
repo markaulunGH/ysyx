@@ -261,6 +261,9 @@ class DS extends Module
             (inst_csrrc || inst_csrrci) -> 0.U(64.W)
         )
     )
+    io.ds_es.exc := inst_ecall
+    io.ds_es.exc_cause := 0xb.U
+    io.ds_es.mret := inst_mret
 
     io.ebreak := inst_ebreak
 }

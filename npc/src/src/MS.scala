@@ -29,4 +29,7 @@ class MS extends Module
     io.ms_ws.csr_addr := io.es_ms.csr_addr
     io.ms_ws.csr_wdata := io.es_ms.csr_wdata
     io.ms_ws.csr_wmask := io.es_ms.csr_wmask
+    io.ms_ws.exc := io.es_ms.exc
+    io.ms_ws.exc_cause := io.es_ms.exc_cause
+    io.ms_ws.mret := io.es_ms.mret
 }

@@ -37,4 +37,7 @@ class ES extends Module
     io.es_ms.csr_addr := io.ds_es.csr_addr
     io.es_ms.csr_wmask := io.ds_es.csr_wmask
     io.es_ms.csr_wdata := io.ds_es.csr_wdata
+    io.es_ms.exc := io.ds_es.exc
+    io.es_ms.exc_cause := io.ds_es.exc_cause
+    io.es_ms.mret := io.ds_es.mret
 }
