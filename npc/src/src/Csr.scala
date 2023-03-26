@@ -84,7 +84,7 @@ class Csr extends Module
     val mtvec = RegInit(0.U(64.W))
     when (io.csr_rw.wen && io.csr_rw.addr === 0x305.U)
     {
-        mtvec := io.csr_rw.wdata
+        mtvec := Cat(io.csr_rw.wdata(63, 2), 0.U(2.W))
     }
 
     val mepc = RegInit(0.U(64.W))
@@ -100,7 +100,7 @@ class Csr extends Module
     val mcause = RegInit(0.U(64.W))
     when (io.csr_rw.exc)
     {
-        mcause := io.csr_rw.exc_cause
+        mcause := Cat(0.U(1.W), io.csr_rw.exc_cause(62, 0))
     }
     .elsewhen (io.csr_rw.wen && io.csr_rw.addr === 0x342.U)
     {
