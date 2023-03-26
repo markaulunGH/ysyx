@@ -23,7 +23,7 @@ class Csr extends Module
 {
     val io = IO(new Bundle
     {
-        val csr_rw = new Csr_io
+        val csr_rw = new Csr_rw
         val csr_pc = new Csr_pc
     })
 
