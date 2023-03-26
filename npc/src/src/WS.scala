@@ -13,5 +13,9 @@ class WS extends Module
 
     io.reg_w.wen := io.ms_ws.rf_wen
     io.reg_w.waddr := io.ms_ws.rf_waddr
-    io.reg_w.wdata := Mux(io.csr_wen, io.csr.csr_rdata, io.ms_ws.rf_wdata)
+    io.reg_w.wdata := Mux(io.ms_ws.csr_wen, io.csr.rdata, io.ms_ws.rf_wdata)
+
+    io.csr.addr := io.ms_ws.csr_waddr
+    io.csr.wen := io.ms_ws.csr_wen
+    io.csr.wdata := (io.ms_ws.csr_wdata & io.ms_ws.csr_wmask) | (io.csr.rdata & ~io.ms_ws.csr_wmask)
 }
