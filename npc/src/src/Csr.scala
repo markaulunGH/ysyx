@@ -36,7 +36,7 @@ class Csr extends Module
     val mstatus_uxl  = RegInit(0x2.U(2.W))
     val mstatus_sxl  = RegInit(0x2.U(2.W))
     val mstatus_sd   = RegInit(0.U(1.W))
-    when (exc)
+    when (io.exc)
     {
         mstatus_mpp := 0x3.U
         mstatus_mpie := mstatus_mie
@@ -72,7 +72,7 @@ class Csr extends Module
     }
 
     val mepc = RegInit(0.U(64.W))
-    when (exc)
+    when (io.exc)
     {
         mepc := io.pc
     }
@@ -82,7 +82,7 @@ class Csr extends Module
     }
 
     val mcause = RegInit(0.U(64.W))
-    when (exc)
+    when (io.exc)
     {
         mcause := io.exc_cause
     }
