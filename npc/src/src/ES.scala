@@ -32,4 +32,9 @@ class ES extends Module
     io.es_ms.mm_mask := io.ds_es.mm_mask
     io.es_ms.mm_unsigned := io.ds_es.mm_unsigned
     io.es_ms.res_from_mem := io.ds_es.res_from_mem
+
+    io.es_ms.csr_wen := io.ds_es.csr_wen
+    io.es_ms.csr_addr := io.ds_es.csr_addr
+    io.es_ms.csr_wmask := io.ds_es.csr_wmask
+    io.es_ms.csr_wdata := io.ds_es.csr_wdata
 }

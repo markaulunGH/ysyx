@@ -1,15 +1,17 @@
 import chisel3._
 import chisel3.util._
 
+class Csr_io extends Bundle
+{
+    val addr = Input(UInt(12.W))
+    val rdata = Output(UInt(64.W))
+    val wen = Input(Bool())
+    val wdata = Input(UInt(64.W))
+}
 
-class Csrfile extends Module {
-    val io = IO(new Bundle
-    {
-        val addr = Input(UInt(12.W))
-        val wdata = Input(UInt(64.W))
-        val rdata = Output(UInt(64.W))
-        val wen = Input(Bool())
-    })
+class Csr extends Module
+{
+    val io = IO(new Csr_io)
 
     val mstatus = RegInit(0xa00001800L.U(64.W))
     val mtvec = RegInit(0.U(64.W))

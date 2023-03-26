@@ -25,7 +25,7 @@ class DS extends Module
     val imm_B = Cat(inst(31), inst(7), inst(30, 25), inst(11, 8), 0.U(1.W))
     val imm_U = Cat(inst(31, 12), 0.U(12.W))
     val imm_J = Cat(inst(31), inst(19, 12), inst(20), inst(30, 21), 0.U(1.W))
-    val csr = inst(31, 20)
+    val csr_addr = inst(31, 20)
     val uimm = inst(19, 15)
 
     val dopcode = UIntToOH(opcode)
@@ -115,15 +115,7 @@ class DS extends Module
                      inst_mul || inst_mulh || inst_mulhsu || inst_mulhu || inst_div || inst_divu || inst_rem || inst_remu || inst_mulw || inst_divw || inst_divuw || inst_remw || inst_remuw
     val inst_load = inst_lb || inst_lh || inst_lw || inst_lbu || inst_lhu || inst_lwu || inst_ld
     val inst_store = inst_sb || inst_sh || inst_sw || inst_sd
-    val mm_mask = MuxCase(
-        0.U(8.W),
-        Seq(
-            (inst_lb || inst_lbu || inst_sb) -> 0x1.U(8.W),
-            (inst_lh || inst_lhu || inst_sh) -> 0x3.U(8.W),
-            (inst_lw || inst_lwu || inst_sw) -> 0xf.U(8.W),
-            (inst_ld || inst_sd) -> 0xff.U(8.W)
-        )
-    )
+    val inst_csr = inst_csrrw || inst_csrrs || inst_csrrc || inst_csrrwi || inst_csrrsi || inst_csrrci
 
     val src1_is_pc = inst_auipc || inst_jal || inst_jalr
     val src2_is_imm = inst_lui || inst_auipc ||
@@ -139,6 +131,16 @@ class DS extends Module
             (inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> Cat(Fill(51, imm_B(12)), imm_B),
             (inst_lui || inst_auipc) -> Cat(Fill(32, imm_U(31)), imm_U),
             inst_jal -> Cat(Fill(43, imm_J(20)), imm_J)
+        )
+    )
+
+    val mm_mask = MuxCase(
+        0.U(8.W),
+        Seq(
+            (inst_lb || inst_lbu || inst_sb) -> 0x1.U(8.W),
+            (inst_lh || inst_lhu || inst_sh) -> 0x3.U(8.W),
+            (inst_lw || inst_lwu || inst_sw) -> 0xf.U(8.W),
+            (inst_ld || inst_sd) -> 0xff.U(8.W)
         )
     )
 
@@ -218,9 +220,11 @@ class DS extends Module
                        inst_addi || inst_slti | inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_srai || inst_addiw || inst_slliw || inst_srliw || inst_sraiw ||
                        inst_add || inst_sub || inst_sll || inst_slt || inst_sltu || inst_xor || inst_srl || inst_sra || inst_or || inst_and ||
                        inst_addw || inst_subw || inst_sllw || inst_srlw || inst_sraw ||
+                       inst_csr ||
                        inst_mul || inst_mulh || inst_mulhsu || inst_mulhu || inst_div || inst_divu || inst_rem || inst_remu ||
                        inst_mulw || inst_divw || inst_divuw || inst_remw || inst_remuw
     io.ds_es.rf_waddr := rd
+
     io.ds_es.mm_ren := inst_load
     io.ds_es.mm_wen := inst_store
     io.ds_es.mm_wdata := MuxCase(
@@ -236,7 +240,25 @@ class DS extends Module
     io.ds_es.mm_unsigned := inst_lbu || inst_lhu || inst_lwu
     io.ds_es.res_from_mem := inst_load
 
-    
+    io.ds_es.csr_wen := inst_csr
+    io.ds_es.csr_addr := csr_addr
+    io.ds_es.csr_wmask := MuxCase(
+        0.U(64.W),
+        Seq(
+            (inst_csrrw || inst_csrrwi) -> Fill(64, 1.U(1.W)),
+            (inst_csrrs || inst_csrrc) -> rs1_value,
+            (inst_csrrsi || inst_csrrci) -> uimm
+        )
+    )
+    io.ds_es.csr_wdata := MuxCase(
+        0.U(64.W),
+        Seq(
+            inst_csrrw -> rs1_value,
+            inst_csrrwi -> uimm,
+            (inst_csrrs || inst_csrrsi) -> 1.U(64.W),
+            (inst_csrrc || inst_csrrci) -> 0.U(64.W)
+        )
+    )
 
     io.ebreak := inst_ebreak
 }
