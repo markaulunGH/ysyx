@@ -6,7 +6,7 @@ static Context* do_event(Event e, Context* c) {
       Log("Yield");
       c->mepc += 4;
       break;
-    default: panic("??????Unhandled event ID = %d", e.event);
+    default: panic("Unhandled event ID = %d", e.event);
   }
 
   return c;
