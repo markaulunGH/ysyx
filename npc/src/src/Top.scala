@@ -11,33 +11,57 @@ class FS_DS extends Bundle
 
 class DS_ES extends Bundle
 {
+    val pc = Output(UInt(64.W))
     val alu_in = Flipped(new Alu_in)
     val inst_word = Output(Bool())
-    val rf_wen = Output(UInt(1.W))
+    val rf_wen = Output(Bool())
     val rf_waddr = Output(UInt(5.W))
-    val mm_ren = Output(UInt(1.W))
-    val mm_wen = Output(UInt(1.W))
+    val mm_ren = Output(Bool())
+    val mm_wen = Output(Bool())
     val mm_wdata = Output(UInt(64.W))
     val mm_mask = Output(UInt(8.W))
     val mm_unsigned = Output(Bool())
     val res_from_mem = Output(Bool())
+    val csr_wen = Output(Bool())
+    val csr_addr = Output(UInt(12.W))
+    val csr_wmask = Output(UInt(64.W))
+    val csr_wdata = Output(UInt(64.W))
+    val exc = Output(Bool())
+    val exc_cause = Output(UInt(64.W))
+    val mret = Output(Bool())
 }
 
 class ES_MS extends Bundle
 {
+    val pc = Output(UInt(64.W))
     val alu_result = Output(UInt(64.W))
-    val rf_wen = Output(UInt(1.W))
+    val rf_wen = Output(Bool())
     val rf_waddr = Output(UInt(5.W))
     val mm_mask = Output(UInt(8.W))
     val mm_unsigned = Output(Bool())
     val res_from_mem = Output(Bool())
+    val csr_wen = Output(Bool())
+    val csr_addr = Output(UInt(64.W))
+    val csr_wmask = Output(UInt(64.W))
+    val csr_wdata = Output(UInt(64.W))
+    val exc = Output(Bool())
+    val exc_cause = Output(UInt(64.W))
+    val mret = Output(Bool())
 }
 
 class MS_WS extends Bundle
 {
-    val rf_wen = Output(UInt(1.W))
+    val pc = Output(UInt(64.W))
+    val rf_wen = Output(Bool())
     val rf_waddr = Output(UInt(5.W))
     val rf_wdata = Output(UInt(64.W))
+    val csr_wen = Output(Bool())
+    val csr_addr = Output(UInt(64.W))
+    val csr_wmask = Output(UInt(64.W))
+    val csr_wdata = Output(UInt(64.W))
+    val exc = Output(Bool())
+    val exc_cause = Output(UInt(64.W))
+    val mret = Output(Bool())
 }
 
 class Top extends Module
@@ -47,10 +71,10 @@ class Top extends Module
         val pc = Output(UInt(64.W))
         val inst = Input(UInt(64.W))
 
-        val mm_ren = Output(UInt(1.W))
+        val mm_ren = Output(Bool())
         val mm_raddr = Output(UInt(64.W))
         val mm_rdata = Input(UInt(64.W))
-        val mm_wen = Output(UInt(1.W))
+        val mm_wen = Output(Bool())
         val mm_waddr = Output(UInt(64.W))
         val mm_wdata = Output(UInt(64.W))
         val mm_mask = Output(UInt(8.W))
@@ -83,6 +107,10 @@ class Top extends Module
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
     rf.io.reg_w <> ws.io.reg_w
+
+    val csr = Module(new Csr)
+    csr.io.csr_pc <> ds.io.csr_pc
+    csr.io.csr_rw <> ws.io.csr_rw
     
     io.ebreak := ds.io.ebreak
     io.rf := rf.io.rf
