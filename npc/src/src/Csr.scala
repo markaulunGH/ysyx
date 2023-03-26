@@ -42,7 +42,7 @@ class Csr extends Module
         mstatus_mpie := mstatus_mie
         mstatus_mie := 0.U
     }
-    .elsewhen (mret)
+    .elsewhen (io.mret)
     {
         mstatus_mpp := 0.U
         mstatus_mpie := 0.U
