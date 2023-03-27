@@ -37,5 +37,6 @@ void init_ftrace(const char *elf_file);
 void cpu_exec(uint64_t n);
 void update_regs();
 int is_exit_status_bad();
+void init_vga();
 
 #endif
