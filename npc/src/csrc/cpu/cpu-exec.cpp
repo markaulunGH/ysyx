@@ -201,7 +201,7 @@ void init_screen()
 {
     SDL_Window *window = NULL;
     char title[128];
-    sprintf(title, "%s-NPC", str(__GUEST_ISA__));
+    sprintf(title, "riscv64-NPC");
     SDL_Init(SDL_INIT_VIDEO);
     SDL_CreateWindowAndRenderer(SCREEN_W, SCREEN_H, 0, &window, &renderer);
     SDL_SetWindowTitle(window, title);
