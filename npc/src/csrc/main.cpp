@@ -46,6 +46,9 @@ int main(int argc, char** argv, char** env)
 #ifdef CONFIG_DIFFTEST
     init_difftest(argv[diff_so_file] + 7, img_size);
 #endif
+#ifdef CONFIG_VGA
+    init_vga();
+#endif
     init_simulation(2, argv);
     sdb_mainloop();
     end_simulation();

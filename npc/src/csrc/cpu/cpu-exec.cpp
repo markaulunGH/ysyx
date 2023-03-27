@@ -9,6 +9,7 @@
 #include <log.h>
 #include <difftest.h>
 #include <utils.h>
+#include <SDL2/SDL.h>
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
@@ -182,6 +183,41 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 
 #define SERIAL_PORT 0xa00003f8
 #define RTC_ADDR    0xa0000048
+#define VGACTL_ADDR 0xa0000100
+#define FB_ADDR     0xa1000000
+
+#define FB_ADDR_END 0xa1800000
+
+#define SCREEN_W 400
+#define SCREEN_H 300
+
+uint32_t vgactl_port[2];
+uint8_t vmem[SCREEN_W * SCREEN_H * 4];
+
+void init_screen()
+{
+    SDL_Window *window = NULL;
+    char title[128];
+    sprintf(title, "%s-NPC", str(__GUEST_ISA__));
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_CreateWindowAndRenderer(SCREEN_W, SCREEN_H, 0, &window, &renderer);
+    SDL_SetWindowTitle(window, title);
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, SCREEN_W, SCREEN_H);
+}
+
+inline void update_screen()
+{
+    SDL_UpdateTexture(texture, NULL, vmem, SCREEN_W * sizeof(uint32_t));
+    SDL_RenderClear(renderer);
+    SDL_RenderCopy(renderer, texture, NULL, NULL);
+    SDL_RenderPresent(renderer);
+}
+
+void init_vga()
+{
+    vgactl_port[0] = SCREEN_W * SCREEN_H;
+    init_screen();
+}
 
 static void exec_once(Decode *s)
 {
@@ -195,6 +231,14 @@ static void exec_once(Decode *s)
             top->io_mm_rdata = get_time();
             difftest_skip_ref();
         }
+        else if (top->io_mm_raddr == VGACTL_ADDR)
+        {
+            top->io_mm_rdata = vgactl_port[0];
+        }
+        // else if (top->io_mm_raddr == VGACTL_ADDR + 4)
+        // {
+        //     top->io_mm_rdata = vgactl_port[1];
+        // }
         else
         {
             top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
@@ -206,6 +250,27 @@ static void exec_once(Decode *s)
         if (top->io_mm_waddr == SERIAL_PORT)
         {
             putchar(top->io_mm_wdata);
+            difftest_skip_ref();
+        }
+        else if (top->io_mm_waddr == VGACTL_ADDR + 4)
+        {
+            vgactl_port[1] = top->io_mm_wdata;
+            if (vgactl_port[1] == 1)
+            {
+                update_screen();
+            }
+            difftest_skip_ref();
+        }
+        else if (FB_ADDR <= top->io_mm_wdata && top->io_mm_wdata < FB_ADDR_END)
+        {
+            void *p = (void *)(vmem + (top->io_mm_waddr - FB_ADDR));
+            switch (top->io_mm_mask)
+            {
+                case 0x1:  *(uint8_t  *) p = top->io_mm_wdata; break;
+                case 0x3:  *(uint16_t *) p = top->io_mm_wdata; break;
+                case 0xf:  *(uint32_t *) p = top->io_mm_wdata; break;
+                case 0xff: *(uint64_t *) p = top->io_mm_wdata; break;
+            }
             difftest_skip_ref();
         }
         else
