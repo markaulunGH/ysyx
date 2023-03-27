@@ -6,4 +6,6 @@
 // #define CONFIG_MTRACE
 #define CONFIG_DIFFTEST
 
+#define CONFIG_VGA
+
 #endif
