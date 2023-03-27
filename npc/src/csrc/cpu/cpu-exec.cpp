@@ -194,6 +194,9 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 uint32_t vgactl_port[2];
 uint8_t vmem[SCREEN_W * SCREEN_H * 4];
 
+SDL_Renderer *renderer = NULL;
+SDL_Texture *texture = NULL;
+
 void init_screen()
 {
     SDL_Window *window = NULL;
