@@ -24,11 +24,11 @@ int main() {
 #endif
 
   init_fs();
-  panic("Should not reach here");
 
   init_proc();
 
   Log("Finish initialization");
+  panic("Should not reach here");
 
 #ifdef HAS_CTE
   yield();
