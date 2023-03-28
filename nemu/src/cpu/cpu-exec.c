@@ -112,6 +112,12 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   }
 #endif
 #endif
+// #ifdef CONFIG_ETRACE_COND
+//   if (cpu.pc == cpu.csr[1]) {
+//     if (ETRACE_COND) {
+//       log_write("Exception cause %ld at %lx\n", cpu.csr[3], cpu.pc);
+//   }
+// #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
