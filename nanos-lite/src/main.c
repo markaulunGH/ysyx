@@ -24,6 +24,7 @@ int main() {
 #endif
 
   init_fs();
+  panic("Should not reach here");
 
   init_proc();
 
@@ -33,5 +34,4 @@ int main() {
   yield();
 #endif
 
-  panic("Should not reach here");
 }
