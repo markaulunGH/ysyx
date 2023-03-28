@@ -59,7 +59,7 @@ void init_mem() {
 word_t paddr_read(paddr_t addr, int len) {
   if (likely(in_pmem(addr))) {
 #ifdef CONFIG_MTRACE_COND
-    if (MTRACE_COND) {
+    if (MTRACE_COND && addr != cpu.pc) {
       log_write("read  memory 0x%x at 0x%lx\n", addr, cpu.pc);
     }
 #endif
