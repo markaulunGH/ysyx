@@ -76,6 +76,9 @@ word_t paddr_read(paddr_t addr, int len)
 {
     if (in_pmem(addr))
     {
+#ifdef CONFIG_MTRACE
+        log_write("read memory 0x%x at 0x%lx\n", addr, cpu.pc);
+#endif
         return pmem_read(addr, len);
     }
     else
@@ -88,6 +91,9 @@ void paddr_write(paddr_t addr, int len, word_t data)
 {
     if (in_pmem(addr))
     {
+#ifdef CONFIG_MTRACE
+        log_write("write memory 0x%x at 0x%lx\n", addr, cpu.pc);
+#endif
         pmem_write(addr, len, data);
     }
     else
