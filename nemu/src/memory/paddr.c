@@ -57,24 +57,58 @@ void init_mem() {
 }
 
 word_t paddr_read(paddr_t addr, int len) {
+  if (likely(in_pmem(addr))) {
 #ifdef CONFIG_MTRACE_COND
-  if (MTRACE_COND) {
-    log_write("0x%lx: 0x%x\n", cpu.pc, addr);
+    if (MTRACE_COND && addr != cpu.pc) {
+      log_write("read  memory 0x%x at 0x%lx\n", addr, cpu.pc);
+    }
+#endif
+    return pmem_read(addr, len);
+  }
+
+#ifdef CONFIG_DEVICE
+#ifdef CONFIG_DTRACE_COND
+  if (DTRACE_COND) {
+    log_write("read  device 0x%x at 0x%lx\n", addr, cpu.pc);
   }
 #endif
-  if (likely(in_pmem(addr))) return pmem_read(addr, len);
-  IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
+  return mmio_read(addr, len);
+#endif
+
+#ifdef CONFIG_MTRACE_COND
+  if (MTRACE_COND) {
+    log_write("read  memory 0x%x at 0x%lx, out of bound\n", addr, cpu.pc);
+  }
+#endif
   out_of_bound(addr);
   return 0;
 }
 
 void paddr_write(paddr_t addr, int len, word_t data) {
+  if (likely(in_pmem(addr))) {
 #ifdef CONFIG_MTRACE_COND
-  if (MTRACE_COND) {
-    log_write("0x%lx: 0x%x\n", cpu.pc, addr);
+    if (MTRACE_COND) {
+      log_write("write memory 0x%x at 0x%lx\n", addr, cpu.pc);
+    }
+#endif
+    pmem_write(addr, len, data);
+    return;
+  }
+
+#ifdef CONFIG_DEVICE
+#ifdef CONFIG_DTRACE_COND
+  if (DTRACE_COND) {
+    log_write("write device 0x%x at 0x%lx\n", addr, cpu.pc);
   }
 #endif
-  if (likely(in_pmem(addr))) { pmem_write(addr, len, data); return; }
-  IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
+  mmio_write(addr, len, data);
+  return;
+#endif
+
+#ifdef CONFIG_MTRACE_COND
+  if (MTRACE_COND) {
+    log_write("write memory 0x%x at 0x%lx, out of bound\n", addr, cpu.pc);
+  }
+#endif
   out_of_bound(addr);
 }

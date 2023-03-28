@@ -183,6 +183,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 #define SERIAL_PORT 0xa00003f8
 #define RTC_ADDR    0xa0000048
 
+#define likely(x) __builtin_expect(!!(x), 1)
+
 static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
@@ -190,32 +192,50 @@ static void exec_once(Decode *s)
     top->eval();
     if (top->io_mm_ren)
     {
-        if (top->io_mm_raddr == RTC_ADDR)
+        if (in_pmem(top->io_mm_raddr))
         {
-            top->io_mm_rdata = get_time();
-            difftest_skip_ref();
+#ifdef CONFIG_MTRACE
+            log_write("read  memory 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+#endif
+            top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
         }
         else
         {
-            top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
+#ifdef CONFIG_DTRACE
+            log_write("read  device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+#endif
+            if (top->io_mm_raddr == RTC_ADDR)
+            {
+                top->io_mm_rdata = get_time();
+                difftest_skip_ref();
+            }
         }
         top->eval();
     }
     if (top->io_mm_wen)
     {
-        if (top->io_mm_waddr == SERIAL_PORT)
+        if (likely(in_pmem(top->io_mm_waddr)))
         {
-            putchar(top->io_mm_wdata);
-            difftest_skip_ref();
-        }
-        else
-        {
+#ifdef CONFIG_MTRACE
+            log_write("write memory 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+#endif
             switch (top->io_mm_mask)
             {
                 case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata); break;
                 case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata); break;
                 case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
                 case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
+            }
+        }
+        else
+        {
+#ifdef CONFIG_DTRACE
+            log_write("write device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+#endif
+            if (top->io_mm_waddr == SERIAL_PORT)
+            {
+                putchar(top->io_mm_wdata);
+                difftest_skip_ref();
             }
         }
     }
