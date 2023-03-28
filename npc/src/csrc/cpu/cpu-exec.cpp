@@ -183,6 +183,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 #define SERIAL_PORT 0xa00003f8
 #define RTC_ADDR    0xa0000048
 
+#define likely(x) __builtin_expect(!!(x), 1)
+
 static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
