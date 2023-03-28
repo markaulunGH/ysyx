@@ -15,7 +15,6 @@ void do_syscall(Context *c) {
       halt(a[1]);
       break;
     case SYS_write:
-      Log("SYS_write");
       int fd = a[1];
       void *buf = (void *)a[2];
       size_t count = a[3];
