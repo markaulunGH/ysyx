@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <paddr.h>
+#include <config.h>
 
 uint8_t pmem[MEM_SIZE] __attribute((aligned(4096))) = {};
 
