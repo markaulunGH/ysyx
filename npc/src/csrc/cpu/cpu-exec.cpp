@@ -217,7 +217,7 @@ static void exec_once(Decode *s)
         if (likely(in_pmem(top->io_mm_waddr)))
         {
 #ifdef CONFIG_MTRACE
-            log_write("write memory 0x%lx at 0x%lx\n", addr, cpu.pc);
+            log_write("write memory 0x%lx at 0x%lx\n", top->io_mm_addr, cpu.pc);
 #endif
             switch (top->io_mm_mask)
             {
