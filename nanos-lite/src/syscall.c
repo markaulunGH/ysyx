@@ -14,6 +14,17 @@ void do_syscall(Context *c) {
     case SYS_exit:
       halt(a[1]);
       break;
+    case SYS_write:
+      int fd = a[1];
+      void *buf = (void *)a[2];
+      size_t count = a[3];
+      if (fd == 1 || fd == 2) {
+        for (int i = 0; i < count; ++ i) {
+          putch(((char *)buf)[i]);
+        }
+      }
+      c->GPRx = count;
+      break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
 }
