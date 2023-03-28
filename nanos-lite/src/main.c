@@ -28,10 +28,10 @@ int main() {
   init_proc();
 
   Log("Finish initialization");
-  panic("Should not reach here");
 
 #ifdef HAS_CTE
   yield();
 #endif
 
+  panic("Should not reach here");
 }
