@@ -69,7 +69,7 @@ word_t paddr_read(paddr_t addr, int len) {
 #ifdef CONFIG_DEVICE
 #ifdef CONFIG_DTRACE_COND
   if (DTRACE_COND) {
-    log_write("read device 0x%x\n at 0x%lx: 0x%x\n", addr, cpu.pc);
+    log_write("read device 0x%x at 0x%lx\n", addr, cpu.pc);
   }
 #endif
   return mmio_read(addr, len);
@@ -88,7 +88,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) {
 #ifdef CONFIG_MTRACE_COND
     if (MTRACE_COND) {
-      log_write("write memory 0x%x\n at 0x%lx\n", addr, cpu.pc);
+      log_write("write memory 0x%x at 0x%lx\n", addr, cpu.pc);
     }
 #endif
     pmem_write(addr, len, data);
@@ -98,7 +98,7 @@ void paddr_write(paddr_t addr, int len, word_t data) {
 #ifdef CONFIG_DEVICE
 #ifdef CONFIG_DTRACE_COND
   if (DTRACE_COND) {
-    log_write("read device 0x%x\n at 0x%lx: 0x%x\n", addr, cpu.pc);
+    log_write("read device 0x%x at 0x%lx\n", addr, cpu.pc);
   }
 #endif
   mmio_write(addr, len, data);
