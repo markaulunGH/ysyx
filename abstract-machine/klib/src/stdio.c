@@ -77,20 +77,21 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
         break;
       
       case 'p':
-        // uint64_t p = va_arg(ap, uint64_t);
-        // ptr = 0;
-        // while (p) {
-        //   buf[ptr ++] = p % 16 < 9 ? p % 16 + '0' : p % 16 - 9 + 'a';
-        // }
-        // width = 16;
-        // blank = '0';
-        // for (int i = 0; i < width - ptr; ++ i) {
-        //   *out ++ = blank;
-        // }
-        // while (ptr) {
-        //   *out ++ = buf[-- ptr];
-        // }
-        // break;
+        uint64_t p = va_arg(ap, uint64_t);
+        ptr = 0;
+        while (p) {
+          buf[ptr ++] = p % 16 < 9 ? p % 16 + '0' : p % 16 - 9 + 'a';
+          p /= 16;
+        }
+        width = 16;
+        blank = '0';
+        for (int i = 0; i < width - ptr; ++ i) {
+          *out ++ = blank;
+        }
+        while (ptr) {
+          *out ++ = buf[-- ptr];
+        }
+        break;
       }
     case '\\':
       ++ fmt;
