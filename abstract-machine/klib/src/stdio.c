@@ -18,6 +18,9 @@ int printf(const char *fmt, ...) {
 }
 
 int vsprintf(char *out, const char *fmt, va_list ap) {
+  char buf[50];
+  int ptr;
+
   for (; *fmt; ++ fmt) {
     switch (*fmt) {
     case '%':
@@ -53,26 +56,40 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 
       case 'd':
         int d = va_arg(ap, int);
-        char tmp[50];
-        int ptr = 0;
+        ptr = 0;
         if (d < 0) {
-          tmp[ptr ++] = '-';
+          buf[ptr ++] = '-';
           d = -d;
         }
         else if (d == 0) {
-          tmp[ptr ++] = '0';
+          buf[ptr ++] = '0';
         }
         while (d) {
-          tmp[ptr ++] = d % 10 + '0';
+          buf[ptr ++] = d % 10 + '0';
           d /= 10;
         }
         for (int i = 0; i < width - ptr; ++ i) {
           *out ++ = blank;
         }
         while (ptr) {
-          *out ++ = tmp[-- ptr];
+          *out ++ = buf[-- ptr];
         }
         break;
+      
+      case 'p':
+        uint64_t p = va_arg(ap, uint64_t);
+        ptr = 0;
+        while (p) {
+          buf[ptr ++] = p % 16 < 9 ? p % 16 + '0' : p % 16 - 9 + 'a';
+        }
+        width = 16;
+        blank = '0';
+        for (int i = 0; i < width - ptr; ++ i) {
+          *out ++ = blank;
+        }
+        while (ptr) {
+          *out ++ = buf[-- ptr];
+        }
       }
     case '\\':
       ++ fmt;
