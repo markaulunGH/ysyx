@@ -58,7 +58,6 @@ size_t fs_write(int fd, const void *buf, size_t len) {
     for (int i = 0; i < len; ++ i) {
       putch(((char *)buf)[i]);
     }
-    Log("%d", len);
     return len;
   }
   size_t write_size = ramdisk_write(buf, file_table[fd].disk_offset, len);
