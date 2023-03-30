@@ -38,8 +38,8 @@ void device_update();
 #define IRING_BUF_SIZE 30
 char iringbuf[IRING_BUF_SIZE][128];
 
-#define SYMTAB_SIZE 100
-#define STRTAB_SIZE 500
+#define SYMTAB_SIZE 10000
+#define STRTAB_SIZE 50000
 
 Elf64_Shdr symshdr, strshdr;
 Elf64_Sym symtab[SYMTAB_SIZE];
