@@ -65,10 +65,10 @@ void init_ftrace(const char *elf_file) {
   }
 
   fseek(elf_fp, symshdr.sh_offset, SEEK_SET);
-  symtab = malloc(symshdr.sh_size + 10);
+  symtab = malloc(1000000);
   assert(fread(&symtab, symshdr.sh_entsize, symshdr.sh_size / symshdr.sh_entsize, elf_fp));
   fseek(elf_fp, strshdr.sh_offset, SEEK_SET);
-  strtab = malloc(strshdr.sh_size + 10);
+  strtab = malloc(1000000);
   assert(fread(&strtab, 1, strshdr.sh_size, elf_fp));
 
   fclose(elf_fp);
