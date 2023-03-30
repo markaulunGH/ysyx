@@ -16,6 +16,7 @@ int main() {
     assert(n == i + 1);
   }
 
+  printf("0000000\n");
   fseek(fp, 0, SEEK_SET);
   printf("0000000\n");
   for (i = 0; i < 500; i ++) {
