@@ -65,14 +65,14 @@ int _write(int fd, void *buf, size_t count) {
 }
 
 void *_sbrk(intptr_t increment) {
-  extern intptr_t end;
+  extern char end;
   static intptr_t brk = 0;
   if (brk == 0) {
-    brk = end;
+    brk = (intptr_t) &end;
   }
-  char buf[100];
-  sprintf(buf, "0x%x\n", brk);
-  write(1, buf, strlen(buf));
+  // char buf[100];
+  // sprintf(buf, "0x%x\n", brk);
+  // write(1, buf, strlen(buf));
   if (_syscall_(SYS_brk, brk + increment, 0, 0) == 0) {
     intptr_t old_brk = brk;
     brk += increment;
