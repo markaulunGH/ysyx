@@ -120,6 +120,10 @@ void init_ftrace(const char *elf_file)
     fclose(elf_fp);
 }
 
+#define BITMASK(bits) ((1ull << (bits)) - 1)
+#define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1))
+#define SEXT(x, len) ({ struct { int64_t n : len; } __x = { .n = x }; (uint64_t)__x.n; })
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 {
 #ifdef CONFIG_ITRACE
@@ -128,25 +132,23 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 #else
     log_write("%s\n", _this->logbuf);
 #endif
+#endif
 #ifdef CONFIG_FTRACE
-    if (strncmp("jal", _this->logbuf + 44, 3) == 0)
+    uint32_t inst = top->io_inst;
+    int rd = BITS(inst, 11, 7);
+    int rs1 = BITS(inst, 19, 15);
+    uint64_t immJ = (SEXT(BITS(inst, 31, 31), 1) << 20) | (BITS(inst, 19, 12) << 12) | (BITS(inst, 20, 20) << 11) | (BITS(inst, 30, 21) << 1);
+    uint64_t immI = SEXT(BITS(inst, 31, 20), 12);
+    bool jal = BITS(inst, 6, 0) == 0x6f, jalr = BITS(inst, 6, 0) == 0x67;
+    if ((jal || jalr) && rd == 1)
     {
-        for (int i = 0; i < stack_depth; ++i)
+        for (int i = 0; i < stack_depth; ++ i)
         {
             log_write(" ");
         }
-        uint64_t addr;
-        if (*(_this->logbuf + 47) == 'r')
-        {
-            bool success = true;
-            addr = reg_str2val(_this->logbuf + 49, &success);
-        }
-        else
-        {
-            sscanf(_this->logbuf + 48, "%lx", &addr);
-        }
+        uint64_t addr = jal ? cpu.pc + immJ : (immI + cpu.gpr[rs1]) & ~1;
         int id = 0;
-        for (; id < symshdr.sh_size / symshdr.sh_entsize; ++id)
+        for (; id < symshdr.sh_size / symshdr.sh_entsize; ++ id)
         {
             if (ELF32_ST_TYPE(symtab[id].st_info) == STT_FUNC && symtab[id].st_value <= addr && addr < symtab[id].st_value + symtab[id].st_size)
             {
@@ -156,16 +158,15 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
         log_write("call [%s@%lx]\n", strtab + symtab[id].st_name, addr);
         stack_depth += 2;
     }
-    else if (strncmp("ret", _this->logbuf + 44, 3) == 0)
+    else if (jalr && rs1 == 1)
     {
         stack_depth -= 2;
-        for (int i = 0; i < stack_depth; ++i)
+        for (int i = 0; i < stack_depth; ++ i)
         {
             log_write(" ");
         }
         log_write("ret\n");
     }
-#endif
 #endif
     if (g_print_step)
     {
