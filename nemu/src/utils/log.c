@@ -29,5 +29,5 @@ void init_log(const char *log_file) {
 }
 
 bool log_enable() {
-  return CONFIG_TRACE;
+  return MUXDEF(CONFIG_TRACE, true, false);
 }
