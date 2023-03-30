@@ -1,5 +1,6 @@
 #include <common.h>
 #include <fs.h>
+#include <sys/time.h>
 #include "syscall.h"
 void do_syscall(Context *c) {
   uintptr_t a[4];
@@ -34,7 +35,11 @@ void do_syscall(Context *c) {
       c->GPRx = fs_lseek(a[1], a[2], a[3]);
       break;
     case SYS_gettimeofday:
-      c->GPRx = io_read(AM_TIMER_UPTIME).us;
+      uint64_t t = io_read(AM_TIMER_UPTIME).us;
+      struct timeval *tv = (struct timeval *)a[1];
+      tv->tv_sec = t / 1000000;
+      tv->tv_usec = t % 1000000;
+      c->GPRx = 1;
       break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
