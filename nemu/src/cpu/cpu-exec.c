@@ -38,12 +38,9 @@ void device_update();
 #define IRING_BUF_SIZE 30
 char iringbuf[IRING_BUF_SIZE][128];
 
-#define SYMTAB_SIZE 100
-#define STRTAB_SIZE 500
-
 Elf64_Shdr symshdr, strshdr;
-Elf64_Sym symtab[SYMTAB_SIZE];
-char strtab[STRTAB_SIZE];
+Elf64_Sym *symtab;
+char *strtab;
 int stack_depth;
 
 void init_ftrace(const char *elf_file) {
@@ -65,16 +62,22 @@ void init_ftrace(const char *elf_file) {
   }
 
   fseek(elf_fp, symshdr.sh_offset, SEEK_SET);
-  assert(fread(&symtab, symshdr.sh_entsize, symshdr.sh_size / symshdr.sh_entsize, elf_fp));
+  symtab = malloc(symshdr.sh_size);
+  assert(fread(symtab, symshdr.sh_entsize, symshdr.sh_size / symshdr.sh_entsize, elf_fp));
   fseek(elf_fp, strshdr.sh_offset, SEEK_SET);
-  assert(fread(&strtab, 1, strshdr.sh_size, elf_fp));
+  strtab = malloc(strshdr.sh_size);
+  assert(fread(strtab, 1, strshdr.sh_size, elf_fp));
 
   fclose(elf_fp);
 }
 
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
+#ifdef CONFIG_ITRACE_RING
   strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
+#else
+  log_write("%s\n", _this->logbuf);
+#endif
 #ifdef CONFIG_FTRACE_COND
   if (strncmp("jal", _this->logbuf + 32, 3) == 0) {
     if (FTRACE_COND) {
@@ -198,7 +201,7 @@ void cpu_exec(uint64_t n) {
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
-#ifdef CONFIG_ITRACE_COND
+#ifdef CONFIG_ITRACE_RING
     if (ITRACE_COND) {
       for (int i = 0; i < IRING_BUF_SIZE; ++ i) {
         if (g_nr_guest_inst % IRING_BUF_SIZE == i) {
