@@ -82,6 +82,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #else
   log_write("%s\n", _this->logbuf);
 #endif
+#endif
 #ifdef CONFIG_FTRACE_COND
   uint32_t inst = _this->isa.inst.val;
   int rd = BITS(inst, 11, 7);
@@ -115,7 +116,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
       log_write("ret\n");
     }
   }
-#endif
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
