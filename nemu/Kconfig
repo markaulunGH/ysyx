@@ -126,20 +126,15 @@ config TRACE
   bool "Enable tracer"
   default y
 
-config TRACE_START
-  depends on TRACE
-  int "When tracing is enabled (unit: number of instructions)"
-  default 0
-
-config TRACE_END
-  depends on TRACE
-  int "When tracing is disabled (unit: number of instructions)"
-  default 100000000
-
 config ITRACE
   depends on TRACE && TARGET_NATIVE_ELF && ENGINE_INTERPRETER
   bool "Enable instruction tracer"
   default y
+
+config ITRACE_RING
+  depends on ITRACE
+  bool "Enable instruction tracer ring buffer"
+  default n
 
 config ITRACE_COND
   depends on ITRACE
