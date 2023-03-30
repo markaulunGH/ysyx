@@ -152,7 +152,7 @@ config MTRACE_COND
   default "true"
 
 config FTRACE
-  depends on TRACE && ITRACE
+  depends on TRACE
   bool "Enable function call tracer"
   default n
 
