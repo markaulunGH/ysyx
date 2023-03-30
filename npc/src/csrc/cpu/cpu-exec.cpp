@@ -134,7 +134,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 #endif
 #endif
 #ifdef CONFIG_FTRACE
-    uint32_t inst = _this->isa.inst.val;
+    uint32_t inst = top->io_inst;
     int rd = BITS(inst, 11, 7);
     int rs1 = BITS(inst, 19, 15);
     uint64_t immJ = (SEXT(BITS(inst, 31, 31), 1) << 20) | (BITS(inst, 19, 12) << 12) | (BITS(inst, 20, 20) << 11) | (BITS(inst, 30, 21) << 1);
