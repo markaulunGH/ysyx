@@ -48,7 +48,6 @@ extern size_t ramdisk_read(void *buf, size_t offset, size_t len);
 extern size_t ramdisk_write(const void *buf, size_t offset, size_t len);
 
 size_t fs_read(int fd, void *buf, size_t len) {
-  Log("fs_read");
   size_t read_size = ramdisk_read(buf, file_table[fd].disk_offset, len);
   file_table[fd].disk_offset += read_size;
   return read_size;
