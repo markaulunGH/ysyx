@@ -71,6 +71,8 @@ void init_ftrace(const char *elf_file) {
   fclose(elf_fp);
 }
 
+#define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1))
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
 #ifdef CONFIG_ITRACE_RING
@@ -79,6 +81,9 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   log_write("%s\n", _this->logbuf);
 #endif
 #ifdef CONFIG_FTRACE_COND
+  if (BITS(_this->isa.inst.val, 6, 0) == 0x6f || BITS(_this->isa.inst.val, 6, 0) == 0x67) {
+
+  }
   if (strncmp("jal", _this->logbuf + 32, 3) == 0) {
     if (FTRACE_COND) {
       for (int i = 0; i < stack_depth; ++ i) {
