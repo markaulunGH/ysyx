@@ -43,7 +43,7 @@ char iringbuf[IRING_BUF_SIZE][128];
 
 Elf64_Shdr symshdr, strshdr;
 Elf64_Sym symtab[SYMTAB_SIZE];
-char strtab[STRTAB_SIZE];
+char *strtab;
 int stack_depth;
 
 void init_ftrace(const char *elf_file) {
@@ -68,7 +68,7 @@ void init_ftrace(const char *elf_file) {
   // symtab = malloc(symshdr.sh_size + 10);
   assert(fread(&symtab, symshdr.sh_entsize, symshdr.sh_size / symshdr.sh_entsize, elf_fp));
   fseek(elf_fp, strshdr.sh_offset, SEEK_SET);
-  // strtab = malloc(strshdr.sh_size + 10);
+  strtab = malloc(strshdr.sh_size + 10);
   assert(fread(&strtab, 1, strshdr.sh_size, elf_fp));
 
   fclose(elf_fp);
