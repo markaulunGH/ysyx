@@ -126,7 +126,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 #ifdef CONFIG_ITRACE_RING
     strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
 #else
-    log_write(_this->logbuf);
+    log_write("%s\n", _this->logbuf);
 #endif
 #ifdef CONFIG_FTRACE
     if (strncmp("jal", _this->logbuf + 44, 3) == 0)
