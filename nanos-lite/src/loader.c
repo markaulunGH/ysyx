@@ -27,6 +27,8 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
     }
   }
 
+  Log("fxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxk\n");
+
   return ehdr.e_entry;
 }
 
