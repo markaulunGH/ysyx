@@ -75,7 +75,7 @@ void init_ftrace(const char *elf_file) {
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
-  log_write("%s\n", iringbuf[g_nr_guest_inst % IRING_BUF_SIZE]);
+  // log_write("%s\n", iringbuf[g_nr_guest_inst % IRING_BUF_SIZE]);
 #ifdef CONFIG_FTRACE_COND
   if (strncmp("jal", _this->logbuf + 32, 3) == 0) {
     if (FTRACE_COND) {
