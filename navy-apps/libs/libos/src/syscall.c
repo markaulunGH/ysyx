@@ -88,6 +88,7 @@ int _close(int fd) {
 }
 
 off_t _lseek(int fd, off_t offset, int whence) {
+  printf("%d\n", offset);
   return _syscall_(SYS_lseek, fd, offset, whence);
 }
 
