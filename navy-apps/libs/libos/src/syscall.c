@@ -72,7 +72,7 @@ void *_sbrk(intptr_t increment) {
   }
   char buf[100];
   sprintf(buf, "0x%x\n", brk);
-  write(1, buf, strlen(buf));
+  // write(1, buf, strlen(buf));
   if (_syscall_(SYS_brk, brk + increment, 0, 0) == 0) {
     intptr_t old_brk = brk;
     brk += increment;
