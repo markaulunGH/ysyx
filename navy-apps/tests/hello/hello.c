@@ -3,9 +3,9 @@
 
 int main() {
   write(1, "Hello World!\n", 13);
+  write(1, "\n", 1);
   int i = 2;
   volatile int j = 0;
-  write(1, "\n", 1);
   while (1) {
     j ++;
     if (j == 10000) {
