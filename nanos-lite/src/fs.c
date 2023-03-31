@@ -73,7 +73,6 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
     if (file_table[i].read == NULL || file_table[i].write == NULL)
       disk_start += file_table[i].size;
   }
-  printf("%d\n", disk_start);
   switch (whence) {
     case SEEK_SET: file_table[fd].disk_offset = disk_start + offset; break;
     case SEEK_CUR: file_table[fd].disk_offset += offset; break;
