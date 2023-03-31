@@ -72,8 +72,9 @@ size_t fs_lseek(int fd, size_t offset, int whence) {
   for (int i = 0; i < fd; ++ i) {
     // printf("%d\n", file_table[i].disk_offset);
     // if (file_table[i].disk_offset)
-      disk_start += file_table[i].size * (file_table[i].disk_offset > 0);
+      disk_start += file_table[i].size;
   }
+  printf("%d\n", disk_start);
   switch (whence) {
     case SEEK_SET: file_table[fd].disk_offset = disk_start + offset; break;
     case SEEK_CUR: file_table[fd].disk_offset += offset; break;
