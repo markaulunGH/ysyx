@@ -83,12 +83,9 @@ static bool g_print_step = false;
 #define IRING_BUF_SIZE 30
 char iringbuf[IRING_BUF_SIZE][128];
 
-#define SYMTAB_SIZE 100
-#define STRTAB_SIZE 500
-
 Elf64_Shdr symshdr, strshdr;
-Elf64_Sym symtab[SYMTAB_SIZE];
-char strtab[STRTAB_SIZE];
+Elf64_Sym *symtab;
+char *strtab;
 int stack_depth;
 
 void init_ftrace(const char *elf_file)
@@ -114,36 +111,42 @@ void init_ftrace(const char *elf_file)
     }
 
     fseek(elf_fp, symshdr.sh_offset, SEEK_SET);
-    assert(fread(&symtab, symshdr.sh_entsize, symshdr.sh_size / symshdr.sh_entsize, elf_fp));
+    symtab = (Elf64_Sym*) malloc(symshdr.sh_size);
+    assert(fread(symtab, symshdr.sh_entsize, symshdr.sh_size / symshdr.sh_entsize, elf_fp));
     fseek(elf_fp, strshdr.sh_offset, SEEK_SET);
-    assert(fread(&strtab, 1, strshdr.sh_size, elf_fp));
+    strtab = (char*) malloc(strshdr.sh_size);
+    assert(fread(strtab, 1, strshdr.sh_size, elf_fp));
 
     fclose(elf_fp);
 }
 
+#define BITMASK(bits) ((1ull << (bits)) - 1)
+#define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1))
+#define SEXT(x, len) ({ struct { int64_t n : len; } __x = { .n = x }; (uint64_t)__x.n; })
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 {
 #ifdef CONFIG_ITRACE
+#ifdef CONFIG_ITRACE_RING
     strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
+#else
+    log_write("%s\n", _this->logbuf);
+#endif
+#endif
 #ifdef CONFIG_FTRACE
-    if (strncmp("jal", _this->logbuf + 44, 3) == 0)
+    uint32_t inst = top->io_inst;
+    int rd = BITS(inst, 11, 7);
+    int rs1 = BITS(inst, 19, 15);
+    bool jal = BITS(inst, 6, 0) == 0x6f, jalr = BITS(inst, 6, 0) == 0x67;
+    if ((jal || jalr) && rd == 1)
     {
-        for (int i = 0; i < stack_depth; ++i)
+        for (int i = 0; i < stack_depth; ++ i)
         {
             log_write(" ");
         }
-        uint64_t addr;
-        if (*(_this->logbuf + 47) == 'r')
-        {
-            bool success = true;
-            addr = reg_str2val(_this->logbuf + 49, &success);
-        }
-        else
-        {
-            sscanf(_this->logbuf + 48, "%lx", &addr);
-        }
+        uint64_t addr = _this->dnpc;
         int id = 0;
-        for (; id < symshdr.sh_size / symshdr.sh_entsize; ++id)
+        for (; id < symshdr.sh_size / symshdr.sh_entsize; ++ id)
         {
             if (ELF32_ST_TYPE(symtab[id].st_info) == STT_FUNC && symtab[id].st_value <= addr && addr < symtab[id].st_value + symtab[id].st_size)
             {
@@ -153,16 +156,15 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
         log_write("call [%s@%lx]\n", strtab + symtab[id].st_name, addr);
         stack_depth += 2;
     }
-    else if (strncmp("ret", _this->logbuf + 44, 3) == 0)
+    else if (jalr && rs1 == 1)
     {
         stack_depth -= 2;
-        for (int i = 0; i < stack_depth; ++i)
+        for (int i = 0; i < stack_depth; ++ i)
         {
             log_write(" ");
         }
         log_write("ret\n");
     }
-#endif
 #endif
     if (g_print_step)
     {
@@ -183,6 +185,8 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 #define SERIAL_PORT 0xa00003f8
 #define RTC_ADDR    0xa0000048
 
+#define likely(x) __builtin_expect(!!(x), 1)
+
 static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
@@ -190,32 +194,50 @@ static void exec_once(Decode *s)
     top->eval();
     if (top->io_mm_ren)
     {
-        if (top->io_mm_raddr == RTC_ADDR)
+        if (in_pmem(top->io_mm_raddr))
         {
-            top->io_mm_rdata = get_time();
-            difftest_skip_ref();
+#ifdef CONFIG_MTRACE
+            log_write("read  memory 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+#endif
+            top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
         }
         else
         {
-            top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
+#ifdef CONFIG_DTRACE
+            log_write("read  device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+#endif
+            if (top->io_mm_raddr == RTC_ADDR)
+            {
+                top->io_mm_rdata = get_time();
+                difftest_skip_ref();
+            }
         }
         top->eval();
     }
     if (top->io_mm_wen)
     {
-        if (top->io_mm_waddr == SERIAL_PORT)
+        if (likely(in_pmem(top->io_mm_waddr)))
         {
-            putchar(top->io_mm_wdata);
-            difftest_skip_ref();
-        }
-        else
-        {
+#ifdef CONFIG_MTRACE
+            log_write("write memory 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+#endif
             switch (top->io_mm_mask)
             {
                 case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata); break;
                 case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata); break;
                 case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
                 case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
+            }
+        }
+        else
+        {
+#ifdef CONFIG_DTRACE
+            log_write("write device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+#endif
+            if (top->io_mm_waddr == SERIAL_PORT)
+            {
+                putchar(top->io_mm_wdata);
+                difftest_skip_ref();
             }
         }
     }
@@ -307,7 +329,7 @@ void cpu_exec(uint64_t n)
                 (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
                 ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
                 npc_state.halt_pc);
-#ifdef CONFIG_ITRACE
+#ifdef CONFIG_ITRACE_RING
             for (int i = 0; i < IRING_BUF_SIZE; ++i)
             {
                 if (g_nr_guest_inst % IRING_BUF_SIZE == i)

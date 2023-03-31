@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <paddr.h>
+#include <config.h>
+#include <log.h>
 
 uint8_t pmem[MEM_SIZE] __attribute((aligned(4096))) = {};
 
@@ -65,11 +67,6 @@ int load_image(char *img_file)
     assert(fread(pmem, size, 1, fp));
     fclose(fp);
     return size;
-}
-
-int in_pmem(paddr_t addr)
-{
-    return addr - MEM_BASE < MEM_SIZE;
 }
 
 word_t paddr_read(paddr_t addr, int len)

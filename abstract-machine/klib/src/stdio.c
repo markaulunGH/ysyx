@@ -120,7 +120,13 @@ int sprintf(char *out, const char *fmt, ...) {
 }
 
 int snprintf(char *out, size_t n, const char *fmt, ...) {
-  panic("Not implemented");
+  char buf[8192];
+  va_list ap;
+  va_start(ap, fmt);
+  vsprintf(buf, fmt, ap);
+  va_end(ap);
+  strncpy(out, buf, n);
+  return 1;
 }
 
 int vsnprintf(char *out, size_t n, const char *fmt, va_list ap) {

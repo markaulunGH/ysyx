@@ -38,12 +38,9 @@ void device_update();
 #define IRING_BUF_SIZE 30
 char iringbuf[IRING_BUF_SIZE][128];
 
-#define SYMTAB_SIZE 100
-#define STRTAB_SIZE 500
-
 Elf64_Shdr symshdr, strshdr;
-Elf64_Sym symtab[SYMTAB_SIZE];
-char strtab[STRTAB_SIZE];
+Elf64_Sym *symtab;
+char *strtab;
 int stack_depth;
 
 void init_ftrace(const char *elf_file) {
@@ -65,31 +62,39 @@ void init_ftrace(const char *elf_file) {
   }
 
   fseek(elf_fp, symshdr.sh_offset, SEEK_SET);
-  assert(fread(&symtab, symshdr.sh_entsize, symshdr.sh_size / symshdr.sh_entsize, elf_fp));
+  symtab = malloc(symshdr.sh_size);
+  assert(fread(symtab, symshdr.sh_entsize, symshdr.sh_size / symshdr.sh_entsize, elf_fp));
   fseek(elf_fp, strshdr.sh_offset, SEEK_SET);
-  assert(fread(&strtab, 1, strshdr.sh_size, elf_fp));
+  strtab = malloc(strshdr.sh_size);
+  assert(fread(strtab, 1, strshdr.sh_size, elf_fp));
 
   fclose(elf_fp);
 }
 
+#define BITMASK(bits) ((1ull << (bits)) - 1)
+#define BITS(x, hi, lo) (((x) >> (lo)) & BITMASK((hi) - (lo) + 1))
+#define SEXT(x, len) ({ struct { int64_t n : len; } __x = { .n = x }; (uint64_t)__x.n; })
+
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
+#ifdef CONFIG_ITRACE_RING
   strcpy(iringbuf[g_nr_guest_inst % IRING_BUF_SIZE], _this->logbuf);
+#else
+  log_write("%s\n", _this->logbuf);
+#endif
+#endif
 #ifdef CONFIG_FTRACE_COND
-  if (strncmp("jal", _this->logbuf + 32, 3) == 0) {
+  uint32_t inst = _this->isa.inst.val;
+  int rd = BITS(inst, 11, 7);
+  int rs1 = BITS(inst, 19, 15);
+  bool jal = BITS(inst, 6, 0) == 0x6f, jalr = BITS(inst, 6, 0) == 0x67;
+  if ((jal || jalr) && rd == 1) {
     if (FTRACE_COND) {
       for (int i = 0; i < stack_depth; ++ i) {
         log_write(" ");
       }
     }
-    uint64_t addr;
-    if (*(_this->logbuf + 35) == 'r') {
-      bool success = true;
-      addr = isa_reg_str2val(_this->logbuf + 37, &success);
-    }
-    else {
-      sscanf(_this->logbuf + 36, "%lx", &addr);
-    }
+    uint64_t addr = _this->dnpc;
     int id = 0;
     for (; id < symshdr.sh_size / symshdr.sh_entsize; ++ id) {
       if (ELF32_ST_TYPE(symtab[id].st_info) == STT_FUNC && symtab[id].st_value <= addr && addr < symtab[id].st_value + symtab[id].st_size) {
@@ -100,8 +105,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
       log_write("call [%s@%lx]\n", strtab + symtab[id].st_name, addr);
     }
     stack_depth += 2;
-  }
-  else if (strncmp("ret", _this->logbuf + 32, 3) == 0) {
+  } else if (jalr && rs1 == 1) {
     stack_depth -= 2;
     if (FTRACE_COND) {
       for (int i = 0; i < stack_depth; ++ i) {
@@ -110,7 +114,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
       log_write("ret\n");
     }
   }
-#endif
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
@@ -198,7 +201,7 @@ void cpu_exec(uint64_t n) {
            (nemu_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
             ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
           nemu_state.halt_pc);
-#ifdef CONFIG_ITRACE_COND
+#ifdef CONFIG_ITRACE_RING
     if (ITRACE_COND) {
       for (int i = 0; i < IRING_BUF_SIZE; ++ i) {
         if (g_nr_guest_inst % IRING_BUF_SIZE == i) {
