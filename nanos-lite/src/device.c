@@ -34,7 +34,6 @@ size_t events_read(void *buf, size_t offset, size_t len) {
       return strlen(buf);
     }
   }
-  printf("none\n");
   return 0;
 }
 
