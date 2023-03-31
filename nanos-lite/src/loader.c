@@ -15,7 +15,7 @@ static uintptr_t loader(PCB *pcb, const char *filename) {
   int fd = fs_open(filename, 0, 0);
   fs_read(fd, &ehdr, sizeof(ehdr));
   assert(*(uint32_t *) ehdr.e_ident == *(uint32_t *) "\x7f" "ELF");
-  Log("%x", ehdr.e_entry);
+  Log("%p", ehdr.e_entry);
 
   for (int i = 0; i < ehdr.e_phnum; i++) {
     Elf_Phdr phdr;
