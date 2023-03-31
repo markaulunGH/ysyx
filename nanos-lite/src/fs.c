@@ -42,8 +42,8 @@ static Finfo file_table[] __attribute__((used)) = {
 };
 
 void init_fs() {
-  // AM_GPU_CONFIG_T info = io_read(AM_GPU_CONFIG);
-  // file_table[FD_FB].size = info.width * info.height * 4;
+  AM_GPU_CONFIG_T info = io_read(AM_GPU_CONFIG);
+  file_table[FD_FB].size = info.width * info.height * 4;
 }
 
 int fs_open(const char *pathname, int flags, int mode) {
@@ -70,8 +70,7 @@ size_t fs_write(int fd, const void *buf, size_t len) {
 size_t fs_lseek(int fd, size_t offset, int whence) {
   size_t disk_start = 0;
   for (int i = 0; i < fd; ++ i) {
-    // printf("%d\n", file_table[i].disk_offset);
-    if (file_table[i].disk_offset)
+    if (file_table[i].read == NULL || file_table[i].write == NULL)
       disk_start += file_table[i].size;
   }
   printf("%d\n", disk_start);
