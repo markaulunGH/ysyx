@@ -15,10 +15,10 @@ uint32_t NDL_GetTicks() {
 }
 
 int NDL_PollEvent(char *buf, int len) {
-  // if (evtdev < 0) {
-  //   evtdev = open("/dev/event", 0);
-  // }
-  // return read(evtdev, buf, len) > 0;
+  if (evtdev < 0) {
+    evtdev = open("/dev/event", 0);
+  }
+  return read(evtdev, buf, len) > 0;
   return 0;
 }
 
