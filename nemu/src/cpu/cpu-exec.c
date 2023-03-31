@@ -87,8 +87,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
   uint32_t inst = _this->isa.inst.val;
   int rd = BITS(inst, 11, 7);
   int rs1 = BITS(inst, 19, 15);
-  uint64_t immJ = (SEXT(BITS(inst, 31, 31), 1) << 20) | (BITS(inst, 19, 12) << 12) | (BITS(inst, 20, 20) << 11) | (BITS(inst, 30, 21) << 1);
-  uint64_t immI = SEXT(BITS(inst, 31, 20), 12);
   bool jal = BITS(inst, 6, 0) == 0x6f, jalr = BITS(inst, 6, 0) == 0x67;
   if ((jal || jalr) && rd == 1) {
     if (FTRACE_COND) {
@@ -96,7 +94,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
         log_write(" ");
       }
     }
-    uint64_t addr = jal ? cpu.pc + immJ : (immI + cpu.gpr[rs1]) & ~1;
+    uint64_t addr = _this->dnpc;
     int id = 0;
     for (; id < symshdr.sh_size / symshdr.sh_entsize; ++ id) {
       if (ELF32_ST_TYPE(symtab[id].st_info) == STT_FUNC && symtab[id].st_value <= addr && addr < symtab[id].st_value + symtab[id].st_size) {
