@@ -11,7 +11,7 @@ typedef struct {
   WriteFn write;
 } Finfo;
 
-enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_EVENTS, FD_FB};
+enum {FD_STDIN, FD_STDOUT, FD_STDERR, FD_EVENTS, FD_DISPINFO, FD_FB};
 
 extern size_t ramdisk_read(void *buf, size_t offset, size_t len);
 extern size_t ramdisk_write(const void *buf, size_t offset, size_t len);
@@ -32,15 +32,18 @@ size_t invalid_write(const void *buf, size_t offset, size_t len) {
 
 /* This is the information about all files in disk. */
 static Finfo file_table[] __attribute__((used)) = {
-  [FD_STDIN]  = {"stdin", 0, 0, invalid_read, invalid_write},
-  [FD_STDOUT] = {"stdout", 0, 0, invalid_read, serial_write},
-  [FD_STDERR] = {"stderr", 0, 0, invalid_read, serial_write},
-  [FD_EVENTS] = {"/dev/events", 0, 0, events_read, invalid_write},
+  [FD_STDIN]    = {"stdin", 0, 0, invalid_read, invalid_write},
+  [FD_STDOUT]   = {"stdout", 0, 0, invalid_read, serial_write},
+  [FD_STDERR]   = {"stderr", 0, 0, invalid_read, serial_write},
+  [FD_EVENTS]   = {"/dev/events", 0, 0, events_read, invalid_write},
+  [FD_DISPINFO] = {"/proc/dispinfo", 0, 0, dispinfo_read, invalid_write},
+  [FD_FB]       = {"/dev/fb", 0, 0, invalid_read, fb_write},
 #include "files.h"
 };
 
 void init_fs() {
-  // TODO: initialize the size of /dev/fb
+  AM_GPU_CONFIG_T info = io_read(AM_GPU_CONFIG);
+  file_table[FD_FB].size = info.width * info.height * 4;
 }
 
 int fs_open(const char *pathname, int flags, int mode) {
@@ -67,7 +70,8 @@ size_t fs_write(int fd, const void *buf, size_t len) {
 size_t fs_lseek(int fd, size_t offset, int whence) {
   size_t disk_start = 0;
   for (int i = 0; i < fd; ++ i) {
-    disk_start += file_table[i].size;
+    if (file_table[i].read == NULL || file_table[i].write == NULL)
+      disk_start += file_table[i].size;
   }
   switch (whence) {
     case SEEK_SET: file_table[fd].disk_offset = disk_start + offset; break;
