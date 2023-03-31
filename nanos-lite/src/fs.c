@@ -42,9 +42,9 @@ static Finfo file_table[] __attribute__((used)) = {
 };
 
 void init_fs() {
-  printf("???\n");
   AM_GPU_CONFIG_T info = io_read(AM_GPU_CONFIG);
   file_table[FD_FB].size = info.width * info.height * 4;
+  printf("???\n");
 }
 
 int fs_open(const char *pathname, int flags, int mode) {
