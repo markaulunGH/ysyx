@@ -34,7 +34,7 @@ void init_simulation(int argc, char** argv)
     contextp->traceEverOn(true);
     contextp->commandArgs(argc, argv);
 
-    top->trace(tfp, 0);
+    // top->trace(tfp, 0);
     tfp->open("logs/dump.fst");
 
     reset();
