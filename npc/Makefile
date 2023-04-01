@@ -27,7 +27,7 @@ INCFLAGS += $(addprefix -I, $(INC_PATH))
 CFLAGS += $(INCFLAGS)
 LDFLAGS += -lSDL2 -lSDL2_image
 
-VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-UNUSED -Wno-DECLFILENAME --trace-fst --assert --build
+VERILATOR_FLAGS += -cc --exe -O2 -x-assign fast -Wall -Wno-UNUSED -Wno-DECLFILENAME --assert --build
 # VERILATOR_FLAGS += --coverage
 # VERILATOR_FLAGS += --debug
 # VERILATOR_FLAGS += --gdbbt
@@ -74,7 +74,7 @@ sim:
 
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/VTop +trace --img=$(IMG) --elf=$(ELF) --log=$(abspath logs/log.txt) --diff=$(SO) $(ARGS)
+	obj_dir/VTop --img=$(IMG) --elf=$(ELF) --log=$(abspath logs/log.txt) --diff=$(SO) $(ARGS)
 
 gdb:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
