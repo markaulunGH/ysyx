@@ -81,8 +81,6 @@ class Top extends Module
 
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
-
-        val mstatus = Output(UInt(64.W))
     })
     
     val fs = Module(new FS)
@@ -116,6 +114,4 @@ class Top extends Module
     
     io.ebreak := ds.io.ebreak
     io.rf := rf.io.rf
-
-    io.mstatus := csr.io.mstatus
 }
