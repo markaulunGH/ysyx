@@ -48,7 +48,7 @@ int main(int argc, char** argv, char** env)
 #ifdef CONFIG_DIFFTEST
     init_difftest(argv[diff_so_file] + 7, img_size);
 #endif
-    init_simulation(2, argv);
+    init_simulation(1, argv);
     sdb_mainloop();
     end_simulation();
     return is_exit_status_bad();
