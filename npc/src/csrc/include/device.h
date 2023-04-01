@@ -10,5 +10,10 @@ void init_device();
 
 #define SERIAL_PORT 0xa00003f8
 #define RTC_ADDR    0xa0000048
+#define VGACTL_ADDR 0xa0000100
+#define FB_ADDR     0xa1000000
+
+#define SCREEN_H 400
+#define SCREEN_W 300
 
 #endif
