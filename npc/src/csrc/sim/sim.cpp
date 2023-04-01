@@ -6,11 +6,11 @@ VerilatedFstC* tfp = new VerilatedFstC;
 
 void cycle_end()
 {
-    tfp->dump(contextp->time());
+    // tfp->dump(contextp->time());
     contextp->timeInc(1);
     top->clock = 0;
     top->eval();
-    tfp->dump(contextp->time());
+    // tfp->dump(contextp->time());
     contextp->timeInc(1);
     top->clock = 1;
     top->eval();
