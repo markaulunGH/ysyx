@@ -29,7 +29,7 @@ void init_simulation(int argc, char** argv)
 {
     Verilated::mkdir("logs");
 
-    contextp->debug(0);
+    // contextp->debug(0);
     contextp->randReset(2);
     // contextp->traceEverOn(true);
     // contextp->commandArgs(argc, argv);
