@@ -206,11 +206,8 @@ static void exec_once(Decode *s)
 #ifdef CONFIG_DTRACE
             log_write("read  device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
 #endif
-            if (top->io_mm_raddr == RTC_ADDR)
-            {
-                top->io_mm_rdata = get_time();
-                difftest_skip_ref();
-            }
+            top->io_mm_rdata = mmio_read(top->io_mm_raddr, 8);
+            difftest_skip_ref();
         }
         top->eval();
     }
@@ -234,11 +231,14 @@ static void exec_once(Decode *s)
 #ifdef CONFIG_DTRACE
             log_write("write device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
 #endif
-            if (top->io_mm_waddr == SERIAL_PORT)
+            switch (top->io_mm_mask)
             {
-                putchar(top->io_mm_wdata);
-                difftest_skip_ref();
+                case 0x1:  mmio_write(top->io_mm_waddr, 1, top->io_mm_wdata); break;
+                case 0x3:  mmio_write(top->io_mm_waddr, 2, top->io_mm_wdata); break;
+                case 0xf:  mmio_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
+                case 0xff: mmio_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
             }
+            difftest_skip_ref();
         }
     }
     cycle_end();
