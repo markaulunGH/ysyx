@@ -31,7 +31,7 @@ void init_simulation(int argc, char** argv)
 
     contextp->debug(0);
     contextp->randReset(2);
-    // contextp->traceEverOn(true);
+    contextp->traceEverOn(true);
     contextp->commandArgs(argc, argv);
 
     top->trace(tfp, 0);
