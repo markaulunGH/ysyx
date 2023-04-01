@@ -59,6 +59,7 @@ void checkregs(CPU_state *ref, vaddr_t pc)
     {
         if (ref->gpr[i] != cpu.gpr[i])
         {
+            printf("gpr[%d] = %016lx, ref.gpr[%d] = %016lx", i, cpu.gpr[i], i, ref->gpr[i]);
             result = false;
         }
     }
