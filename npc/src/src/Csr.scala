@@ -28,7 +28,6 @@ class Csr extends Module
         val mstatus = Output(UInt(64.W))
     })
 
-    mstatus := Cat(mstatus_sd, 0.U(27.W), mstatus_sxl, mstatus_uxl, 0.U(9.W), mstatus_tsr, mstatus_tw, mstatus_tvm, mstatus_mxr, mstatus_sum, mstatus_mprv, mstatus_xs, mstatus_fs, mstatus_mpp, 0.U(2.W), mstatus_spp, mstatus_mpie, 0.U(1.W), mstatus_spie, mstatus_upie, mstatus_mie, 0.U(1.W), mstatus_sie, mstatus_uie)
 
     val mstatus_uie  = RegInit(0.U(1.W))
     val mstatus_sie  = RegInit(0.U(1.W))
@@ -118,4 +117,7 @@ class Csr extends Module
     ))
     io.csr_pc.mtvec := mtvec
     io.csr_pc.mepc := mepc
+
+    mstatus := Cat(mstatus_sd, 0.U(27.W), mstatus_sxl, mstatus_uxl, 0.U(9.W), mstatus_tsr, mstatus_tw, mstatus_tvm, mstatus_mxr, mstatus_sum, mstatus_mprv, mstatus_xs, mstatus_fs, mstatus_mpp, 0.U(2.W), mstatus_spp, mstatus_mpie, 0.U(1.W), mstatus_spie, mstatus_upie, mstatus_mie, 0.U(1.W), mstatus_sie, mstatus_uie)
+
 }
