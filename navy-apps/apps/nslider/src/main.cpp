@@ -31,7 +31,7 @@ void render() {
 }
 
 void prev(int rep) {
-  printf("prev\b");
+  printf("prev\n");
   if (rep == 0) rep = 1;
   cur -= rep;
   if (cur < 0) cur = 0;
@@ -72,7 +72,7 @@ int main() {
         case SDLK_J:
         case SDLK_DOWN: next(rep); rep = 0; g = 0; break;
         case SDLK_K:
-        case SDLK_UP: printf("ppprev\n"); prev(rep); rep = 0; g = 0; break;
+        case SDLK_UP: prev(rep); rep = 0; g = 0; break;
         case SDLK_G:
           g ++;
           if (g > 1) {
