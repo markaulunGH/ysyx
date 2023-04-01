@@ -6,11 +6,11 @@ VerilatedFstC* tfp = new VerilatedFstC;
 
 void cycle_end()
 {
-    tfp->dump(contextp->time());
+    // tfp->dump(contextp->time());
     contextp->timeInc(1);
     top->clock = 0;
     top->eval();
-    tfp->dump(contextp->time());
+    // tfp->dump(contextp->time());
     contextp->timeInc(1);
     top->clock = 1;
     top->eval();
@@ -31,7 +31,7 @@ void init_simulation(int argc, char** argv)
 
     contextp->debug(0);
     contextp->randReset(2);
-    contextp->traceEverOn(true);
+    // contextp->traceEverOn(true);
     contextp->commandArgs(argc, argv);
 
     top->trace(tfp, 0);
