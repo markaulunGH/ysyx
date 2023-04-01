@@ -61,7 +61,7 @@ void mmio_write(paddr_t addr, int len, word_t data)
     {
         putchar(data);
     }
-    else if (addr == VGACTL_ADDR + 8)
+    else if (addr == VGACTL_ADDR + 4)
     {
         vgactl_port_base[1] = data;
         vga_update_screen();
