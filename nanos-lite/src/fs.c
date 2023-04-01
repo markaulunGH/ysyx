@@ -73,7 +73,6 @@ size_t fs_write(int fd, const void *buf, size_t len) {
 }
 
 size_t fs_lseek(int fd, size_t offset, int whence) {
-  printf("%d\n", fd);
   size_t disk_start = 0;
   for (int i = 0; i < fd; ++ i) {
     if (file_table[i].read == NULL || file_table[i].write == NULL) {
