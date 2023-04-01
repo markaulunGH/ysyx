@@ -9,6 +9,7 @@
 #include <log.h>
 #include <difftest.h>
 #include <utils.h>
+#include <device.h>
 
 const char *regs[] = {
   "$0", "ra", "sp", "gp", "tp", "t0", "t1", "t2",
