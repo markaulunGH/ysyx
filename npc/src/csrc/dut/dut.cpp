@@ -53,7 +53,7 @@ void checkregs(CPU_state *ref, vaddr_t pc)
     bool result = true;
     if (ref->pc != cpu.pc)
     {
-        printf("Difftest failed at pc = %016lx", cpu.pc);
+        printf("Difftest failed at pc = %016lx\n", cpu.pc);
         printf("pc = %016lx, ref.pc = %016lx", cpu.pc, ref->pc);
         result = false;
     }
@@ -61,7 +61,7 @@ void checkregs(CPU_state *ref, vaddr_t pc)
     {
         if (ref->gpr[i] != cpu.gpr[i])
         {
-            printf("Difftest failed at pc = %016lx", cpu.pc);
+            printf("Difftest failed at pc = %016lx\n", cpu.pc);
             printf("gpr[%d] = %016lx, ref.gpr[%d] = %016lx\n", i, cpu.gpr[i], i, ref->gpr[i]);
             result = false;
         }
