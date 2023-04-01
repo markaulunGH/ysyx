@@ -13,7 +13,7 @@ void init_device();
 #define VGACTL_ADDR 0xa0000100
 #define FB_ADDR     0xa1000000
 
-#define SCREEN_H 400
-#define SCREEN_W 300
+#define SCREEN_W 400
+#define SCREEN_H 300
 
 #endif
