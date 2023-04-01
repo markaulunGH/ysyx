@@ -22,18 +22,11 @@ int SDL_PollEvent(SDL_Event *ev) {
       ev->type = SDL_KEYUP;
     }
     printf("%s\n", buf);
-
-
-uint8_t keystate[ARRLEN(keyname)];
-      uint8_t keycode = 0;
-      sscanf(buf+3,"%2d %s",&keycode,buf+6);  // buf+3 -> buf+3 means %s do not change.
-      if(keycode != 0){
-        keystate[keycode] = (ev->type == SDL_KEYDOWN) ? 1:0;
-        ev->key.keysym.sym = keycode;
-      }
-    // sscanf(buf + 3, "%c", &ev->key.keysym.sym);
+    sscanf(buf + 3, "%c", &ev->key.keysym.sym);
     printf("%d\n", ev->key.keysym.sym);
+    return 1;
   }
+  return 0;
 }
 
 int SDL_WaitEvent(SDL_Event *event) {
