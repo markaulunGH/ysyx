@@ -52,6 +52,7 @@ word_t mmio_read(paddr_t addr, int len)
     {
         return vgactl_port_base[0];
     }
+    printf("%d\n", addr);
     assert(0);
 }
 
