@@ -8,7 +8,7 @@
 
 extern const std::unique_ptr<VerilatedContext> contextp;
 extern const std::unique_ptr<VTop> top;
-extern VerilatedFstC* tfp;
+// extern VerilatedFstC* tfp;
 
 void init_simulation(int argc, char** argv);
 void end_simulation();
