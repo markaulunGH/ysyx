@@ -190,6 +190,7 @@ SDL_STBIMG_DEF SDL_Surface* STBIMG_LoadFromMemory(const unsigned char* buffer, i
 	int inforet = 0;
 	SDL_Surface* ret = NULL;
 	int origin_has_alpha;
+	printf("loadimage\n");
 
 	if(buffer == NULL)
 	{
