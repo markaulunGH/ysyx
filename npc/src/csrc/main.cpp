@@ -5,6 +5,7 @@
 #include <config.h>
 #include <log.h>
 #include <difftest.h>
+#include <device.h>
 
 void init_disasm(const char *triple);
 
@@ -38,6 +39,7 @@ int main(int argc, char** argv, char** env)
         }
     }
     init_mem();
+    init_device();
     init_sdb(batch);
 #ifdef CONFIG_ITRACE
     init_disasm("riscv64-pc-linux-gnu");
