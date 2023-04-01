@@ -18,10 +18,18 @@ void SDL_BlitSurface(SDL_Surface *src, SDL_Rect *srcrect, SDL_Surface *dst, SDL_
   } else {
     dst_x = dstrect->x, dst_y = dstrect->y;
   }
-  assert(dst->format->BitsPerPixel == 32);
-  for (int i = 0; i < h; ++ i) {
-    for (int j = 0; j < w; ++ j) {
-      ((uint32_t*) dst->pixels)[(dst_y + i) * dst->w + dst_x + j] = ((uint32_t*) src->pixels)[(src_y + i) * src->w + src_x + j];
+  assert(dst->format->BitsPerPixel == 32 || dst->format->BitsPerPixel == 8);
+  if (dst->format->BitsPerPixel == 32) {
+    for (int i = 0; i < h; ++ i) {
+      for (int j = 0; j < w; ++ j) {
+        ((uint32_t*) dst->pixels)[(dst_y + i) * dst->w + dst_x + j] = ((uint32_t*) src->pixels)[(src_y + i) * src->w + src_x + j];
+      }
+    }
+  } else if (dst->format->BitsPerPixel == 8) {
+    for (int i = 0; i < h; ++ i) {
+      for (int j = 0; j < w; ++ j) {
+        ((uint8_t*) dst->pixels)[(dst_y + i) * dst->w + dst_x + j] = ((uint8_t*) src->pixels)[(src_y + i) * src->w + src_x + j];
+      }
     }
   }
 }
