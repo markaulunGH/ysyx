@@ -21,10 +21,12 @@ int SDL_PollEvent(SDL_Event *ev) {
     } else if (strncmp(buf, "ku", 2) == 0) {
       ev->type = SDL_KEYUP;
     }
-    for (int i = 0; ; ++ i) {
-      if (strcmp(buf + 3, keyname[i]) == 0) {
-        ev->key.keysym.sym = i;
-        return 1;
+    if (ev->type == SDL_KEYDOWN || ev->type == SDL_KEYUP) {
+      for (int i = 0; ; ++ i) {
+        if (strcmp(buf + 3, keyname[i]) == 0) {
+          ev->key.keysym.sym = i;
+          return 1;
+        }
       }
     }
   }
