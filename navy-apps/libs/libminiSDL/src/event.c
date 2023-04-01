@@ -22,7 +22,8 @@ int SDL_PollEvent(SDL_Event *ev) {
       ev->type = SDL_KEYUP;
     }
     printf("%s\n", buf);
-    // sscanf(buf + 3, "")
+    // sscanf(buf + 3, "%c", &ev->key.keysym.sym);
+    // printf("%d\n", ev->key.keysym.sym);
   }
 }
 
