@@ -48,7 +48,7 @@ class DS extends Module
     val inst_lw     = dopcode(0x3)  && dfunct3(0x2)
     val inst_lbu    = dopcode(0x3)  && dfunct3(0x4)
     val inst_lhu    = dopcode(0x3)  && dfunct3(0x5)
-    val inst_lwu    = dopcode(0x3)  && dfunct3(0x7)
+    val inst_lwu    = dopcode(0x3)  && dfunct3(0x6)
     val inst_ld     = dopcode(0x3)  && dfunct3(0x3)
     val inst_sb     = dopcode(0x23) && dfunct3(0x0)
     val inst_sh     = dopcode(0x23) && dfunct3(0x1)
