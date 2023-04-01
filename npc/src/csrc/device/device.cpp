@@ -76,7 +76,10 @@ void mmio_write(paddr_t addr, int len, word_t data)
             case 8: *(uint64_t *)(vmem + (addr - FB_ADDR)) = data; break;
         }
     }
-    assert(0);
+    else
+    {
+        assert(0);
+    }
 }
 
 void init_device()
