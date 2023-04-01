@@ -47,9 +47,14 @@ void init_fs() {
 }
 
 int fs_open(const char *pathname, int flags, int mode) {
+  size_t disk_start = 0;
   for (int i = 0; i < sizeof(file_table) / sizeof(Finfo); ++ i) {
     if (strcmp(pathname, file_table[i].name) == 0) {
+      file_table[i].disk_offset = disk_start;
       return i;
+    }
+    if (file_table[i].read == NULL || file_table[i].write == NULL) {
+      disk_start += file_table[i].size;
     }
   }
   panic("File %s not found\n", pathname);
@@ -70,8 +75,9 @@ size_t fs_write(int fd, const void *buf, size_t len) {
 size_t fs_lseek(int fd, size_t offset, int whence) {
   size_t disk_start = 0;
   for (int i = 0; i < fd; ++ i) {
-    if (file_table[i].read == NULL || file_table[i].write == NULL)
+    if (file_table[i].read == NULL || file_table[i].write == NULL) {
       disk_start += file_table[i].size;
+    }
   }
   switch (whence) {
     case SEEK_SET: file_table[fd].disk_offset = disk_start + offset; break;
