@@ -1,7 +1,11 @@
 #include <common.h>
 #include <fs.h>
 #include <sys/time.h>
+#include <proc.h>
 #include "syscall.h"
+
+extern void naive_uload(PCB *pcb, const char *filename);
+
 void do_syscall(Context *c) {
   uintptr_t a[4];
   a[0] = c->GPR1;
@@ -14,7 +18,7 @@ void do_syscall(Context *c) {
       yield();
       break;
     case SYS_exit:
-      halt(a[1]);
+      naive_uload(NULL, "/bin/menu");
       break;
     case SYS_open:
       c->GPRx = fs_open((void *)a[1], a[2], a[3]);
@@ -40,6 +44,10 @@ void do_syscall(Context *c) {
       tv->tv_sec = t / 1000000;
       tv->tv_usec = t % 1000000;
       c->GPRx = 1;
+      break;
+    case SYS_execve:
+      char *fname = (char *)a[1];
+      naive_uload(NULL, fname);
       break;
     default: panic("Unhandled syscall ID = %d", a[0]);
   }
