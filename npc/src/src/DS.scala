@@ -5,16 +5,14 @@ class DS extends Module
 {
     val io = IO(new Bundle
     {
-        val fs_ds = Flipped(Decoupled(new FS_DS))
-        val ds_es = Decoupled(new DS_ES)
+        val fs_ds = Flipped(new FS_DS)
+        val ds_es = new DS_ES
 
         val reg_r = Flipped(new Reg_r)
         val csr_pc = Flipped(new Csr_pc)
 
         val ebreak = Output(Bool())
     })
-
-    val ds_valid = RegInit(false.B)
 
     val inst = io.fs_ds.inst
     val opcode = inst(6, 0)

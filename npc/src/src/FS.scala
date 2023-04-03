@@ -8,10 +8,8 @@ class FS extends Module
         val pc = Output(UInt(64.W))
         val inst = Input(UInt(64.W))
 
-        val fs_ds = Decoupled(new FS_DS)
+        val fs_ds = new FS_DS
     })
-
-    val fs_valid = RegInit(false.B)
 
     val pc = RegInit(0x7ffffffc.U(64.W))
     pc := Mux(io.fs_ds.br_taken, io.fs_ds.br_target, pc + 4.U)
