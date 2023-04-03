@@ -78,6 +78,7 @@ void mmio_write(paddr_t addr, int len, word_t data)
     }
     else
     {
+        printf("%d\n", addr);
         assert(0);
     }
 }
