@@ -14,6 +14,10 @@ class DS extends Module
         val ebreak = Output(Bool())
     })
 
+    // val ds_ready_go = 1.U(1.W)
+    // val ds_allow_in = 
+    // val ds_to_es_valid = 
+
     val inst = io.fs_ds.inst
     val opcode = inst(6, 0)
     val funct3 = inst(14, 12)
