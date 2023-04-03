@@ -34,7 +34,7 @@ class AXI_Lite extends Bundle
 {
     val waddr = Decoupled(new WaddrChannel)
     val wdata = Decoupled(new WdataChannel)
-    val wresp = Filpped(new Decoupled(new WrespChannel))
+    val wresp = Filpped(Decoupled(new WrespChannel))
     val raddr = Decoupled(new RaddrChannel)
     val rdata = Flipped(Decoupled(new RdataChannel))
 }
