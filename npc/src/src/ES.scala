@@ -5,8 +5,8 @@ class ES extends Module
 {
     val io = IO(new Bundle
     {
-        val ds_es = Flipped(new DS_ES)
-        val es_ms = new ES_MS
+        val ds_es = Flipped(Decoupled(new DS_ES))
+        val es_ms = Decoupled(new ES_MS)
 
         val mm_ren = Output(UInt(1.W))
         val mm_raddr = Output(UInt(64.W))
@@ -15,6 +15,9 @@ class ES extends Module
         val mm_wdata = Output(UInt(64.W))
         val mm_mask = Output(UInt(8.W))
     })
+
+    val es_valid = RegInit(false.B)
+
     val alu = Module(new Alu)
     io.ds_es.alu_in <> alu.io.in
     val alu_result = Mux(io.ds_es.inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)

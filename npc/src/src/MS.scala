@@ -5,11 +5,13 @@ class MS extends Module
 {
     val io = IO(new Bundle
     {
-        val es_ms = Flipped(new ES_MS)
-        val ms_ws = new MS_WS
+        val es_ms = Flipped(Decoupled(new ES_MS))
+        val ms_ws = Decoupled(new MS_WS)
 
         val mm_rdata = Input(UInt(64.W))
     })
+
+    val ms_valid = RegInit(false.B)
 
     val mm_rdata = MuxCase(
         0.U(64.W),
