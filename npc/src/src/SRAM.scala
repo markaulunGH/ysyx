@@ -1,31 +1,42 @@
 import chisel3._
 import chisel3.util._
 
+class WaddrChannel extends Bundle
+{
+    val awaddr = Output(UInt(64.W))
+    val awprot = Output(UInt(3.W))
+}
+
+class WdataChannel extends Bundle
+{
+    val wdata = Output(UInt(64.W))
+    val wstrb = Output(UInt(8.W))
+}
+
+class WrespChannel extends Bundle
+{
+    val bresp = Output(UInt(2.W))
+}
+
+class RaddrChannel extends Bundle
+{
+    val araddr = Output(UInt(64.W))
+    val arprot = Output(UInt(3.W))
+}
+
+class RdataChannel extends Bundle
+{
+    val rdata = Output(UInt(64.W))
+    val rresp = Output(UInt(2.W))
+}
+
 class AXI_Lite extends Bundle
 {
-    val awvalid = Output(Bool())
-    val awready = Input(Bool())
-    val awaddr  = Output(UInt(64.W))
-    val awprot  = Output(UInt(3.W))
-
-    val wvalid  = Output(Bool())
-    val wready  = Input(Bool())
-    val wdata   = Output(UInt(64.W))
-    val wstrb   = Output(UInt(8.W))
-
-    val bvalid  = Input(Bool())
-    val bready  = Output(Bool())
-    val bresp   = Input(UInt(2.W))
-
-    val arvalid = Output(Bool())
-    val arready = Input(Bool())
-    val araddr  = Output(UInt(64.W))
-    val arprot  = Output(UInt(3.W))
-
-    val rvalid  = Input(Bool())
-    val rready  = Output(Bool())
-    val rdata   = Input(UInt(64.W))
-    val rresp   = Input(UInt(2.W))
+    val waddr = Decoupled(new WaddrChannel)
+    val wdata = Decoupled(new WdataChannel)
+    val wresp = Filpped(Decoupled(new WrespChannel))
+    val raddr = Decoupled(new RaddrChannel)
+    val rdata = Flipped(Decoupled(new RdataChannel))
 }
 
 class SRAM extends Module
@@ -35,5 +46,5 @@ class SRAM extends Module
         val axi = Flipped(new AXI_Lite)
     })
 
-    
+    val rdata = RegInit(0.U(64.W))
 }
