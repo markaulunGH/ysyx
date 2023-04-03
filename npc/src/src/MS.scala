@@ -9,6 +9,8 @@ class MS extends Module
         val ms_ws = new MS_WS
 
         val mm_rdata = Input(UInt(64.W))
+
+        val valid = Output(Bool())
     })
 
     val mm_rdata = MuxCase(

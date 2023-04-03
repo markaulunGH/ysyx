@@ -9,6 +9,8 @@ class FS extends Module
         val inst = Input(UInt(64.W))
 
         val fs_ds = new FS_DS
+
+        val valid = Output(Bool())
     })
 
     val pc = RegInit(0x7ffffffc.U(64.W))
