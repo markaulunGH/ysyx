@@ -35,8 +35,8 @@ class DS extends Module
 
     val inst_lui    = dopcode(0x37)
     val inst_auipc  = dopcode(0x17)
-    val inst_jal    = dopcode(0x60)
-    val inst_jalr   = dopcode(0x60)
+    val inst_jal    = dopcode(0x6f)
+    val inst_jalr   = dopcode(0x67)
     val inst_beq    = dopcode(0x63) && dfunct3(0x0)
     val inst_bne    = dopcode(0x63) && dfunct3(0x1)
     val inst_blt    = dopcode(0x63) && dfunct3(0x4)
