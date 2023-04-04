@@ -8,17 +8,8 @@ class MS extends Module
         val es_ms = Flipped(new ES_MS)
         val ms_ws = new MS_WS
 
-        val data_axi = new AXI_Lite_Slave
+        val mm_rdata = Input(UInt(64.W))
     })
-
-    val rdata = io.data_axi.r.data
-
-    io.data_axi.r.ready := true.B
-    when (io.data_axi.r.fire)
-    {
-
-    }
-    io.data_axi.b.ready := true.B
 
     val mm_rdata = MuxCase(
         0.U(64.W),
