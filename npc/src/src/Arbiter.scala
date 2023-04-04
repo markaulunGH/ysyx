@@ -12,13 +12,13 @@ class Arbiter extends Module
 
     val ms_req = io.ms.ar.valid || io.ms.aw.valid
 
-    io.axi.bits.aw.addr := Mux(ms_req, io.ms.bits.aw.addr, io.fs.bits.aw.addr)
-    io.axi.bits.aw.prot := Mux(ms_req, io.ms.bits.aw.prot, io.fs.bits.aw.prot)
-    io.axi.bits.w.data  := Mux(ms_req, io.ms.bits.w.data,  io.fs.bits.w.data)
-    io.axi.bits.w.strb  := Mux(ms_req, io.ms.bits.w.strb,  io.fs.bits.w.strb)
-    io.axi.bits.b.resp  := Mux(ms_req, io.ms.bits.b.resp,  io.fs.bits.b.resp)
-    io.axi.bits.ar.addr := Mux(ms_req, io.ms.bits.ar.addr, io.fs.bits.ar.addr)
-    io.axi.bits.ar.prot := Mux(ms_req, io.ms.bits.ar.prot, io.fs.bits.ar.prot)
-    io.axi.bits.r.data  := Mux(ms_req, io.ms.bits.r.data,  io.fs.bits.r.data)
-    io.axi.bits.r.resp  := Mux(ms_req, io.ms.bits.r.resp,  io.fs.bits.r.resp)
+    io.axi.Bits.aw.addr := Mux(ms_req, io.ms.Bits.aw.addr, io.fs.Bits.aw.addr)
+    io.axi.Bits.aw.prot := Mux(ms_req, io.ms.Bits.aw.prot, io.fs.Bits.aw.prot)
+    io.axi.Bits.w.data  := Mux(ms_req, io.ms.Bits.w.data,  io.fs.Bits.w.data)
+    io.axi.Bits.w.strb  := Mux(ms_req, io.ms.Bits.w.strb,  io.fs.Bits.w.strb)
+    io.axi.Bits.b.resp  := Mux(ms_req, io.ms.Bits.b.resp,  io.fs.Bits.b.resp)
+    io.axi.Bits.ar.addr := Mux(ms_req, io.ms.Bits.ar.addr, io.fs.Bits.ar.addr)
+    io.axi.Bits.ar.prot := Mux(ms_req, io.ms.Bits.ar.prot, io.fs.Bits.ar.prot)
+    io.axi.Bits.r.data  := Mux(ms_req, io.ms.Bits.r.data,  io.fs.Bits.r.data)
+    io.axi.Bits.r.resp  := Mux(ms_req, io.ms.Bits.r.resp,  io.fs.Bits.r.resp)
 }
