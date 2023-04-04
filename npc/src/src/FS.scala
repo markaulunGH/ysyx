@@ -33,6 +33,8 @@ class FS extends Module
         inst_buffer_valid := false.B
     }
 
+    io.inst_slave.b.ready := true.B
+
     io.fs_ds.inst := Mux(inst_buffer_valid, inst_buffer, inst)
     io.fs_ds.pc := io.pf_fs.pc
 
