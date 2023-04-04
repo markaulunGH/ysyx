@@ -32,10 +32,10 @@ class ES extends Module
         arfire := false.B
     }
 
+    val awfire = RegInit(false.B)
     io.data_master.aw.valid := io.ds_es.mm_wen && !awfire
     io.data_master.aw.bits.addr := alu_result
     io.data_master.aw.bits.prot := 0.U(3.W)
-    val awfire = RegInit(false.B)
     when (io.data_master.aw.fire)
     {
         awfire := true.B
@@ -45,10 +45,10 @@ class ES extends Module
         awfire := false.B
     }
 
+    val wfire = RegInit(false.B)
     io.data_master.w.valid := io.ds_es.mm_wen && awfire && !wfire
     io.data_master.w.bits.data := io.ds_es.mm_wdata
     io.data_master.w.bits.strb := io.ds_es.mm_mask
-    val wfire = RegInit(false.B)
     when (io.data_master.w.fire)
     {
         wfire := true.B
