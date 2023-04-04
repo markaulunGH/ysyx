@@ -134,6 +134,7 @@ class Top extends Module
         val rf = Output(Vec(32, UInt(64.W)))
     })
     
+    val pf = Module(new PF)
     val fs = Module(new FS)
     val ds = Module(new DS)
     val es = Module(new ES)
@@ -151,6 +152,12 @@ class Top extends Module
     es.io.ready := ready
     ms.io.ready := ready
     ws.io.ready := ready
+
+    val arbiter = Module(new Arbiter)
+    arbiter.io.inst_master <> pf.io.inst_master
+    arbiter.io.inst_slave  <> fs.io.inst_slave
+    arbiter.io.data_master <> es.io.data_master
+    arbiter.io.data_slave  <> ms.io.data_slave
     
     io.pc := fs.io.pc
     fs.io.inst := io.inst

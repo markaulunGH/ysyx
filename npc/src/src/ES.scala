@@ -8,7 +8,7 @@ class ES extends Module
         val ds_es = Flipped(new DS_ES)
         val es_ms = new ES_MS
 
-        val data_axi = new AXI_Lite_Master
+        val data_master = new AXI_Lite_Master
 
         val es_ready = Output(Bool())
         val ready = Input(Bool())
@@ -19,11 +19,11 @@ class ES extends Module
     val alu_result = Mux(io.ds_es.inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)
 
 
-    io.data_axi.ar.valid := io.ds_es.mm_ren
-    io.data_axi.ar.bits.addr := alu_result
-    io.data_axi.ar.bits.prot := 0.U(3.W)
+    io.data_master.ar.valid := io.ds_es.mm_ren
+    io.data_master.ar.bits.addr := alu_result
+    io.data_master.ar.bits.prot := 0.U(3.W)
     val arfire = RegInit(false.B)
-    when (io.inst_axi.ar.fire)
+    when (io.data_master.ar.fire)
     {
         arfire := true.B
     }
@@ -32,11 +32,11 @@ class ES extends Module
         arfire := false.B
     }
 
-    io.data_axi.aw.valid := io.ds_es.mm_wen && !awfire
-    io.data_axi.aw.bits.addr := alu_result
-    io.data_axi.aw.bits.prot := 0.U(3.W)
+    io.data_master.aw.valid := io.ds_es.mm_wen && !awfire
+    io.data_master.aw.bits.addr := alu_result
+    io.data_master.aw.bits.prot := 0.U(3.W)
     val awfire = RegInit(false.B)
-    when (io.inst_axi.aw.fire)
+    when (io.data_master.aw.fire)
     {
         awfire := true.B
     }
@@ -45,11 +45,11 @@ class ES extends Module
         awfire := false.B
     }
 
-    io.data_axi.w.valid := io.ds_es.mm_wen && awfire && !wfire
-    io.data_axi.w.bits.data := io.ds_es.mm_wdata
-    io.data_axi.w.bits.strb := io.ds_es.mm_mask
+    io.data_master.w.valid := io.ds_es.mm_wen && awfire && !wfire
+    io.data_master.w.bits.data := io.ds_es.mm_wdata
+    io.data_master.w.bits.strb := io.ds_es.mm_mask
     val wfire = RegInit(false.B)
-    when (io.inst_axi.w.fire)
+    when (io.data_master.w.fire)
     {
         wfire := true.B
     }

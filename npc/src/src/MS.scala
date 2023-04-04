@@ -8,16 +8,16 @@ class MS extends Module
         val es_ms = Flipped(new ES_MS)
         val ms_ws = new MS_WS
 
-        val data_axi = new AXI_Lite_Slave
+        val data_slave = new AXI_Lite_Slave
 
         val ms_ready = Output(Bool())
         val ready = Input(Bool())
     })
 
-    io.data_axi.r.ready := true.B
-    io.data_axi.b.ready := true.B
+    io.data_slave.r.ready := true.B
+    io.data_slave.b.ready := true.B
 
-    val data = io.data_axi.r.data
+    val data = io.data_slave.r.data
     val mm_rdata = MuxCase(
         0.U(64.W),
         Seq(
@@ -42,5 +42,5 @@ class MS extends Module
     io.ms_ws.exc_cause := io.es_ms.exc_cause
     io.ms_ws.mret := io.es_ms.mret
 
-    io.ms_ready = (io.es_ms.mm_ren && io.data_axi.r.fire) || (io.es_ms.mm_wen && io.data_axi.b.fire) || (!io.es_ms.mm_ren && !io.es_ms.mm_wen)
+    io.ms_ready = (io.es_ms.mm_ren && io.data_slave.r.fire) || (io.es_ms.mm_wen && io.data_slave.b.fire) || (!io.es_ms.mm_ren && !io.es_ms.mm_wen)
 }

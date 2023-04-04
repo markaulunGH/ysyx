@@ -7,7 +7,7 @@ class PF extends Module
     {
         val pf_fs = new PF_FS
 
-        val inst_axi = new AXI_Lite_Master
+        val inst_master = new AXI_Lite_Master
 
         val pf_ready = Output(Bool())
         val ready = Input(Bool())
@@ -21,15 +21,15 @@ class PF extends Module
         pc := next_pc
     }
 
-    io.inst_axi.ar.valid := io.ready
-    io.inst_axi.ar.bits.addr := next_pc
-    io.inst_axi.ar.bits.prot := 0.U(3.W)
-    io.inst_axi.aw.valid := false.B
-    io.inst_axi.aw.bits.addr := 0.U(64.W)
-    io.inst_axi.aw.bits.prot := 0.U(3.W)
-    io.inst_axi.w.valid := false.B
-    io.inst_axi.w.bits.data := 0.U(64.W)
-    io.inst_axi.w.bits.strb := 0.U(8.W)
+    io.inst_master.ar.valid := io.ready
+    io.inst_master.ar.bits.addr := next_pc
+    io.inst_master.ar.bits.prot := 0.U(3.W)
+    io.inst_master.aw.valid := false.B
+    io.inst_master.aw.bits.addr := 0.U(64.W)
+    io.inst_master.aw.bits.prot := 0.U(3.W)
+    io.inst_master.w.valid := false.B
+    io.inst_master.w.bits.data := 0.U(64.W)
+    io.inst_master.w.bits.strb := 0.U(8.W)
 
-    io.pf_ready = io.inst_axi.ar.fire
+    io.pf_ready = io.inst_master.ar.fire
 }
