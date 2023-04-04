@@ -45,17 +45,17 @@ class ES extends Module
         awfire := false.B
     }
 
-    val wfire = RegInit(false.B)
+    val _wfire = RegInit(false.B)
     io.data_master.w.valid := io.ds_es.mm_wen && awfire && !wfire
     io.data_master.w.bits.data := io.ds_es.mm_wdata
     io.data_master.w.bits.strb := io.ds_es.mm_mask
     when (io.data_master.w.fire)
     {
-        wfire := true.B
+        _wfire := true.B
     }
     .elsewhen
     {
-        wfire := false.B
+        _wfire := false.B
     }
 
     io.es_ms.pc := io.ds_es.pc
