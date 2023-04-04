@@ -10,7 +10,7 @@ class MS extends Module
 
         val mm_rdata = Input(UInt(64.W))
 
-        // val valid = Output(Bool())
+        val ready = Output(Bool())
     })
 
     val mm_rdata = MuxCase(

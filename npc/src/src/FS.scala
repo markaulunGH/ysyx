@@ -6,11 +6,12 @@ class FS extends Module
     val io = IO(new Bundle
     {
         val pc = Output(UInt(64.W))
-        val inst = Input(UInt(64.W))
+        
+        val axi = new AXI
 
         val fs_ds = new FS_DS
 
-        // val valid = Output(Bool())
+        val ready = Output(Bool())
     })
 
     val pc = RegInit(0x7ffffffc.U(64.W))
