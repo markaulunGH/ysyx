@@ -45,26 +45,23 @@ class AXI_Lite extends Module
 
     val arinit :: araddr :: Nil = Enum(2)
     val arstate = RegInit(arinit)
-    switch (arstate)
-    {
-        is (arinit) { arstate := Mux(io.ar.valid, araddr, arinit) }
-        is (araddr) { arstate := Mux(io.ar.ready, arinit, araddr) }
-    }
+    arstate := MuxLookup(arstate, arinit, Seq(
+        arinit -> Mux(io.ar.valid, araddr, arinit),
+        araddr -> Mux(io.ar.ready, arinit, araddr)
+    ))
 
     val rinit :: rdata :: Nil = Enum(2)
     val rstate = RegInit(rinit)
-    switch (rstate)
-    {
-        is (rinit) { rstate := Mux(io.r.valid, rdata, rinit) }
-        is (rdata) { rstate := rinit }
-    }
+    rstate := MuxLookup(rstate, rinit, Seq(
+        rinit -> Mux(io.r.valid, rdata, rinit),
+        rdata -> rinit
+    ))
 
     val winit :: waddr :: wdata :: Nil = Enum(3)
     val wstate = RegInit(winit)
-    switch (wstate)
-    {
-        is (winit) { wstate := Mux(io.aw.valid, waddr, winit) }
-        is (waddr) { wstate := Mux(io.aw.ready, wdata, waddr) }
-        is (wdata) { wstate := Mux(io.w.ready, winit, wdata) }
-    }
+    wstate := MuxLookup(wstate, winit, Seq(
+        winit -> Mux(io.aw.valid, waddr, winit),
+        waddr -> Mux(io.aw.ready, wdata, waddr),
+        wdata -> Mux(io.w.ready, winit, wdata)
+    ))
 }
