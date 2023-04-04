@@ -48,7 +48,7 @@ class Arbiter extends Module
     io.slave.b.ready          := io.data_slave.b.ready
     io.data_slave.b.bits.resp := io.slave.b.bits.resp
 
-    io.master.ar.valid      := Mux(data_req, io.data_master.ar.valid, io.pf.ar.valid) && (widle || io.axi.ar.bits.addr =/= io.axi.aw.bits.addr)
+    io.master.ar.valid      := Mux(data_req, io.data_master.ar.valid, io.inst_master.ar.valid) && (widle || io.master.ar.bits.addr =/= io.master.aw.bits.addr)
     io.data_master.ar.ready := Mux(data_req, io.master.ar.ready, false.B)
     io.inst_master.ar.ready := Mux(data_req, false.B, io.master.ar.ready)
     io.master.ar.bits.addr  := Mux(data_req, io.data_master.ar.bits.addr, io.pf.ar.bits.addr)
