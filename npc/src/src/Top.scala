@@ -159,8 +159,6 @@ class Top extends Module
     arbiter.io.data_master <> es.io.data_master
     arbiter.io.data_slave  <> ms.io.data_slave
     
-    io.pc := pf.io.pc
-
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
     rf.io.reg_w <> ws.io.reg_w
