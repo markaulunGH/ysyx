@@ -13,6 +13,8 @@ class MS extends Module
         val ready = Output(Bool())
     })
 
+    val axi = Module(new AXI)
+
     val mm_rdata = MuxCase(
         0.U(64.W),
         Seq(
