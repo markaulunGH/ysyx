@@ -6,6 +6,7 @@ class PF extends Module
     val io = IO(new Bundle
     {
         val pf_fs = new PF_FS
+        val pf_ds = new PF_DS
 
         val inst_master = new AXI_Lite_Master
 
@@ -14,7 +15,7 @@ class PF extends Module
     })
 
     val pc = RegInit(0x7ffffffc.U(64.W))
-    val next_pc = Mux(io.pf_fs.br_taken, io.pf_fs.br_target, pc + 4.U)
+    val next_pc = Mux(io.pf_ds.br_taken, io.pf_ds.br_target, pc + 4.U)
 
     when (io.pf_ready)
     {
