@@ -32,11 +32,11 @@ class RdataChannel extends Bundle
 
 class AXI_Lite extends Bundle
 {
-    val waddr = Decoupled(new WaddrChannel)
-    val wdata = Decoupled(new WdataChannel)
-    val wresp = Flipped(Decoupled(new WrespChannel))
-    val raddr = Decoupled(new RaddrChannel)
-    val rdata = Flipped(Decoupled(new RdataChannel))
+    val aw = Decoupled(new WaddrChannel)
+    val w  = Decoupled(new WdataChannel)
+    val b  = Flipped(Decoupled(new WrespChannel))
+    val ar = Decoupled(new RaddrChannel)
+    val r  = Flipped(Decoupled(new RdataChannel))
 }
 
 class SRAM extends Module
