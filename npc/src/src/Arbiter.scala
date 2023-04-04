@@ -24,14 +24,14 @@ class Arbiter extends Module
         data_req := false.B
     }
 
-    val write_finished = RegInit(true.B)
+    val widle = RegInit(true.B)
     when (io.data_master.aw.valid)
     {
-        write_finished := false.B
+        widle := false.B
     }
     .elsewhen (io.data_master.b.fire)
     {
-        write_finished := true.B
+        widle := true.B
     }
 
     io.master.aw.valid     := io.data_master.aw.valid
@@ -48,7 +48,7 @@ class Arbiter extends Module
     io.slave.b.ready        := io.data_slave.b.ready
     io.data_slave.b.bits.resp := io.slave.b.bits.resp
 
-    io.master.ar.valid     := Mux(data_req, io.ms.ar.valid, io.pf.ar.valid) && (write_finished || io.axi.ar.bits.addr =/= io.axi.aw.bits.addr)
+    io.master.ar.valid     := Mux(data_req, io.ms.ar.valid, io.pf.ar.valid) && (widle || io.axi.ar.bits.addr =/= io.axi.aw.bits.addr)
     io.data_master.ar.ready  := Mux(data_req, io.master.ar.ready, false.B)
     io.inst_master.ar.ready  := Mux(data_req, false.B, io.master.ar.ready)
     io.master.ar.bits.addr := Mux(data_req, io.ms.ar.bits.addr, io.pf.ar.bits.addr)
