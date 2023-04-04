@@ -5,6 +5,7 @@ class DS extends Module
 {
     val io = IO(new Bundle
     {
+        val pf_ds = Flipped(new PF_DS)
         val fs_ds = Flipped(new FS_DS)
         val ds_es = new DS_ES
 
@@ -12,6 +13,9 @@ class DS extends Module
         val csr_pc = Flipped(new Csr_pc)
 
         val ebreak = Output(Bool())
+
+        val ds_ready = Output(Bool())
+        val ready = Input(Bool())
     })
 
     val inst = io.fs_ds.inst
@@ -247,7 +251,6 @@ class DS extends Module
     )
     io.ds_es.mm_mask := mm_mask
     io.ds_es.mm_unsigned := inst_lbu || inst_lhu || inst_lwu
-    io.ds_es.res_from_mem := inst_load
 
     io.ds_es.csr_wen := inst_csr
     io.ds_es.csr_addr := csr_addr
@@ -273,4 +276,6 @@ class DS extends Module
     io.ds_es.mret := inst_mret
 
     io.ebreak := inst_ebreak
+
+    io.ds_ready := true.B
 }

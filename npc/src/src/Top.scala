@@ -1,12 +1,63 @@
 import chisel3._
 import chisel3.util._
 
+class WaddrChannel extends Bundle
+{
+    val addr = Output(UInt(64.W))
+    val prot = Output(UInt(3.W))
+}
+
+class WdataChannel extends Bundle
+{
+    val data = Output(UInt(64.W))
+    val strb = Output(UInt(8.W))
+}
+
+class WrespChannel extends Bundle
+{
+    val resp = Output(UInt(2.W))
+}
+
+class RaddrChannel extends Bundle
+{
+    val addr = Output(UInt(64.W))
+    val prot = Output(UInt(3.W))
+}
+
+class RdataChannel extends Bundle
+{
+    val data = Output(UInt(64.W))
+    val resp = Output(UInt(2.W))
+}
+
+class AXI_Lite_Master extends Bundle
+{
+    val aw = Decoupled(new WaddrChannel)
+    val w  = Decoupled(new WdataChannel)
+    val ar = Decoupled(new RaddrChannel)
+}
+
+class AXI_Lite_Slave extends Bundle
+{
+    val b = Flipped(Decoupled(new WrespChannel))
+    val r = Flipped(Decoupled(new RdataChannel))
+}
+
+class PF_FS extends Bundle
+{
+    val pc = Output(UInt(64.W))
+}
+
+class PF_DS extends Bundle
+{
+    val br_taken = Input(Bool())
+    val br_target = Input(UInt(64.W))
+}
+
 class FS_DS extends Bundle
 {
     val inst = Output(UInt(64.W))
     val pc = Output(UInt(64.W))
-    val br_taken = Input(Bool())
-    val br_target = Input(UInt(64.W))
 }
 
 class DS_ES extends Bundle
@@ -21,7 +72,6 @@ class DS_ES extends Bundle
     val mm_wdata = Output(UInt(64.W))
     val mm_mask = Output(UInt(8.W))
     val mm_unsigned = Output(Bool())
-    val res_from_mem = Output(Bool())
     val csr_wen = Output(Bool())
     val csr_addr = Output(UInt(12.W))
     val csr_wmask = Output(UInt(64.W))
@@ -37,9 +87,10 @@ class ES_MS extends Bundle
     val alu_result = Output(UInt(64.W))
     val rf_wen = Output(Bool())
     val rf_waddr = Output(UInt(5.W))
+    val mm_ren = Output(Bool())
+    val mm_wen = Output(Bool())
     val mm_mask = Output(UInt(8.W))
     val mm_unsigned = Output(Bool())
-    val res_from_mem = Output(Bool())
     val csr_wen = Output(Bool())
     val csr_addr = Output(UInt(64.W))
     val csr_wmask = Output(UInt(64.W))
@@ -88,10 +139,18 @@ class Top extends Module
     val es = Module(new ES)
     val ms = Module(new MS)
     val ws = Module(new WS)
+    pf.io.pf_fs <> fs.io.pf_fs
+    pf.io.pf_ds <> ds.io.pf_ds
     fs.io.fs_ds <> ds.io.fs_ds
     ds.io.ds_es <> es.io.ds_es
     es.io.es_ms <> ms.io.es_ms
     ms.io.ms_ws <> ws.io.ms_ws
+    val ready = fs.io.fs_ready && ds.io.ds_ready && es.io.es_ready && ms.io.ms_ready && ws.io.ws_ready
+    fs.io.ready := ready
+    ds.io.ready := ready
+    es.io.ready := ready
+    ms.io.ready := ready
+    ws.io.ready := ready
     
     io.pc := fs.io.pc
     fs.io.inst := io.inst
