@@ -6,6 +6,7 @@ class FS extends Module
     val io = IO(new Bundle
     {
         val pc = Output(UInt(64.W))
+        val inst = Input(UInt(64.W))
         
         val axi = new AXI
 
