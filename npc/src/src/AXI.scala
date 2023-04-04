@@ -12,10 +12,7 @@ class AXI extends Module
     val arstate = RegInit(arinit)
     switch (arstate)
     {
-        is (arinit)
-        {
-            arstate := Mux(io.axi.ar.valid, araddr, arinit)
-        }
+        is (arinit) arstate := Mux(io.axi.ar.valid, araddr, arinit)
         is (araddr)
         {
             arstate := Mux(io.axi.ar.ready, arinit, araddr)
