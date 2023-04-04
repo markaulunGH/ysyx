@@ -1,7 +1,7 @@
 import chisel3._
 import chisel3.util._
 
-class Arbiter extends Module
+class AXI_Arbiter extends Module
 {
     val io = IO(new Bundle
     {

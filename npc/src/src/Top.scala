@@ -153,7 +153,7 @@ class Top extends Module
     ms.io.ready := ready
     ws.io.ready := ready
 
-    val arbiter = Module(new Arbiter)
+    val arbiter = Module(new AXI_Arbiter)
     arbiter.io.inst_master <> pf.io.inst_master
     arbiter.io.inst_slave  <> fs.io.inst_slave
     arbiter.io.data_master <> es.io.data_master
