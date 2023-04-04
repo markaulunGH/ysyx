@@ -10,6 +10,8 @@ class PF extends Module
 
         val inst_master = new AXI_Lite_Master
 
+        val pc = Output(UInt(64.W))
+
         val pf_ready = Output(Bool())
         val ready = Input(Bool())
     })

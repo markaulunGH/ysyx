@@ -159,7 +159,7 @@ class Top extends Module
     arbiter.io.data_master <> es.io.data_master
     arbiter.io.data_slave  <> ms.io.data_slave
     
-    io.pc := fs.io.pc
+    io.pc := pf.io.pc
     fs.io.inst := io.inst
     
     io.mm_ren := es.io.mm_ren
