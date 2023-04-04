@@ -42,5 +42,5 @@ class MS extends Module
     io.ms_ws.exc_cause := io.es_ms.exc_cause
     io.ms_ws.mret := io.es_ms.mret
 
-    io.ms_ready = (io.es_ms.mm_ren && io.data_slave.r.fire) || (io.es_ms.mm_wen && io.data_slave.b.fire) || (!io.es_ms.mm_ren && !io.es_ms.mm_wen)
+    io.ms_ready := (io.es_ms.mm_ren && io.data_slave.r.fire) || (io.es_ms.mm_wen && io.data_slave.b.fire) || (!io.es_ms.mm_ren && !io.es_ms.mm_wen)
 }
