@@ -54,7 +54,7 @@ void checkregs(CPU_state *ref, vaddr_t pc)
     if (ref->pc != cpu.pc)
     {
         printf("Difftest failed\n");
-        printf("cpu.pc = %016lx\nref.pc = %016lx\n", cpu.pc, ref->pc);
+        printf("cpu.pc = %016lx\nref.pc = %016lx", cpu.pc, ref->pc);
         result = false;
     }
     for (int i = 0; i < 32; ++ i)
