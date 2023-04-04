@@ -19,17 +19,17 @@ class Arbiter extends Module
     {
         data_req := true.B
     }
-    .elsewhen (io.ms.r.fire)
+    .elsewhen (io.data_master.r.fire)
     {
         data_req := false.B
     }
 
     val write_finished = RegInit(true.B)
-    when (io.ms.aw.valid)
+    when (io.data_master.aw.valid)
     {
         write_finished := false.B
     }
-    .elsewhen (io.ms.b.fire)
+    .elsewhen (io.data_master.b.fire)
     {
         write_finished := true.B
     }
