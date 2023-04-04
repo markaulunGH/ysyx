@@ -14,6 +14,8 @@ class FS extends Module
     })
 
     val axi = Module(new AXI_Lite)
+    axi.io.ar.addr := io.pc
+    axi.io.ar.valid := axi.arstate === 0.U
 
     val pc = RegInit(0x7ffffffc.U(64.W))
     pc := Mux(io.fs_ds.br_taken, io.fs_ds.br_target, pc + 4.U)
