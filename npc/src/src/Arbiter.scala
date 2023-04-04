@@ -29,7 +29,7 @@ class Arbiter extends Module
     {
         widle := false.B
     }
-    .elsewhen (io.data_master.b.fire)
+    .elsewhen (io.data_slave.b.fire)
     {
         widle := true.B
     }
