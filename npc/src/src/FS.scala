@@ -10,6 +10,7 @@ class FS extends Module
 
         val inst_slave = new AXI_Lite_Slave
 
+        val inst = Output(UInt(64.W))
         val fs_ready = Output(Bool())
         val ready = Input(Bool())
     })
@@ -36,5 +37,6 @@ class FS extends Module
     io.fs_ds.inst := Mux(inst_buffer_valid, inst_buffer, inst)
     io.fs_ds.pc := io.pf_fs.pc
 
+    io.inst := Mux(inst_buffer_valid, inst_buffer, inst)
     io.fs_ready := io.inst_slave.r.fire || inst_buffer_valid
 }
