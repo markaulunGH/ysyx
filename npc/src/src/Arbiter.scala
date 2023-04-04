@@ -19,7 +19,7 @@ class Arbiter extends Module
     {
         data_req := true.B
     }
-    .elsewhen (io.data_master.r.fire)
+    .elsewhen (io.data_slave.r.fire)
     {
         data_req := false.B
     }
