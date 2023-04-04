@@ -5,8 +5,11 @@ class DS extends Module
 {
     val io = IO(new Bundle
     {
+        val pf_ds = Flipped(new PF_DS)
         val fs_ds = Flipped(new FS_DS)
         val ds_es = new DS_ES
+
+        val inst_axi = new AXI_Lite_Slave
 
         val reg_r = Flipped(new Reg_r)
         val csr_pc = Flipped(new Csr_pc)
@@ -14,7 +17,14 @@ class DS extends Module
         val ebreak = Output(Bool())
     })
 
-    val inst = io.fs_ds.inst
+    val inst = io.inst_axi.r.bits.data
+
+    io.inst_axi.r.ready := true.B
+    when (io.inst_axi.r.fire)
+    {
+
+    }
+
     val opcode = inst(6, 0)
     val funct3 = inst(14, 12)
     val funct7 = inst(31, 25)

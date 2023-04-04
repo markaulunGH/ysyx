@@ -8,6 +8,8 @@ class ES extends Module
         val ds_es = Flipped(new DS_ES)
         val es_ms = new ES_MS
 
+        val data_axi = new AXI_Lite_Master
+
         val mm_ren = Output(UInt(1.W))
         val mm_raddr = Output(UInt(64.W))
         val mm_wen = Output(UInt(1.W))
@@ -15,9 +17,25 @@ class ES extends Module
         val mm_wdata = Output(UInt(64.W))
         val mm_mask = Output(UInt(8.W))
     })
+
     val alu = Module(new Alu)
     io.ds_es.alu_in <> alu.io.in
     val alu_result = Mux(io.ds_es.inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)
+
+    io.data_axi.ar.valid := io.ds_es.mm_ren
+    io.data_axi.ar.bits.addr := io.ds_es.mm_raddr
+    io.data_axi.ar.bits.prot := 0.U(3.W)
+    when (io.inst_axi.ar.fire)
+    {
+
+    }
+    io.data_axi.aw.valid := io.ds_es.mm_wen
+    io.data_axi.aw.bits.addr := io.ds_es.mm_waddr
+    io.data_axi.aw.bits.prot := 0.U(3.W)
+    when (io.inst_axi.aw.fire)
+    {
+
+    }
 
     io.mm_ren := io.ds_es.mm_ren
     io.mm_raddr := alu_result
