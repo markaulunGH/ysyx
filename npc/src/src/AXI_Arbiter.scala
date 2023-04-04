@@ -36,6 +36,7 @@ class AXI_Arbiter extends Module
 
     io.master.aw.valid      := io.data_master.aw.valid
     io.data_master.aw.ready := io.master.aw.ready
+    io.inst_master.aw.ready := false.B
     io.master.aw.bits.addr  := io.data_master.aw.bits.addr
     io.master.aw.bits.prot  := io.data_master.aw.bits.prot
 
@@ -46,6 +47,7 @@ class AXI_Arbiter extends Module
     io.master.w.bits.strb  := io.data_master.w.bits.strb
 
     io.data_slave.b.valid     := io.slave.b.valid
+    io.inst_slave.b.valid     := false.B
     io.slave.b.ready          := io.data_slave.b.ready
     io.data_slave.b.bits.resp := io.slave.b.bits.resp
 
