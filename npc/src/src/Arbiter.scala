@@ -12,7 +12,7 @@ class Arbiter extends Module
 
     val ms_req = io.ms.ar.valid || io.ms.aw.valid
 
-    io.axi.aw.addr := Mux(ms_req, io.ms.aw.addr, io.fs.aw.addr)
+    val addr := Mux(ms_req, io.ms.aw.addr, io.fs.aw.addr)
     io.axi.aw.prot := Mux(ms_req, io.ms.aw.prot, io.fs.aw.prot)
     io.axi.w.data  := Mux(ms_req, io.ms.w.data,  io.fs.w.data)
     io.axi.w.strb  := Mux(ms_req, io.ms.w.strb,  io.fs.w.strb)
