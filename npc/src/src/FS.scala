@@ -14,7 +14,7 @@ class FS extends Module
     })
 
     val axi = Module(new AXI_Lite)
-    axi.io.ar.addr := io.pc
+    axi.io.ar.bits.addr := io.pc
     axi.io.ar.valid := axi.arstate === 0.U
 
     val pc = RegInit(0x7ffffffc.U(64.W))
