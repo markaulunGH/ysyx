@@ -160,14 +160,6 @@ class Top extends Module
     arbiter.io.data_slave  <> ms.io.data_slave
     
     io.pc := pf.io.pc
-    
-    io.mm_ren := es.io.mm_ren
-    io.mm_raddr := es.io.mm_raddr
-    ms.io.mm_rdata := io.mm_rdata
-    io.mm_wen := es.io.mm_wen
-    io.mm_waddr := es.io.mm_waddr
-    io.mm_wdata := es.io.mm_wdata
-    io.mm_mask := es.io.mm_mask
 
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
