@@ -3,7 +3,7 @@
 
 #include <common.h>
 
-#define MEM_SIZE 0xf000000
+#define MEM_SIZE 0x8000000
 #define MEM_BASE 0x80000000
 
 uint8_t *guest_to_host(paddr_t paddr);
