@@ -35,7 +35,7 @@ class Arbiter extends Module
     }
 
     io.master.aw.valid     := io.data_master.aw.valid
-    io.data_master.aw.ready  := io.master.ready
+    io.data_master.aw.ready  := io.master.aw.ready
     io.master.aw.bits.addr := io.data_master.aw.bits.addr
     io.master.aw.bits.prot := io.data_master.aw.bits.prot
 
