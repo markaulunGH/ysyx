@@ -5,7 +5,7 @@ class AXI extends Module
 {
     val io = IO(new Bundle
     {
-        val axi = new AXI
+        val axi = new AXI_Lite
     })
 
     val arinit :: araddr :: Nil = Enum(2)
