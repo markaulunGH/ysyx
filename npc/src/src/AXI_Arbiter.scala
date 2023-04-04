@@ -50,6 +50,7 @@ class AXI_Arbiter extends Module
     io.inst_slave.b.valid     := false.B
     io.slave.b.ready          := io.data_slave.b.ready
     io.data_slave.b.bits.resp := io.slave.b.bits.resp
+    io.inst_slave.b.bits.resp := 0.U(3.W)
 
     io.master.ar.valid      := Mux(data_req, io.data_master.ar.valid, io.inst_master.ar.valid) && (widle || io.master.ar.bits.addr =/= io.master.aw.bits.addr)
     io.data_master.ar.ready := Mux(data_req, io.master.ar.ready, false.B)
