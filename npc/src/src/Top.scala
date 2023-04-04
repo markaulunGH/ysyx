@@ -119,17 +119,6 @@ class Top extends Module
 {
     val io = IO(new Bundle
     {
-        val pc = Output(UInt(64.W))
-        val inst = Input(UInt(64.W))
-
-        val mm_ren = Output(Bool())
-        val mm_raddr = Output(UInt(64.W))
-        val mm_rdata = Input(UInt(64.W))
-        val mm_wen = Output(Bool())
-        val mm_waddr = Output(UInt(64.W))
-        val mm_wdata = Output(UInt(64.W))
-        val mm_mask = Output(UInt(8.W))
-
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
     })
