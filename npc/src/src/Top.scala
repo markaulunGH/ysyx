@@ -148,6 +148,10 @@ class Top extends Module
     arbiter.io.inst_slave  <> fs.io.inst_slave
     arbiter.io.data_master <> es.io.data_master
     arbiter.io.data_slave  <> ms.io.data_slave
+
+    val sram = Module(new Sram)
+    sram.io.master <> arbiter.io.master
+    sram.io.slave  <> arbiter.io.slave
     
     val rf = Module(new Regfile)
     rf.io.reg_r <> ds.io.reg_r
