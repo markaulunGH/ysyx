@@ -41,6 +41,7 @@ class AXI_Arbiter extends Module
 
     io.master.w.valid      := io.data_master.w.valid
     io.data_master.w.ready := io.master.w.ready
+    io.inst_master.w.ready := false.B
     io.master.w.bits.data  := io.data_master.w.bits.data
     io.master.w.bits.strb  := io.data_master.w.bits.strb
 
