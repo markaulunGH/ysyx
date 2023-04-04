@@ -13,15 +13,15 @@ class Arbiter extends Module
         val slave        = new AXI_Lite_Slave
     })
 
-    val ms_req = RegInit(false.B)
+    val data_req = RegInit(false.B)
 
-    when (io.ms.ar.valid)
+    when (io.data_master.ar.valid)
     {
-        ms_req := true.B
+        data_req := true.B
     }
     .elsewhen (io.ms.r.fire)
     {
-        ms_req := false.B
+        data_req := false.B
     }
 
     val write_finished = RegInit(true.B)
@@ -48,15 +48,15 @@ class Arbiter extends Module
     io.slave.b.ready        := io.data_slave.b.ready
     io.data_slave.b.bits.resp := io.slave.b.bits.resp
 
-    io.master.ar.valid     := Mux(ms_req, io.ms.ar.valid, io.pf.ar.valid) && (write_finished || io.axi.ar.bits.addr =/= io.axi.aw.bits.addr)
-    io.data_master.ar.ready  := Mux(ms_req, io.master.ar.ready, false.B)
-    io.inst_master.ar.ready  := Mux(ms_req, false.B, io.master.ar.ready)
-    io.master.ar.bits.addr := Mux(ms_req, io.ms.ar.bits.addr, io.pf.ar.bits.addr)
-    io.master.ar.bits.prot := Mux(ms_req, io.ms.ar.bits.prot, io.pf.ar.bits.prot)
+    io.master.ar.valid     := Mux(data_req, io.ms.ar.valid, io.pf.ar.valid) && (write_finished || io.axi.ar.bits.addr =/= io.axi.aw.bits.addr)
+    io.data_master.ar.ready  := Mux(data_req, io.master.ar.ready, false.B)
+    io.inst_master.ar.ready  := Mux(data_req, false.B, io.master.ar.ready)
+    io.master.ar.bits.addr := Mux(data_req, io.ms.ar.bits.addr, io.pf.ar.bits.addr)
+    io.master.ar.bits.prot := Mux(data_req, io.ms.ar.bits.prot, io.pf.ar.bits.prot)
 
-    io.data_slave.r.valid     := Mux(ms_req, io.slave.r.valid, false.B)
-    io.inst_slave.r.valid     := Mux(ms_req, false.B, io.slave.r.valid)
-    io.slave.r.ready        := Mux(ms_req, io.data_slave.r.ready, io.inst_slave.r.ready)
+    io.data_slave.r.valid     := Mux(data_req, io.slave.r.valid, false.B)
+    io.inst_slave.r.valid     := Mux(data_req, false.B, io.slave.r.valid)
+    io.slave.r.ready        := Mux(data_req, io.data_slave.r.ready, io.inst_slave.r.ready)
     io.data_slave.r.bits.data := io.slave.r.bits.data
     io.inst_slave.r.bits.data := io.slave.r.bits.data
     io.data_slave.r.bits.resp := io.slave.r.bits.resp
