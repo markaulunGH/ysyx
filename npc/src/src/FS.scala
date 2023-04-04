@@ -11,7 +11,7 @@ class FS extends Module
         val inst_slave = new AXI_Lite_Slave
 
         val fs_ready = Output(Bool())
-        val ready = Input(UInt(64.W))
+        val ready = Input(Bool())
     })
 
     val inst = io.inst_slave.r.bits.data
