@@ -39,7 +39,7 @@ class AXI_Lite_IO extends Bundle
     val r  = Flipped(Decoupled(new RdataChannel))
 }
 
-class AXI extends Module
+class AXI_Lite extends Module
 {
     val io = IO(new AXI_Lite_IO)
 
