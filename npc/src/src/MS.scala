@@ -24,7 +24,7 @@ class MS extends Module
             (io.es_ms.mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(io.es_ms.mm_unsigned, 0.U(1.W), data(7))),  data(7, 0)),
             (io.es_ms.mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(io.es_ms.mm_unsigned, 0.U(1.W), data(15))), data(15, 0)),
             (io.es_ms.mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(io.es_ms.mm_unsigned, 0.U(1.W), data(31))), data(31, 0)),
-            (io.es_ms.mm_mask === 0xff.U) -> io.mm_rdata
+            (io.es_ms.mm_mask === 0xff.U) -> data
         )
     )
 
