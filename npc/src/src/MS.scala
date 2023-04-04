@@ -17,7 +17,7 @@ class MS extends Module
     io.data_slave.r.ready := true.B
     io.data_slave.b.ready := true.B
 
-    val data = io.data_slave.r.data
+    val data = io.data_slave.r.bits.data
     val mm_rdata = MuxCase(
         0.U(64.W),
         Seq(
