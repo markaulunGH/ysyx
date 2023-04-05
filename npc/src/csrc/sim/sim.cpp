@@ -28,8 +28,6 @@ void reset()
         top->reset = i < 99;
         cycle_end();
     }
-    top->eval();
-    cycle_end();
 }
 
 void init_simulation(int argc, char** argv)
