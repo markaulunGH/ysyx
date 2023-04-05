@@ -23,7 +23,7 @@ class SRAM extends Module
     when (io.master.aw.fire)
     {
         awfire := true.B
-        awaddr := io.master.aw.bist.addr
+        awaddr := io.master.aw.bits.addr
     }
     .elsewhen (io.master.b.fire)
     {
