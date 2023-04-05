@@ -193,14 +193,9 @@ static void exec_once(Decode *s)
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
     bool init = g_nr_guest_inst < 1;
-    printf("%d ", top->io_ready);
-    // printf("%x\n", top->io_pc);
-    int cnt = 0;
-    while (!top->io_ready)
+    do
     {
-        ++ cnt;
         init = false;
-        // printf("%d\n", init);
         top->eval();
         if (top->io_mm_ren)
         {
@@ -252,8 +247,7 @@ static void exec_once(Decode *s)
             }
         }
         cycle_end();
-    }
-    printf("%d\n", cnt);
+    } while (!top->io_ready || init);
     update_regs();
     if (top->io_ebreak)
     {
