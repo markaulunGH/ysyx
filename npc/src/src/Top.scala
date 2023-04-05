@@ -133,8 +133,6 @@ class Top extends Module
         val rf = Output(Vec(32, UInt(64.W)))
         val rf_wen = Output(Bool())
         val ready = Output(Bool())
-
-        val ms_wen = Output(Bool())
     })
     
     val pf = Module(new PF)
@@ -188,6 +186,4 @@ class Top extends Module
     io.rf := rf.io.rf
     io.rf_wen := rf.io.rf_wen
     io.ready := ready
-
-    io.ms_wen := ms.io.mm_wen
 }
