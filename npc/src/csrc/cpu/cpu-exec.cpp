@@ -192,7 +192,6 @@ static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
-    int init = g_nr_guest_inst < 1;
     do
     {
         top->eval();
