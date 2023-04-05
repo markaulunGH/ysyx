@@ -12,8 +12,6 @@ class MS extends Module
 
         val ms_ready = Output(Bool())
         val ready = Input(Bool())
-
-        val mm_wen = Output(Bool())
     })
 
     io.data_slave.r.ready := true.B
