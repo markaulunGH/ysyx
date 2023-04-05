@@ -12,11 +12,11 @@ class FS extends Module
 
         val fs_ready = Output(Bool())
         val ready = Input(Bool())
-        val inst = Output(UInt(64.W))
+        val inst = Output(UInt(32.W))
     })
 
     val inst = io.inst_slave.r.bits.data
-    val inst_buffer = RegInit(0.U(64.W))
+    val inst_buffer = RegInit(0.U(32.W))
     val inst_buffer_valid = RegInit(true.B)
 
     io.inst_slave.r.ready := true.B
