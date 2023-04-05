@@ -3,7 +3,7 @@
 
 const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
-VerilatedVcdC* tfp = new VerilatedVcdC;
+VerilatedFstC* tfp = new VerilatedFstC;
 
 void cycle_end()
 {
@@ -40,7 +40,7 @@ void init_simulation(int argc, char** argv)
     contextp->commandArgs(argc, argv);
 
     top->trace(tfp, 0);
-    tfp->open("logs/dump.vcd");
+    tfp->open("logs/dump.fst");
 
     reset();
 }
