@@ -246,7 +246,7 @@ static void exec_once(Decode *s)
         }
         cycle_end();
     } while (!top->io_ready);
-    printf("%x\n", top->io_pc);
+    printf("%x %d\n", top->io_pc, top->io_ready);
     
     update_regs();
     if (top->io_ebreak)
