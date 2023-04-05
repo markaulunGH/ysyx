@@ -18,7 +18,7 @@ class PF extends Module
     val pc = RegInit(0x7ffffffc.U(64.W))
     val next_pc = Mux(io.pf_ds.br_taken, io.pf_ds.br_target, pc + 4.U)
 
-    when (io.pf_ready)
+    when (io.ready)
     {
         pc := next_pc
     }
