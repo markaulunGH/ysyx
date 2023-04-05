@@ -23,7 +23,7 @@ class PF extends Module
         pc := next_pc
     }
 
-    val buffer = RegInit(true.B)
+    val buffer = RegInit(false.B)
     io.inst_master.ar.valid := !buffer && !reset.asBool()
     io.inst_master.ar.bits.addr := next_pc
     io.inst_master.ar.bits.prot := 0.U(3.W)
