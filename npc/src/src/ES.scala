@@ -22,7 +22,7 @@ class ES extends Module
     io.data_master.ar.valid := io.ds_es.mm_ren && !arfire
     io.data_master.ar.bits.addr := alu_result
     io.data_master.ar.bits.prot := 0.U(3.W)
-    when (io.data_master.ar.fire)
+    when (io.data_master.ar.fire && !io.ready)
     {
         arfire := true.B
     }
@@ -35,7 +35,7 @@ class ES extends Module
     io.data_master.aw.valid := io.ds_es.mm_wen && !awfire
     io.data_master.aw.bits.addr := alu_result
     io.data_master.aw.bits.prot := 0.U(3.W)
-    when (io.data_master.aw.fire)
+    when (io.data_master.aw.fire && !io.ready)
     {
         awfire := true.B
     }
@@ -48,7 +48,7 @@ class ES extends Module
     io.data_master.w.valid := io.ds_es.mm_wen && !wfire
     io.data_master.w.bits.data := io.ds_es.mm_wdata
     io.data_master.w.bits.strb := io.ds_es.mm_mask
-    when (io.data_master.w.fire)
+    when (io.data_master.w.fire && !io.ready)
     {
         wfire := true.B
     }
