@@ -58,7 +58,7 @@ class SRAM extends Module
     when (io.master.ar.fire)
     {
         arfire := true.B
-        raddr := io.master.ar.bits.addr
+        araddr := io.master.ar.bits.addr
     }
     .elsewhen (io.slave.r.fire)
     {
@@ -66,7 +66,7 @@ class SRAM extends Module
     }
 
     io.mm_ren := arfire
-    io.mm_raddr := raddr
+    io.mm_raddr := araddr
     io.slave.r.valid := arfire
     io.slave.r.bits.data := io.mm_rdata
     io.slave.r.bits.resp := 0.U(2.W)
