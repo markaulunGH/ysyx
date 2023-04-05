@@ -20,7 +20,7 @@ void cycle_end()
     contextp->timeInc(1);
     top->clock = 1;
     printf("%d\n", top->io_ready);
-    top->eval();
+    // top->eval();
     printf("%d\n", top->io_ready);
 }
 
