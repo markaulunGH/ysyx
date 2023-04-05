@@ -147,7 +147,7 @@ class Top extends Module
     es.io.es_ms <> ms.io.es_ms
     ms.io.ms_ws <> ws.io.ms_ws
     val reset = Module.reset
-    val ready = fs.io.fs_ready && ds.io.ds_ready && es.io.es_ready && ms.io.ms_ready && ws.io.ws_ready && !reset
+    val ready = fs.io.fs_ready && ds.io.ds_ready && es.io.es_ready && ms.io.ms_ready && ws.io.ws_ready && !reset.asBool()
     pf.io.ready := ready
     fs.io.ready := ready
     ds.io.ready := ready
