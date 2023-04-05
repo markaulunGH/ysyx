@@ -12,25 +12,25 @@ void cycle_end()
 #endif
     contextp->timeInc(1);
     top->clock = 0;
-    printf("%d\n", top->io_ready);
+    // printf("%d\n", top->io_ready);
     top->eval();
 #ifdef CONFIG_WAVE
     tfp->dump(contextp->time());
 #endif
     contextp->timeInc(1);
     top->clock = 1;
-    printf("%d\n", top->io_ready);
+    // printf("%d\n", top->io_ready);
     // top->eval();
-    printf("%d\n", top->io_ready);
+    // printf("%d\n", top->io_ready);
 }
 
 void reset()
 {
     for (int i = 0; i < 100; ++ i)
     {
+        top->eval();
         top->reset = i < 99;
         cycle_end();
-        top->eval();
     }
 }
 
