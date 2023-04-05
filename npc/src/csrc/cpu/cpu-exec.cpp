@@ -247,6 +247,7 @@ static void exec_once(Decode *s)
         }
         cycle_end();
     } while (!top->io_ready || init --);
+    printf("%x\n", top->io_pc);
     update_regs();
     if (top->io_ebreak)
     {
