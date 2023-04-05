@@ -13,8 +13,6 @@ class PF extends Module
         val pf_ready = Output(Bool())
         val ready = Input(Bool())
         val pc = Output(UInt(64.W))
-
-        val arfire = Output(Bool())
     })
 
     val pc = RegInit(0x7ffffffc.U(64.W))
