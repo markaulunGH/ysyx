@@ -17,9 +17,9 @@ class FS extends Module
 
     val inst = io.inst_slave.r.bits.data
     val inst_buffer = RegInit(0.U(32.W))
-    val inst_buffer_valid = RegInit(true.B)
+    val inst_buffer_valid = RegInit(true.B) // pretend that there is an instruction in the buffer before the first instruction is fetched; maybe problematic
 
-    io.inst_slave.r.ready := true.B
+    io.inst_slave.r.ready := !inst_buffer_valid && !reset.asBool()
     when (io.inst_slave.r.fire)
     {
         inst_buffer := inst
@@ -34,7 +34,7 @@ class FS extends Module
         inst_buffer_valid := false.B
     }
 
-    io.inst_slave.b.ready := true.B
+    io.inst_slave.b.ready := false.B
 
     io.fs_ds.inst := Mux(inst_buffer_valid, inst_buffer, inst)
     io.fs_ds.pc := io.pf_fs.pc
