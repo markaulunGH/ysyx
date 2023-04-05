@@ -192,7 +192,7 @@ static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
     printf("before %x %d\n", top->io_pc, top->io_ready);
-    printf("%d\n", top->io_ms_wen);
+    // printf("%d\n", top->io_ms_wen);
     s->npc.inst.val = top->io_inst;
     do
     {
