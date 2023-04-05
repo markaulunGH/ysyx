@@ -191,58 +191,61 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
-    s->npc.inst.val = top->io_inst = paddr_read(top->io_pc, 4);
-    top->eval();
-    if (top->io_mm_ren)
+    s->npc.inst.val = top->io_inst;
+    while (!top->io_rf_wen)
     {
-        if (in_pmem(top->io_mm_raddr))
-        {
-#ifdef CONFIG_MTRACE
-            log_write("read  memory 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
-#endif
-            top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
-        }
-        else
-        {
-#ifdef CONFIG_DTRACE
-            log_write("read  device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
-#endif
-            top->io_mm_rdata = mmio_read(top->io_mm_raddr, 8);
-            difftest_skip_ref();
-        }
         top->eval();
-    }
-    if (top->io_mm_wen)
-    {
-        if (likely(in_pmem(top->io_mm_waddr)))
+        if (top->io_mm_ren)
         {
+            if (in_pmem(top->io_mm_raddr))
+            {
 #ifdef CONFIG_MTRACE
-            log_write("write memory 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+                log_write("read  memory 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
 #endif
-            switch (top->io_mm_mask)
-            {
-                case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata); break;
-                case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata); break;
-                case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
-                case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
+                top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
             }
-        }
-        else
-        {
+            else
+            {
 #ifdef CONFIG_DTRACE
-            log_write("write device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+                log_write("read  device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
 #endif
-            switch (top->io_mm_mask)
-            {
-                case 0x1:  mmio_write(top->io_mm_waddr, 1, top->io_mm_wdata); break;
-                case 0x3:  mmio_write(top->io_mm_waddr, 2, top->io_mm_wdata); break;
-                case 0xf:  mmio_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
-                case 0xff: mmio_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
+                top->io_mm_rdata = mmio_read(top->io_mm_raddr, 8);
+                difftest_skip_ref();
             }
-            difftest_skip_ref();
+            top->eval();
         }
+        if (top->io_mm_wen)
+        {
+            if (likely(in_pmem(top->io_mm_waddr)))
+            {
+#ifdef CONFIG_MTRACE
+                log_write("write memory 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+#endif
+                switch (top->io_mm_mask)
+                {
+                    case 0x1:  paddr_write(top->io_mm_waddr, 1, top->io_mm_wdata); break;
+                    case 0x3:  paddr_write(top->io_mm_waddr, 2, top->io_mm_wdata); break;
+                    case 0xf:  paddr_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
+                    case 0xff: paddr_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
+                }
+            }
+            else
+            {
+#ifdef CONFIG_DTRACE
+                log_write("write device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+#endif
+                switch (top->io_mm_mask)
+                {
+                    case 0x1:  mmio_write(top->io_mm_waddr, 1, top->io_mm_wdata); break;
+                    case 0x3:  mmio_write(top->io_mm_waddr, 2, top->io_mm_wdata); break;
+                    case 0xf:  mmio_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
+                    case 0xff: mmio_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
+                }
+                difftest_skip_ref();
+            }
+        }
+        cycle_end();
     }
-    cycle_end();
     update_regs();
     if (top->io_ebreak)
     {

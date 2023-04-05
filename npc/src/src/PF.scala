@@ -12,6 +12,7 @@ class PF extends Module
 
         val pf_ready = Output(Bool())
         val ready = Input(Bool())
+        val pc = Output(UInt(64.W))
     })
 
     val pc = RegInit(0x7ffffffc.U(64.W))
@@ -35,4 +36,5 @@ class PF extends Module
     io.pf_fs.pc := pc
     
     io.pf_ready := io.inst_master.ar.fire
+    io.pc := pc
 }

@@ -127,8 +127,11 @@ class Top extends Module
         val mm_wdata = Output(UInt(64.W))
         val mm_mask = Output(UInt(8.W))
 
+        val pc = Output(UInt(64.W))
+        val inst = Output(UInt(64.W))
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
+        val rf_wen = Output(Bool())
     })
     
     val pf = Module(new PF)
@@ -176,6 +179,9 @@ class Top extends Module
     csr.io.csr_pc <> ds.io.csr_pc
     csr.io.csr_rw <> ws.io.csr_rw
     
+    io.pc := pf.io.pc
+    io.inst := fs.io.inst
     io.ebreak := ds.io.ebreak
     io.rf := rf.io.rf
+    io.rf_wen := rf.io.rf_wen
 }
