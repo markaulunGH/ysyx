@@ -25,6 +25,7 @@ class PF extends Module
         pc := next_pc
     }
 
+    val buffer = RegInit(false.B)
     io.inst_master.ar.valid := !buffer && !reset.asBool()
     io.inst_master.ar.bits.addr := next_pc
     io.inst_master.ar.bits.prot := 0.U(3.W)
@@ -35,7 +36,6 @@ class PF extends Module
     io.inst_master.w.bits.data := 0.U(64.W)
     io.inst_master.w.bits.strb := 0.U(8.W)
 
-    val buffer = RegInit(false.B)
     when (io.inst_master.ar.fire && !io.ready)
     {
         buffer := true.B
