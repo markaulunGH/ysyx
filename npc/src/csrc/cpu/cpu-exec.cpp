@@ -191,7 +191,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
-    printf("%d\n", top->io_pc);
+    printf("%x\n", top->io_pc);
     s->npc.inst.val = top->io_inst;
     do
     {
