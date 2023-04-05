@@ -189,5 +189,5 @@ class Top extends Module
     io.rf_wen := rf.io.rf_wen
     io.ready := ready
 
-    io.ms_wen := io.ms.io.mm_wen
+    io.ms_wen := ms.io.mm_wen
 }
