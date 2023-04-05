@@ -2,7 +2,7 @@
 #define __SIM_H__
 
 #include "VTop.h"
-#include "verilated_fst_c.h"
+#include "verilated_vcd_c.h"
 #include <verilated.h>
 #include <nvboard.h>
 
