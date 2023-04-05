@@ -133,6 +133,8 @@ class Top extends Module
         val rf = Output(Vec(32, UInt(64.W)))
         val rf_wen = Output(Bool())
         val ready = Output(Bool())
+
+        val arfire = Output(Bool())
     })
     
     val pf = Module(new PF)
@@ -154,6 +156,8 @@ class Top extends Module
     es.io.ready := ready
     ms.io.ready := ready
     ws.io.ready := ready
+
+    io.arfire := pf.io.arfire
 
     val arbiter = Module(new AXI_Arbiter)
     arbiter.io.inst_master <> pf.io.inst_master
