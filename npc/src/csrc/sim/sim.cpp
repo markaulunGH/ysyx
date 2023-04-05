@@ -18,7 +18,6 @@ void cycle_end()
 #endif
     contextp->timeInc(1);
     top->clock = 1;
-    top->eval();
 }
 
 void reset()
@@ -27,6 +26,7 @@ void reset()
     {
         top->reset = i < 99;
         cycle_end();
+        top->eval();
     }
 }
 
