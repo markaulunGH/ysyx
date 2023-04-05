@@ -46,7 +46,7 @@ class ES extends Module
     }
 
     val wfire = RegInit(false.B)
-    io.data_master.w.valid := io.ds_es.mm_wen && awfire && !wfire
+    io.data_master.w.valid := io.ds_es.mm_wen && !wfire
     io.data_master.w.bits.data := io.ds_es.mm_wdata
     io.data_master.w.bits.strb := io.ds_es.mm_mask
     when (io.data_master.w.fire)
