@@ -194,7 +194,6 @@ static void exec_once(Decode *s)
     s->npc.inst.val = top->io_inst;
     while (!top->io_rf_wen)
     {
-        printf("???\n");
         top->eval();
         if (top->io_mm_ren)
         {
