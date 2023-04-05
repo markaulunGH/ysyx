@@ -7,6 +7,6 @@
 // #define CONFIG_FTRACE
 // #define CONFIG_MTRACE
 // #define CONFIG_DTRACE
-// #define CONFIG_DIFFTEST
+#define CONFIG_DIFFTEST
 
 #endif
