@@ -18,7 +18,7 @@ void cycle_end()
 #endif
     contextp->timeInc(1);
     top->clock = 1;
-    // top->eval();
+    top->eval();
 }
 
 void reset()
