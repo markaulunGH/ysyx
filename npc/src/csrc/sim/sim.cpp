@@ -21,7 +21,7 @@ void cycle_end()
     top->clock = 1;
     printf("%d\n", top->io_ready);
     top->eval();
-    pritnf("%d\n", top->io_ready);
+    printf("%d\n", top->io_ready);
 }
 
 void reset()
