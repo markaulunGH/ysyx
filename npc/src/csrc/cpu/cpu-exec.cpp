@@ -196,6 +196,7 @@ static void exec_once(Decode *s)
     while (!top->io_ready && init)
     {
         init = false;
+        printf("%d\n", init);
         top->eval();
         if (top->io_mm_ren)
         {
