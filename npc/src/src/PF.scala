@@ -25,7 +25,7 @@ class PF extends Module
         pc := next_pc
     }
 
-    io.inst_master.ar.valid := io.ready
+    io.inst_master.ar.valid := arfire
     io.inst_master.ar.bits.addr := next_pc
     io.inst_master.ar.bits.prot := 0.U(3.W)
     io.inst_master.aw.valid := false.B
@@ -36,23 +36,23 @@ class PF extends Module
     io.inst_master.w.bits.strb := 0.U(8.W)
 
     val arfire = RegInit(true.B)
-    when (io.ready)
-    {
-        arfire := false.B
-    }
-    .elsewhen (io.inst_master.ar.fire)
-    {
-        arfire := true.B
-    }
-
-    // when (io.inst_master.ar.fire)
-    // {
-    //     arfire := true.B
-    // }
-    // .elsewhen (io.ready)
+    // when (io.ready)
     // {
     //     arfire := false.B
     // }
+    // .elsewhen (io.inst_master.ar.fire)
+    // {
+    //     arfire := true.B
+    // }
+
+    when (io.inst_master.ar.fire)
+    {
+        arfire := true.B
+    }
+    .elsewhen (io.ready)
+    {
+        arfire := false.B
+    }
 
     io.pf_fs.pc := pc
     
