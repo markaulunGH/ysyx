@@ -192,10 +192,9 @@ static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
-    bool init = g_nr_guest_inst < 1;
+    int init = g_nr_guest_inst < 1;
     do
     {
-        init = false;
         top->eval();
         if (top->io_mm_ren)
         {
@@ -247,7 +246,7 @@ static void exec_once(Decode *s)
             }
         }
         cycle_end();
-    } while (!top->io_ready || init);
+    } while (!top->io_ready || init --);
     update_regs();
     if (top->io_ebreak)
     {
