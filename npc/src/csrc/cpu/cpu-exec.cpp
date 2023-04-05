@@ -192,8 +192,8 @@ static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
-    while (!top->io_ready)
-    {
+    // while (!top->io_ready)
+    // {
         top->eval();
         if (top->io_mm_ren)
         {
@@ -245,7 +245,7 @@ static void exec_once(Decode *s)
             }
         }
         cycle_end();
-    }
+    // }
     update_regs();
     if (top->io_ebreak)
     {
