@@ -18,6 +18,7 @@ void cycle_end()
 #endif
     contextp->timeInc(1);
     top->clock = 1;
+    printf("%d\n", top->io_ready);
     top->eval();
 }
 
