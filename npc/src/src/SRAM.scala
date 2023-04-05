@@ -25,7 +25,7 @@ class SRAM extends Module
         awfire := true.B
         awaddr := io.master.aw.bits.addr
     }
-    .elsewhen (io.master.b.fire)
+    .elsewhen (io.slave.b.fire)
     {
         awfire := false.B
     }
@@ -40,7 +40,7 @@ class SRAM extends Module
         wdata := io.master.w.bits.addr
         wstrb := io.master.w.bits.strb
     }
-    .elsewhen (io.master.b.fire)
+    .elsewhen (io.slave.b.fire)
     {
         wfire := false.B
     }
@@ -60,7 +60,7 @@ class SRAM extends Module
         arfire := true.B
         raddr := io.master.ar.bits.addr
     }
-    .elsewhen (io.master.r.fire)
+    .elsewhen (io.slave.r.fire)
     {
         arfire := false.B
     }
