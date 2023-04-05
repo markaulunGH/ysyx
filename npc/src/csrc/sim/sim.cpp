@@ -5,6 +5,11 @@ const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
 VerilatedFstC* tfp = new VerilatedFstC;
 
+void cycle_begin()
+{
+    top->eval();
+}
+
 void cycle_end()
 {
 #ifdef CONFIG_WAVE
@@ -19,16 +24,13 @@ void cycle_end()
 #endif
     contextp->timeInc(1);
     top->clock = 1;
-    // printf("%d\n", top->io_ready);
-    // top->eval();
-    // printf("%d\n", top->io_ready);
 }
 
 void reset()
 {
     for (int i = 0; i < 100; ++ i)
     {
-        top->eval();
+        cycle_begin();
         top->reset = i < 99;
         cycle_end();
     }
