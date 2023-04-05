@@ -128,7 +128,7 @@ class Top extends Module
         val mm_mask = Output(UInt(8.W))
 
         val pc = Output(UInt(64.W))
-        val inst = Output(UInt(64.W))
+        val inst = Output(UInt(32.W))
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
         val rf_wen = Output(Bool())
