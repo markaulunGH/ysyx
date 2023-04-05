@@ -28,9 +28,9 @@ void reset()
 {
     for (int i = 0; i < 100; ++ i)
     {
+        top->eval();
         top->reset = i < 99;
         cycle_end();
-        top->eval();
     }
 }
 
