@@ -56,7 +56,7 @@ class PF_DS extends Bundle
 
 class FS_DS extends Bundle
 {
-    val inst = Output(UInt(64.W))
+    val inst = Output(UInt(32.W))
     val pc = Output(UInt(64.W))
 }
 
