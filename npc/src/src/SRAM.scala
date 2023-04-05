@@ -37,7 +37,7 @@ class SRAM extends Module
     when (io.master.w.fire)
     {
         wfire := true.B
-        wdata := io.master.w.bits.addr
+        wdata := io.master.w.bits.data
         wstrb := io.master.w.bits.strb
     }
     .elsewhen (io.slave.b.fire)
