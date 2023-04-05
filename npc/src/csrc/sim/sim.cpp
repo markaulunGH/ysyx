@@ -12,10 +12,10 @@ void cycle_end()
 #endif
     contextp->timeInc(1);
     top->clock = 0;
-    top->eval();
-#ifdef CONFIG_WAVE
-    tfp->dump(contextp->time());
-#endif
+//     top->eval();
+// #ifdef CONFIG_WAVE
+//     tfp->dump(contextp->time());
+// #endif
     contextp->timeInc(1);
     top->clock = 1;
     top->eval();
