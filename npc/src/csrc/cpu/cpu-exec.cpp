@@ -249,7 +249,7 @@ static void exec_once(Decode *s)
         }
         cycle_end();
     } while (!top->io_ready);
-    top->eval();l
+    top->eval();
     printf("after %x %d\n", top->io_pc, top->io_ready);
     
     update_regs();
