@@ -23,7 +23,7 @@ class PF extends Module
         pc := next_pc
     }
 
-    io.inst_master.ar.valid := io.ready
+    io.inst_master.ar.valid := io.pf_ready
     io.inst_master.ar.bits.addr := next_pc
     io.inst_master.ar.bits.prot := 0.U(3.W)
     io.inst_master.aw.valid := false.B
