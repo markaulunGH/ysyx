@@ -12,6 +12,7 @@ class FS extends Module
 
         val fs_ready = Output(Bool())
         val ready = Input(Bool())
+        val inst = Output(UInt(64.W))
     })
 
     val inst = io.inst_slave.r.bits.data
@@ -39,4 +40,5 @@ class FS extends Module
     io.fs_ds.pc := io.pf_fs.pc
 
     io.fs_ready := io.inst_slave.r.fire || inst_buffer_valid
+    io.inst := Mux(inst_buffer_valid, inst_buffer, inst)
 }
