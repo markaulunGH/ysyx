@@ -195,7 +195,7 @@ static void exec_once(Decode *s)
     bool init = g_nr_guest_inst < 1;
     printf("%d\n", top->io_ready);
     // printf("%x\n", top->io_pc);
-    while (!top->io_ready)
+    while (top->io_ready)
     {
         init = false;
         // printf("%d\n", init);
