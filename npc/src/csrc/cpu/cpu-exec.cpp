@@ -194,7 +194,7 @@ static void exec_once(Decode *s)
     s->npc.inst.val = top->io_inst;
     bool init = g_nr_guest_inst < 1;
     printf("%d\n", top->io_ready);
-    printf("%x\n", top->io_pc);
+    // printf("%x\n", top->io_pc);
     while (!top->io_ready)
     {
         init = false;
