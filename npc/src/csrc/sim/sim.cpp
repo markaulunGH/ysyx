@@ -30,10 +30,10 @@ void reset()
 {
     for (int i = 0; i < 100; ++ i)
     {
-        // cycle_begin();
+        cycle_begin();
         top->reset = i < 99;
         cycle_end();
-        top->eval();
+        // top->eval();
     }
 }
 
