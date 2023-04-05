@@ -192,7 +192,7 @@ static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
-    while (!top->io_ready && g_nr_guest_inst > 1)
+    while (!top->io_ready && g_nr_guest_inst < 1)
     {
         top->eval();
         if (top->io_mm_ren)
