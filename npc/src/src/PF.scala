@@ -47,6 +47,6 @@ class PF extends Module
 
     io.pf_fs.pc := pc
     
-    io.pf_ready := io.inst_master.ar.fire || arfire
+    io.pf_ready := io.inst_master.ar.fire || buffer
     io.pc := pc
 }
