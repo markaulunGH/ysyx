@@ -19,7 +19,7 @@ class FS extends Module
     val inst_buffer = RegInit(0.U(32.W))
     val inst_buffer_valid = RegInit(true.B)
 
-    io.inst_slave.r.ready := io.ready
+    io.inst_slave.r.ready := !inst_buffer_valid
     when (io.inst_slave.r.fire)
     {
         inst_buffer := inst
