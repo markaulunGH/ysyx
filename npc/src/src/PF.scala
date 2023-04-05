@@ -33,8 +33,18 @@ class PF extends Module
     io.inst_master.w.bits.data := 0.U(64.W)
     io.inst_master.w.bits.strb := 0.U(8.W)
 
+    val arfire = RegInit(true.B)
+    when (io.inst_master.ar.fire)
+    {
+        arfire := true.B
+    }
+    .elsewhen (io.ready)
+    {
+        arfire := false.B
+    }
+
     io.pf_fs.pc := pc
     
-    io.pf_ready := io.inst_master.ar.fire
+    io.pf_ready := io.inst_master.ar.fire || arfire
     io.pc := pc
 }

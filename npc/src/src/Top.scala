@@ -146,7 +146,7 @@ class Top extends Module
     ds.io.ds_es <> es.io.ds_es
     es.io.es_ms <> ms.io.es_ms
     ms.io.ms_ws <> ws.io.ms_ws
-    val ready = fs.io.fs_ready && ds.io.ds_ready && es.io.es_ready && ms.io.ms_ready && ws.io.ws_ready
+    val ready = fs.io.fs_ready && ds.io.ds_ready && es.io.es_ready && ms.io.ms_ready && ws.io.ws_ready && !io.reset
     pf.io.ready := ready
     fs.io.ready := ready
     ds.io.ready := ready
