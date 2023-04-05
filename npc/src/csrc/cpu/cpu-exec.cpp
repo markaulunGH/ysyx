@@ -191,7 +191,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
-    printf("%x\n", top->io_pc);
+    printf("before %x\n", top->io_pc);
     s->npc.inst.val = top->io_inst;
     do
     {
@@ -247,7 +247,7 @@ static void exec_once(Decode *s)
         }
         cycle_end();
     } while (!top->io_ready);
-    printf("%x %d\n", top->io_pc, top->io_ready);
+    printf("after %x %d\n", top->io_pc, top->io_ready);
     
     update_regs();
     if (top->io_ebreak)
