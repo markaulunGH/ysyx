@@ -17,7 +17,7 @@ class FS extends Module
 
     val inst = io.inst_slave.r.bits.data
     val inst_buffer = RegInit(0.U(32.W))
-    val inst_buffer_valid = RegInit(true.B)
+    val inst_buffer_valid = RegInit(false.B)
 
     io.inst_slave.r.ready := !inst_buffer_valid && !reset.asBool()
     when (io.inst_slave.r.fire)
