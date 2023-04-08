@@ -33,6 +33,16 @@ class AXI_Arbiter extends Module
     {
         widle := true.B
     }
+    
+    val ridle = RegInit(true.B)
+    when (io.data_slave.r.fire)
+    {
+        ridle := true.B
+    }
+    .elsewhen (io.data_master.ar.valid)
+    {
+        ridle := false.B
+    }
 
     io.master.aw.valid      := io.data_master.aw.valid
     io.data_master.aw.ready := io.master.aw.ready
@@ -58,9 +68,9 @@ class AXI_Arbiter extends Module
     io.master.ar.bits.addr  := Mux(io.data_master.ar.valid || data_req, io.data_master.ar.bits.addr, io.inst_master.ar.bits.addr)
     io.master.ar.bits.prot  := Mux(io.data_master.ar.valid || data_req, io.data_master.ar.bits.prot, io.inst_master.ar.bits.prot)
 
-    io.data_slave.r.valid     := Mux(io.data_master.ar.valid || data_req, io.slave.r.valid, false.B)
-    io.inst_slave.r.valid     := Mux(io.data_master.ar.valid || data_req, false.B, io.slave.r.valid)
-    io.slave.r.ready          := Mux(io.data_master.ar.valid || data_req, io.data_slave.r.ready, io.inst_slave.r.ready)
+    io.data_slave.r.valid     := Mux(data_req, io.slave.r.valid, false.B)
+    io.inst_slave.r.valid     := Mux(data_req, false.B, io.slave.r.valid)
+    io.slave.r.ready          := Mux(data_req, io.data_slave.r.ready, io.inst_slave.r.ready)
     io.data_slave.r.bits.data := io.slave.r.bits.data
     io.inst_slave.r.bits.data := io.slave.r.bits.data
     io.data_slave.r.bits.resp := io.slave.r.bits.resp
