@@ -18,11 +18,10 @@ class ES extends Module
     io.ds_es.alu_in <> alu.io.in
     val alu_result = Mux(io.ds_es.inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)
 
-
-    io.data_master.ar.valid := io.ds_es.mm_ren
+    val arfire = RegInit(false.B)
+    io.data_master.ar.valid := io.ds_es.mm_ren && !arfire
     io.data_master.ar.bits.addr := alu_result
     io.data_master.ar.bits.prot := 0.U(3.W)
-    val arfire = RegInit(false.B)
     when (io.data_master.ar.fire)
     {
         arfire := true.B
