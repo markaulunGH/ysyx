@@ -17,14 +17,35 @@ class MS extends Module
     io.data_slave.r.ready := true.B
     io.data_slave.b.ready := true.B
 
-    val data = io.data_slave.r.bits.data
+    val rdata = RegInit(0.U(64.W))
+    val rfire = RegInit(false.B)
+    when (io.data_slave.r.fire)
+    {
+        rdata := io.data_slave.r.bits.data
+        rfire := true.B
+    }
+    .elsewhen (io.ready)
+    {
+        rfire := false.B
+    }
+
+    val bfire = RegInit(false.B)
+    when (io.data_slave.b.fire)
+    {
+        rfire := true.B
+    }
+    .elsewhen (io.ready)
+    {
+        rfire := false.B
+    }
+
     val mm_rdata = MuxCase(
         0.U(64.W),
         Seq(
-            (io.es_ms.mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(io.es_ms.mm_unsigned, 0.U(1.W), data(7))),  data(7, 0)),
-            (io.es_ms.mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(io.es_ms.mm_unsigned, 0.U(1.W), data(15))), data(15, 0)),
-            (io.es_ms.mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(io.es_ms.mm_unsigned, 0.U(1.W), data(31))), data(31, 0)),
-            (io.es_ms.mm_mask === 0xff.U) -> data
+            (io.es_ms.mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(io.es_ms.mm_unsigned, 0.U(1.W), rdata(7))),  rdata(7, 0)),
+            (io.es_ms.mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(io.es_ms.mm_unsigned, 0.U(1.W), rdata(15))), rdata(15, 0)),
+            (io.es_ms.mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(io.es_ms.mm_unsigned, 0.U(1.W), rdata(31))), rdata(31, 0)),
+            (io.es_ms.mm_mask === 0xff.U) -> rdata
         )
     )
 
@@ -42,5 +63,5 @@ class MS extends Module
     io.ms_ws.exc_cause := io.es_ms.exc_cause
     io.ms_ws.mret := io.es_ms.mret
 
-    io.ms_ready := (io.es_ms.mm_ren && io.data_slave.r.fire) || (io.es_ms.mm_wen && io.data_slave.b.fire) || (!io.es_ms.mm_ren && !io.es_ms.mm_wen)
+    io.ms_ready := (io.es_ms.mm_ren && (io.data_slave.r.fire || rfire)) || (io.es_ms.mm_wen && (io.data_slave.b.fire || bfire)) || (!io.es_ms.mm_ren && !io.es_ms.mm_wen)
 }
