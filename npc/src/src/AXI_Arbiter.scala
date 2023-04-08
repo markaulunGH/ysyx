@@ -34,6 +34,16 @@ class AXI_Arbiter extends Module
         widle := true.B
     }
 
+    val ridle = RegInit(true.B)
+    when (io.data_master.ar.valid)
+    {
+        ridle := false.B
+    }
+    .elsewhen (io.data_slave.r.fire)
+    {
+        ridle := true.B
+    }
+
     io.master.aw.valid      := io.data_master.aw.valid
     io.data_master.aw.ready := io.master.aw.ready
     io.inst_master.aw.ready := false.B
