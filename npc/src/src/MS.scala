@@ -42,9 +42,9 @@ class MS extends Module
     val mm_rdata = MuxCase(
         0.U(64.W),
         Seq(
-            (io.es_ms.mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(io.es_ms.mm_unsigned, 0.U(1.W), data(7))),  rdata(7, 0)),
-            (io.es_ms.mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(io.es_ms.mm_unsigned, 0.U(1.W), data(15))), rdata(15, 0)),
-            (io.es_ms.mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(io.es_ms.mm_unsigned, 0.U(1.W), data(31))), rdata(31, 0)),
+            (io.es_ms.mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(io.es_ms.mm_unsigned, 0.U(1.W), rdata(7))),  rdata(7, 0)),
+            (io.es_ms.mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(io.es_ms.mm_unsigned, 0.U(1.W), rdata(15))), rdata(15, 0)),
+            (io.es_ms.mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(io.es_ms.mm_unsigned, 0.U(1.W), rdata(31))), rdata(31, 0)),
             (io.es_ms.mm_mask === 0xff.U) -> rdata
         )
     )
