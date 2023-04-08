@@ -62,6 +62,7 @@ class AXI_Arbiter extends Module
     io.data_slave.b.bits.resp := io.slave.b.bits.resp
     io.inst_slave.b.bits.resp := 0.U(3.W)
 
+    //potential bugs down here; maybe fixed when changing to pipeline
     io.master.ar.valid      := Mux(io.data_master.ar.valid || data_req, io.data_master.ar.valid, io.inst_master.ar.valid) && (widle || io.master.ar.bits.addr =/= io.master.aw.bits.addr)
     io.data_master.ar.ready := Mux(io.data_master.ar.valid || data_req, io.master.ar.ready, false.B)
     io.inst_master.ar.ready := Mux(io.data_master.ar.valid || data_req, false.B, io.master.ar.ready)
