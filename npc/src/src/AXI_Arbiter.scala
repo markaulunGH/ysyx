@@ -13,10 +13,10 @@ class AXI_Arbiter extends Module
         val slave        = new AXI_Lite_Slave
     })
 
-    val widle = RegNext(true.B, MuxCase(widle, Seq(
+    val widle = RegNext(MuxCase(widle, Seq(
         io.master.aw.valid -> false.B,
         io.slave.b.fire    -> true.B
-    )))
+    )), true.B)
     
     val ridle = RegNext(true.B, MuxCase(ridle, Seq(
         io.slave.r.fire -> true.B,
