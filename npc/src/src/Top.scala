@@ -100,6 +100,7 @@ class ES_DS extends Bundle
     val es_valid = Output(Bool())
     val to_mm_valid = Output(Bool())
     val rf_waddr = Output(Bool())
+    val rf_wen = Output(Bool())
     val mm_ren = Output(Bool())
 }
 
@@ -120,6 +121,11 @@ class ES_MS extends Bundle
     val exc = Output(Bool())
     val exc_cause = Output(UInt(64.W))
     val mret = Output(Bool())
+}
+
+class MS_DS extends Bundle
+{
+    val rf_wen = Output(Bool())
 }
 
 class MS_ES extends Bundle

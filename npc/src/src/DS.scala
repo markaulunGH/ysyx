@@ -9,6 +9,7 @@ class DS extends Module
         val ds_es = new DS_ES
         val fs_ds = Flipped(new FS_DS)
         val es_ds = Flipped(new ES_DS)
+        val ms_ds = Flipped(new MS_DS)
 
         val reg_r = Flipped(new Reg_r)
         val csr_pc = Flipped(new Csr_pc)
