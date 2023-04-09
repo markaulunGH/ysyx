@@ -20,7 +20,7 @@ class DS extends Module
     val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard)
     val ds_allow_in = !ds_valid || ds_ready && es_allow_in
     val to_es_valid = ds_valid && ds_ready
-    // when (br_taken && ds_to_es_valid && io.ds_es.es_allow_in)
+    when (io.ds_pf.br_taken && ds_to_es_valid && io.ds_es.es_allow_in)
     {
         ds_valid := false.B
     }
@@ -198,7 +198,7 @@ class DS extends Module
 
     val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
-    io.pf_ds.br_taken := inst_jal || inst_jalr ||
+    io.ds_pf.br_taken := inst_jal || inst_jalr ||
                          inst_beq  &&  rs1_value === rs2_value ||
                          inst_bne  &&  rs1_value =/= rs2_value ||
                          inst_blt  &&  rs1_lt_rs2 ||
@@ -206,7 +206,7 @@ class DS extends Module
                          inst_bltu &&  rs1_ltu_rs2 ||
                          inst_bgeu && !rs1_ltu_rs2 ||
                          inst_ecall || inst_mret
-    io.pf_ds.br_target := MuxCase(
+    io.ds_pf.br_target := MuxCase(
         0.U(64.W),
         Seq(
             (inst_jal || inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> (pc + imm),
