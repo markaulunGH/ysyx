@@ -49,7 +49,7 @@ class MS extends Module
         rdata := io.data_slave.r.bits.data
         rfire := true.B
     }
-    .elsewhen (io.ready)
+    .elsewhen (ms_allow_in)
     {
         rfire := false.B
     }
@@ -59,7 +59,7 @@ class MS extends Module
     {
         bfire := true.B
     }
-    .elsewhen (io.ready)
+    .elsewhen (ms_allow_in)
     {
         bfire := false.B
     }
