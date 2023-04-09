@@ -45,7 +45,7 @@ class AXI_Lite_Slave extends Bundle
 
 class PF_FS extends Bundle
 {
-    val pf_to_fs_valid = Output(Bool())
+    val to_fs_valid = Output(Bool())
     val next_pc = Output(UInt(64.W))
 }
 
@@ -75,6 +75,7 @@ class DS_FS extends Bundle
 
 class DS_ES extends Bundle
 {
+    val to_es_valid = Output(Bool())
     val pc = Output(UInt(64.W))
     val alu_in = Flipped(new Alu_in)
     val inst_word = Output(Bool())
