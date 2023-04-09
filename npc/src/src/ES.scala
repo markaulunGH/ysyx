@@ -14,7 +14,7 @@ class ES extends Module
 
     val es_valid = RegInit(false.B)
     val es_ready = (io.ds_es.mm_ren && arfire) || (io.ds_es.mm_wen && wfire) || (!io.ds_es.mm_ren && !io.ds_es.mm_wen)
-    val es_allow_in = !es_valid || es_ready && ms_allow_in
+    val es_allow_in = !es_valid || es_ready && io.ms_es.ms_allow_in
     val to_ms_valid = es_valid && es_ready
     when (es_allow_in)
     {
