@@ -33,12 +33,12 @@ class WS extends Module
     val exc_cause = RegEnable(io.ms_ws.exc_cause, enable)
     val mret = RegEnable(io.ms_ws.mret, enable)
 
-    io.reg_w.wen := rf_wen && io.ready
+    io.reg_w.wen := rf_wen
     io.reg_w.waddr := rf_waddr
     io.reg_w.wdata := Mux(csr_wen, io.csr_rw.rdata, rf_wdata)
 
     io.csr_rw.addr := csr_addr
-    io.csr_rw.wen := csr_wen && io.ready
+    io.csr_rw.wen := csr_wen
     io.csr_rw.wdata := (csr_wdata & csr_wmask) | (io.csr_rw.rdata & ~csr_wmask)
     io.csr_rw.pc := pc
     io.csr_rw.exc := exc
