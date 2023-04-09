@@ -29,7 +29,6 @@ class MS extends Module
     val rf_waddr = RegEnable(io.es_ms.rf_waddr, enable)
     val mm_ren = RegEnable(io.es_ms.mm_ren, enable)
     val mm_wen = RegEnable(io.es_ms.mm_wen, enable)
-    val mm_addr = RegEnable(io.es_ms.mm_addr, enable)
     val mm_wdata = RegEnable(io.es_ms.mm_wdata, enable)
     val mm_mask = RegEnable(io.es_ms.mm_mask, enable)
     val mm_unsigned = RegEnable(io.es_ms.mm_unsigned, enable)
