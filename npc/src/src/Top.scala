@@ -126,7 +126,7 @@ class ES_MS extends Bundle
 
 class MS_DS extends Bundle
 {
-    val to_ws_valid = Output(bool())
+    val to_ws_valid = Output(Bool())
     val rf_wen = Output(Bool())
 }
 
