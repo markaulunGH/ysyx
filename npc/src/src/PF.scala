@@ -32,7 +32,7 @@ class PF extends Module
     {
         arfire := true.B
     }
-    .elsewhen (io.ready)
+    .elsewhen (pf_ready)
     {
         arfire := false.B
     }
