@@ -13,17 +13,6 @@ class AXI_Arbiter extends Module
         val slave        = new AXI_Lite_Slave
     })
 
-    val data_req = RegInit(false.B)
-
-    when (io.data_master.ar.valid)
-    {
-        data_req := true.B
-    }
-    .elsewhen (io.data_slave.r.fire)
-    {
-        data_req := false.B
-    }
-
     val widle = RegInit(true.B)
     when (io.master.aw.valid)
     {
@@ -42,6 +31,16 @@ class AXI_Arbiter extends Module
     .elsewhen (io.master.ar.valid)
     {
         ridle := false.B
+    }
+
+    val data_req = RegInit(false.B)
+    when (io.data_master.ar.valid && (ridle || io.slave.r.fire))
+    {
+        data_req := true.B
+    }
+    .elsewhen (io.data_slave.r.fire)
+    {
+        data_req := false.B
     }
 
     io.master.aw.valid      := io.data_master.aw.valid
@@ -63,11 +62,11 @@ class AXI_Arbiter extends Module
     io.inst_slave.b.bits.resp := 0.U(3.W)
 
     //potential bugs down here; maybe fixed when changing to pipeline
-    io.master.ar.valid      := Mux(io.data_master.ar.valid || data_req, io.data_master.ar.valid, io.inst_master.ar.valid) && (widle || io.master.ar.bits.addr =/= io.master.aw.bits.addr) && (ridle || io.slave.r.fire)
-    io.data_master.ar.ready := Mux(io.data_master.ar.valid || data_req, io.master.ar.ready, false.B) && (ridle || io.slave.r.fire)
-    io.inst_master.ar.ready := Mux(io.data_master.ar.valid || data_req, false.B, io.master.ar.ready) && (ridle || io.slave.r.fire)
-    io.master.ar.bits.addr  := Mux(io.data_master.ar.valid || data_req, io.data_master.ar.bits.addr, io.inst_master.ar.bits.addr)
-    io.master.ar.bits.prot  := Mux(io.data_master.ar.valid || data_req, io.data_master.ar.bits.prot, io.inst_master.ar.bits.prot)
+    io.master.ar.valid      := Mux(io.data_master.ar.valid, io.data_master.ar.valid, io.inst_master.ar.valid) && (widle || io.master.ar.bits.addr =/= io.master.aw.bits.addr) && (ridle || io.slave.r.fire)
+    io.data_master.ar.ready := Mux(io.data_master.ar.valid, io.master.ar.ready, false.B) && (ridle || io.slave.r.fire)
+    io.inst_master.ar.ready := Mux(io.data_master.ar.valid, false.B, io.master.ar.ready) && (ridle || io.slave.r.fire)
+    io.master.ar.bits.addr  := Mux(io.data_master.ar.valid, io.data_master.ar.bits.addr, io.inst_master.ar.bits.addr)
+    io.master.ar.bits.prot  := Mux(io.data_master.ar.valid, io.data_master.ar.bits.prot, io.inst_master.ar.bits.prot)
 
     io.data_slave.r.valid     := Mux(data_req, io.slave.r.valid, false.B)
     io.inst_slave.r.valid     := Mux(data_req, false.B, io.slave.r.valid)
