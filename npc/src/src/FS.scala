@@ -23,7 +23,7 @@ class FS extends Module
     {
         fs_valid := io.pf_fs.to_fs_valid
     }
-    .elsewhen (io.fs_ds.br_taken && io.fs_ds.ds_to_es_valid && io.fs_es.es_allow_in)
+    .elsewhen (io.fs_ds.br_taken && io.ds_fs.to_es_valid && io.fs_es.es_allow_in)
     {
         fs_valid := false.B
     }
