@@ -16,11 +16,14 @@ class DS extends Module
         val ebreak = Output(Bool())
     })
 
+    val read_rf1 = Wire(Bool())
+    val read_rf2 = Wire(Bool())
+
     val ds_valid = RegInit(false.B)
     val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard)
     val ds_allow_in = !ds_valid || ds_ready && es_allow_in
     val to_es_valid = ds_valid && ds_ready
-    when (io.ds_pf.br_taken && ds_to_es_valid && io.ds_es.es_allow_in)
+    when (io.ds_pf.br_taken && to_es_valid && io.ds_es.es_allow_in)
     {
         ds_valid := false.B
     }
@@ -179,8 +182,8 @@ class DS extends Module
     io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
     io.reg_r.raddr2 := rs2
 
-    val read_rf1 = inst_R || inst_I || inst_S || inst_B
-    val read_rf2 = inst_R || inst_S || inst_B
+    read_rf1 := inst_R || inst_I || inst_S || inst_B
+    read_rf2 := inst_R || inst_S || inst_B
 
     val rs1_value = MuxCase(io.reg_r.rdata1, Seq(
         (io.reg_r.raddr1 && io.es_ds.to_mm_valid && io.es_ds.rf_wen && io.reg_r.raddr1 === io.es_ds.rf_waddr) -> io.es_ds.alu_result
