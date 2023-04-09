@@ -196,8 +196,8 @@ class DS extends Module
         (io.reg_r.raddr2 && io.ws_ds.valid       && io.ws_ds.rf_wen && io.reg_r.raddr2 === io.ws_ds.rf_waddr) -> io.ws_ds.rf_wdata
     ))
 
-    val rf1_hazard = (io.es_ds.es_valid && io.es_ds.mm_ren && io.reg_r.raddr1 === io.es_ds.rf_waddr) && io.reg_r.raddr1
-    val rf2_hazard = (io.es_ds.es_valid && io.es_ds.mm_ren && io.reg_2.raddr2 === io.es_ds.rf_waddr) && io.reg_2.raddr2
+    val rf1_hazard = (io.es_ds.es_valid && io.es_ds.mm_ren && io.reg_r.raddr1 === io.es_ds.rf_waddr) && io.reg_r.raddr1 =/= 0.U
+    val rf2_hazard = (io.es_ds.es_valid && io.es_ds.mm_ren && io.reg_2.raddr2 === io.es_ds.rf_waddr) && io.reg_2.raddr2 =/= 0.U
 
     val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
