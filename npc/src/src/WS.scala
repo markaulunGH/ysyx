@@ -14,7 +14,7 @@ class WS extends Module
 
     val ws_valid = RegInit(false.B)
     val ws_ready = true.B
-    val ws_allow_in = !ws_valid || ws_ready_go
+    val ws_allow_in = !ws_valid || ws_ready
     when (ws_allow_in)
     {
         ws_valid := io.ms_ws.to_ws_valid
