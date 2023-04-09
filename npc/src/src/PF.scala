@@ -30,14 +30,10 @@ class PF extends Module
     io.inst_master.w.bits.data := 0.U(64.W)
     io.inst_master.w.bits.strb := 0.U(8.W)
 
-    when (io.inst_master.ar.fire && !io.ready)
-    {
-        buffer := true.B
-    }
-    .elsewhen (io.ready)
-    {
-        buffer := false.B
-    }
+    buffer := MuxCase(buffer, Seq(
+        (io.inst_master.ar.fire && !io.ready) -> true.B,
+        (io.ready) -> false.B
+    ))
 
     io.pf_fs.pc := pc
     
