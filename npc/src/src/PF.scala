@@ -17,10 +17,14 @@ class PF extends Module
 
     val pc = RegInit(0x7ffffffc.U(64.W))
     val next_pc = Mux(io.pf_ds.br_taken, io.pf_ds.br_target, pc + 4.U)
-    pc := Mux(io.ready, next_pc, pc)
 
-    val buffer = RegInit(false.B)
-    io.inst_master.ar.valid := !buffer && !reset.asBool()
+    when (io.ready)
+    {
+        pc := next_pc
+    }
+
+    val arfire = RegInit(false.B)
+    io.inst_master.ar.valid := !arfire && !reset.asBool()
     io.inst_master.ar.bits.addr := next_pc
     io.inst_master.ar.bits.prot := 0.U(3.W)
     io.inst_master.aw.valid := false.B
@@ -30,13 +34,17 @@ class PF extends Module
     io.inst_master.w.bits.data := 0.U(64.W)
     io.inst_master.w.bits.strb := 0.U(8.W)
 
-    buffer := MuxCase(buffer, Seq(
-        (io.inst_master.ar.fire && !io.ready) -> true.B,
-        (io.ready) -> false.B
-    ))
+    when (io.inst_master.ar.fire && !io.ready)
+    {
+        arfire := true.B
+    }
+    .elsewhen (io.ready)
+    {
+        arfire := false.B
+    }
 
     io.pf_fs.pc := pc
     
-    io.pf_ready := io.inst_master.ar.fire || buffer
+    io.pf_ready := io.inst_master.ar.fire || arfire
     io.pc := pc
 }

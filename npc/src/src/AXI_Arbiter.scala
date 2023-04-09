@@ -14,22 +14,34 @@ class AXI_Arbiter extends Module
     })
 
     val widle = RegInit(true.B)
-    widle := MuxCase(widle, Seq(
-        io.master.aw.valid -> false.B,
-        io.slave.b.fire    -> true.B
-    ))
+    when (io.master.aw.valid)
+    {
+        widle := false.B
+    }
+    .elsewhen (io.slave.b.fire)
+    {
+        widle := true.B
+    }
     
     val ridle = RegInit(true.B)
-    ridle := MuxCase(ridle, Seq(
-        io.slave.r.fire -> true.B,
-        io.master.ar.valid -> false.B
-    ))
+    when (io.slave.r.fire)
+    {
+        ridle := true.B
+    }
+    .elsewhen (io.master.ar.valid)
+    {
+        ridle := false.B
+    }
 
     val data_req = RegInit(false.B)
-    data_req := MuxCase(data_req, Seq(
-        (io.data_master.ar.valid && (ridle || io.slave.r.fire)) -> true.B,
-        io.data_slave.r.fire -> false.B
-    ))
+    when (io.data_master.ar.valid && (ridle || io.slave.r.fire))
+    {
+        data_req := true.B
+    }
+    .elsewhen (io.data_slave.r.fire)
+    {
+        data_req := false.B
+    }
 
     io.master.aw.valid      := io.data_master.aw.valid
     io.data_master.aw.ready := io.master.aw.ready
