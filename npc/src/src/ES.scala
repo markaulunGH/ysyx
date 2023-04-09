@@ -32,6 +32,7 @@ class ES extends Module
     val rf_waddr = RegEnable(io.ds_es.rf_waddr, enable)
     val mm_ren = RegEnable(io.ds_es.mm_ren, enable)
     val mm_wen = RegEnable(io.ds_es.mm_wen, enable)
+    val mm_wdata = RegEnable(io.ds_es.mm_wdata, enable)
     val mm_mask = RegEnable(io.ds_es.mm_mask, enable)
     val mm_unsigned = RegEnable(io.ds_es.mm_unsigned, enable)
     val csr_wen = RegEnable(io.ds_es.csr_wen, enable)
