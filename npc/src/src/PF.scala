@@ -6,22 +6,16 @@ class PF extends Module
     val io = IO(new Bundle
     {
         val pf_fs = new PF_FS
-        val pf_ds = new PF_DS
+        val fs_pf = Flipped(new FS_PF)
+        val ds_pf = Flipped(new DS_PF)
 
         val inst_master = new AXI_Lite_Master
-
-        val pf_ready = Output(Bool())
-        val ready = Input(Bool())
-        val pc = Output(UInt(64.W))
     })
 
-    val pc = RegInit(0x7ffffffc.U(64.W))
-    val next_pc = Mux(io.pf_ds.br_taken, io.pf_ds.br_target, pc + 4.U)
-
-    when (io.ready)
-    {
-        pc := next_pc
-    }
+    val pf_ready = io.inst_master.ar.fire || arfire
+    val to_fs_valid = pf_ready
+    
+    val next_pc = Mux(io.ds_pf.br_taken, io.ds_pf.br_target, io.fs_pf.pc + 4.U)
 
     val arfire = RegInit(false.B)
     io.inst_master.ar.valid := !arfire && !reset.asBool()
@@ -43,8 +37,6 @@ class PF extends Module
         arfire := false.B
     }
 
-    io.pf_fs.pc := pc
-    
-    io.pf_ready := io.inst_master.ar.fire || arfire
-    io.pc := pc
+    io.pf_fs.to_fs_valid := to_fs_valid
+    io.pf_fs.next_pc := next_pc
 }

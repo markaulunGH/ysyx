@@ -5,15 +5,34 @@ class FS extends Module
 {
     val io = IO(new Bundle
     {
-        val pf_fs = Flipped(new PF_FS)
         val fs_ds = new FS_DS
+        val pf_fs = Flipped(new PF_FS)
+        val ds_fs = Flipped(new DS_FS)
 
         val inst_slave = new AXI_Lite_Slave
 
-        val fs_ready = Output(Bool())
-        val ready = Input(Bool())
         val inst = Output(UInt(32.W))
+        val pc = Output(UInt(64.W))
     })
+
+    val fs_valid = RegInit(false.B)
+    val fs_ready = fs_valid && (io.inst_slave.r.fire || rfire)
+    val fs_allow_in = !fs_valid || fs_ready && ds_allow_in
+    val to_ds_valid = fs_valid && fs_ready
+    when (fs_allow_in)
+    {
+        fs_valid := io.pf_fs.to_fs_valid
+    }
+    .elsewhen (io.fs_ds.br_taken && io.fs_ds.ds_to_es_valid && io.fs_es.es_allow_in)
+    {
+        fs_valid := false.B
+    }
+
+    val pc = RegInit(0x7ffffffc.U(64.W))
+    when (fs_allow_in && io.pf_fs.pf_to_fs_valid)
+    {
+        pc := io.pf_fs.next_pc
+    }
 
     val rdata = RegInit(0.U(32.W))
     val rfire = RegInit(true.B) // pretend that there is an instruction in the buffer before the first instruction is fetched; maybe problematic
@@ -34,6 +53,6 @@ class FS extends Module
     io.fs_ds.inst := Mux(rfire, rdata, io.inst_slave.r.bits.data)
     io.fs_ds.pc := io.pf_fs.pc
 
-    io.fs_ready := io.inst_slave.r.fire || rfire
     io.inst := Mux(rfire, rdata, io.inst_slave.r.bits.data)
+    io.pc := pc
 }
