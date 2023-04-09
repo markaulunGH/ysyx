@@ -15,7 +15,7 @@ class PF extends Module
         val pc = Output(UInt(64.W))
     })
 
-    val pc = RegNext(0x7ffffffc.U(64.W), Mux(io.ready, Mux(io.pf_ds.br_taken, io.pf_ds.br_target, pc + 4.U), pc))
+    val pc = RegNext(Mux(io.ready, Mux(io.pf_ds.br_taken, io.pf_ds.br_target, pc + 4.U), pc), 0x7ffffffc.U(64.W))
     val next_pc = Mux(io.pf_ds.br_taken, io.pf_ds.br_target, pc + 4.U)
 
     val buffer = RegInit(false.B)
