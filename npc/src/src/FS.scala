@@ -44,7 +44,7 @@ class FS extends Module
         rdata := io.inst_slave.r.bits.data
         rfire := true.B
     }
-    .elsewhen (io.ready)
+    .elsewhen (fs_allow_in)
     {
         rfire := false.B
     }
