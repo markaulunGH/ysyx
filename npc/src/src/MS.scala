@@ -8,13 +8,14 @@ class MS extends Module
         val ms_es = new MS_ES
         val ms_ws = new MS_WS
         val es_ms = Flipped(new ES_MS)
+        val ws_ms = Flipped(new WS_MS)
 
         val data_slave = new AXI_Lite_Slave
     })
 
     val ms_valid = RegInit(false.B)
     val ms_ready = (io.es_ms.mm_ren && (io.data_slave.r.fire || rfire)) || (io.es_ms.mm_wen && (io.data_slave.b.fire || bfire)) || (!io.es_ms.mm_ren && !io.es_ms.mm_wen)
-    val ms_allow_in = !ms_valid || ms_ready_go && ws_allow_in
+    val ms_allow_in = !ms_valid || ms_ready && io.ws_ms.ws_allow_in
     val to_ws_valid = ms_valid && ms_ready
     when (ms_allow_in)
     {
