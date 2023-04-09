@@ -23,8 +23,8 @@ class PF extends Module
         pc := next_pc
     }
 
-    val buffer = RegInit(false.B)
-    io.inst_master.ar.valid := !buffer && !reset.asBool()
+    val arfire = RegInit(false.B)
+    io.inst_master.ar.valid := !arfire && !reset.asBool()
     io.inst_master.ar.bits.addr := next_pc
     io.inst_master.ar.bits.prot := 0.U(3.W)
     io.inst_master.aw.valid := false.B
@@ -36,15 +36,15 @@ class PF extends Module
 
     when (io.inst_master.ar.fire && !io.ready)
     {
-        buffer := true.B
+        arfire := true.B
     }
     .elsewhen (io.ready)
     {
-        buffer := false.B
+        arfire := false.B
     }
 
     io.pf_fs.pc := pc
     
-    io.pf_ready := io.inst_master.ar.fire || buffer
+    io.pf_ready := io.inst_master.ar.fire || arfire
     io.pc := pc
 }

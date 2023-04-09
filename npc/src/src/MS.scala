@@ -32,11 +32,11 @@ class MS extends Module
     val bfire = RegInit(false.B)
     when (io.data_slave.b.fire)
     {
-        rfire := true.B
+        bfire := true.B
     }
     .elsewhen (io.ready)
     {
-        rfire := false.B
+        bfire := false.B
     }
 
     val mm_rdata = MuxCase(

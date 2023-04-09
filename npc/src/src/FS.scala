@@ -15,30 +15,25 @@ class FS extends Module
         val inst = Output(UInt(32.W))
     })
 
-    val inst = io.inst_slave.r.bits.data
-    val inst_buffer = RegInit(0.U(32.W))
-    val inst_buffer_valid = RegInit(true.B) // pretend that there is an instruction in the buffer before the first instruction is fetched; maybe problematic
+    val rdata = RegInit(0.U(32.W))
+    val rfire = RegInit(true.B) // pretend that there is an instruction in the buffer before the first instruction is fetched; maybe problematic
 
-    io.inst_slave.r.ready := !inst_buffer_valid && !reset.asBool()
-    when (io.inst_slave.r.fire)
-    {
-        inst_buffer := inst
-    }
-
+    io.inst_slave.r.ready := !rfire && !reset.asBool()
     when (io.inst_slave.r.fire && !io.ready)
     {
-        inst_buffer_valid := true.B
+        rdata := io.inst_slave.r.bits.data
+        rfire := true.B
     }
     .elsewhen (io.ready)
     {
-        inst_buffer_valid := false.B
+        rfire := false.B
     }
 
     io.inst_slave.b.ready := false.B
 
-    io.fs_ds.inst := Mux(inst_buffer_valid, inst_buffer, inst)
+    io.fs_ds.inst := Mux(rfire, rdata, io.inst_slave.r.bits.data)
     io.fs_ds.pc := io.pf_fs.pc
 
-    io.fs_ready := io.inst_slave.r.fire || inst_buffer_valid
-    io.inst := Mux(inst_buffer_valid, inst_buffer, inst)
+    io.fs_ready := io.inst_slave.r.fire || rfire
+    io.inst := Mux(rfire, rdata, io.inst_slave.r.bits.data)
 }
