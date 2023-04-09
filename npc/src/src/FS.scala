@@ -30,7 +30,7 @@ class FS extends Module
     }
 
     val pc = RegInit(0x7ffffffc.U(64.W))
-    when (fs_allow_in && io.pf_fs.pf_to_fs_valid)
+    when (fs_allow_in && io.pf_fs.to_fs_valid)
     {
         pc := io.pf_fs.next_pc
     }
