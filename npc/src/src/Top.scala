@@ -56,7 +56,7 @@ class FS_PF extends Bundle
 
 class FS_DS extends Bundle
 {
-    val fs_to_ds_valid = Output(Bool())
+    val to_ds_valid = Output(Bool())
     val inst = Output(UInt(32.W))
     val pc = Output(UInt(64.W))
     val br_taken = Input(Bool())
