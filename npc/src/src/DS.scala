@@ -23,7 +23,7 @@ class DS extends Module
     val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard)
     val ds_allow_in = !ds_valid || ds_ready && io.es_ds.es_allow_in
     val to_es_valid = ds_valid && ds_ready
-    when (io.ds_pf.br_taken && to_es_valid && io.ds_es.es_allow_in)
+    when (io.ds_pf.br_taken && to_es_valid && io.es_ds.es_allow_in)
     {
         ds_valid := false.B
     }
@@ -186,9 +186,9 @@ class DS extends Module
     read_rf2 := inst_R || inst_S || inst_B
 
     val rs1_value = MuxCase(io.reg_r.rdata1, Seq(
-        (io.reg_r.raddr1 && io.es_ds.to_mm_valid && io.es_ds.rf_wen && io.reg_r.raddr1 === io.es_ds.rf_waddr) -> io.es_ds.alu_result
-        (io.reg_r.raddr1 && io.ms_ds.to_ws_valid && io.ms_ds.rf_wen && io.reg_r.raddr1 === io.ms_ds.rf_waddr) -> io.ms_ds.rf_wdata
-        (io.reg_r.raddr1 && io.ws_ds.valid       && io.ws_ds.rf_wen && io.reg_r.raddr1 === io.ws_ds.rf_waddr) -> io.ws_ds.rf_wdata
+        (io.reg_r.raddr1 =/= 0.U && io.es_ds.to_mm_valid && io.es_ds.rf_wen && io.reg_r.raddr1 === io.es_ds.rf_waddr) -> io.es_ds.alu_result
+        (io.reg_r.raddr1 =/= 0.U && io.ms_ds.to_ws_valid && io.ms_ds.rf_wen && io.reg_r.raddr1 === io.ms_ds.rf_waddr) -> io.ms_ds.rf_wdata
+        (io.reg_r.raddr1 =/= 0.U && io.ws_ds.valid       && io.ws_ds.rf_wen && io.reg_r.raddr1 === io.ws_ds.rf_waddr) -> io.ws_ds.rf_wdata
     ))
     val rs2_value = MuxCase(io.reg_r.rdata2, Seq(
         (io.reg_r.raddr2 && io.es_ds.to_mm_valid && io.es_ds.rf_wen && io.reg_r.raddr2 === io.es_ds.rf_waddr) -> io.es_ds.alu_result
