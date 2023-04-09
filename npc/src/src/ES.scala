@@ -56,7 +56,7 @@ class ES extends Module
     {
         arfire := true.B
     }
-    .elsewhen (io.ready)
+    .elsewhen (es_allow_in)
     {
         arfire := false.B
     }
@@ -69,7 +69,7 @@ class ES extends Module
     {
         awfire := true.B
     }
-    .elsewhen (io.ready)
+    .elsewhen (es_allow_in)
     {
         awfire := false.B
     }
@@ -82,7 +82,7 @@ class ES extends Module
     {
         wfire := true.B
     }
-    .elsewhen (io.ready)
+    .elsewhen (es_allow_in)
     {
         wfire := false.B
     }
