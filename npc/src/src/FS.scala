@@ -35,5 +35,5 @@ class FS extends Module
     io.fs_ds.pc := io.pf_fs.pc
 
     io.fs_ready := io.inst_slave.r.fire || rfire
-    io.inst := Mux(rfire, rdata, inst)
+    io.inst := Mux(rfire, rdata, io.inst_slave.r.bits.data)
 }
