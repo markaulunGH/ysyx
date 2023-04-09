@@ -18,7 +18,7 @@ class DS extends Module
 
     val ds_valid = RegInit(false.B)
     val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard)
-    val ds_allow_in = !ds_valid || ds_ready_go && es_allow_in
+    val ds_allow_in = !ds_valid || ds_ready && es_allow_in
     val to_es_valid = ds_valid && ds_ready
     when (br_taken && ds_to_es_valid && io.ds_es.es_allow_in)
     {
