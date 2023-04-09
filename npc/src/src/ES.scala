@@ -8,6 +8,7 @@ class ES extends Module
         val es_ds = new ES_DS
         val es_ms = new ES_MS
         val ds_es = Flipped(new DS_ES)
+        val ms_es = Flipped(new MS_ES)
 
         val data_master = new AXI_Lite_Master
     })
