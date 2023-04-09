@@ -96,6 +96,11 @@ class DS_ES extends Bundle
     val mret = Output(Bool())
 }
 
+class ES_FS extends Bundle
+{
+    val es_allow_in = Output(Bool())
+}
+
 class ES_DS extends Bundle
 {
     val es_allow_in = Output(Bool())

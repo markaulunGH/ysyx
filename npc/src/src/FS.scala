@@ -8,6 +8,7 @@ class FS extends Module
         val fs_ds = new FS_DS
         val pf_fs = Flipped(new PF_FS)
         val ds_fs = Flipped(new DS_FS)
+        val es_fs = Flipped(new ES_FS)
 
         val inst_slave = new AXI_Lite_Slave
 
@@ -23,7 +24,7 @@ class FS extends Module
     {
         fs_valid := io.pf_fs.to_fs_valid
     }
-    .elsewhen (io.fs_ds.br_taken && io.ds_fs.to_es_valid && io.fs_es.es_allow_in)
+    .elsewhen (io.fs_ds.br_taken && io.ds_fs.to_es_valid && io.es_fs.es_allow_in)
     {
         fs_valid := false.B
     }
