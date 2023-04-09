@@ -152,6 +152,7 @@ class MS_WS extends Bundle
 
 class WS_DS extends Bundle
 {
+    val valid = Output(Bool())
     val rf_wen = Output(Bool())
 }
 
