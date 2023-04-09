@@ -18,10 +18,7 @@ class PF extends Module
     val pc = RegInit(0x7ffffffc.U(64.W))
     val next_pc = Mux(io.pf_ds.br_taken, io.pf_ds.br_target, pc + 4.U)
 
-    when (io.ready)
-    {
-        pc := next_pc
-    }
+    pc := Mux(io.ready, next_pc, pc)
 
     val buffer = RegInit(false.B)
     io.inst_master.ar.valid := !buffer && !reset.asBool()
