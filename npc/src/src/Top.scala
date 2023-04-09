@@ -148,6 +148,11 @@ class MS_WS extends Bundle
     val mret = Output(Bool())
 }
 
+class WS_DS extends Bundle
+{
+    val rf_wen = Output(Bool())
+}
+
 class WS_MS extends Bundle
 {
     val ws_allow_in = Output(Bool())
