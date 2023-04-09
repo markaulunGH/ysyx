@@ -39,7 +39,7 @@ class FS extends Module
     val rfire = RegInit(true.B) // pretend that there is an instruction in the buffer before the first instruction is fetched; maybe problematic
 
     io.inst_slave.r.ready := !rfire && !reset.asBool()
-    when (io.inst_slave.r.fire && !io.ready)
+    when (io.inst_slave.r.fire && !fs_allow_in)
     {
         rdata := io.inst_slave.r.bits.data
         rfire := true.B
