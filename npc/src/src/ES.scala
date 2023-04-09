@@ -43,9 +43,9 @@ class ES extends Module
     val mret = RegEnable(io.ds_es.mret, enable)
 
     val alu = Module(new Alu)
-    alu.io.alu_in.alu_op := alu_op
-    alu.io.alu_in.alu_src1 := alu_src1
-    alu.io.alu_in.alu_src2 := alu_src2
+    alu.io.in.alu_op := alu_op
+    alu.io.in.alu_src1 := alu_src1
+    alu.io.in.alu_src2 := alu_src2
     val alu_result = Mux(inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)
 
     val arfire = RegInit(false.B)
