@@ -239,7 +239,7 @@ class Top extends Module
     csr.io.csr_pc <> ds.io.csr_pc
     csr.io.csr_rw <> ws.io.csr_rw
     
-    io.pc := pf.io.pc
+    io.pc := fs.io.pc
     io.inst := fs.io.inst
     io.ebreak := ds.io.ebreak
     io.rf := rf.io.rf
