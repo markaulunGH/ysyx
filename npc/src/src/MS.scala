@@ -5,6 +5,7 @@ class MS extends Module
 {
     val io = IO(new Bundle
     {
+        val ms_ds = new MS_DS
         val ms_es = new MS_ES
         val ms_ws = new MS_WS
         val es_ms = Flipped(new ES_MS)
