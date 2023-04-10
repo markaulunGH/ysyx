@@ -45,23 +45,38 @@ class AXI_Lite_Slave extends Bundle
 
 class PF_FS extends Bundle
 {
-    val pc = Output(UInt(64.W))
+    val to_fs_valid = Output(Bool())
+    val next_pc = Output(UInt(64.W))
 }
 
-class PF_DS extends Bundle
+class FS_PF extends Bundle
 {
-    val br_taken = Input(Bool())
-    val br_target = Input(UInt(64.W))
+    val pc = Output(UInt(64.W))
 }
 
 class FS_DS extends Bundle
 {
+    val to_ds_valid = Output(Bool())
     val inst = Output(UInt(32.W))
     val pc = Output(UInt(64.W))
 }
 
+class DS_PF extends Bundle
+{
+    val br_taken = Output(Bool())
+    val br_target = Output(UInt(64.W))
+}
+
+class DS_FS extends Bundle
+{
+    val ds_allow_in = Output(Bool())
+    val to_es_valid = Output(Bool())
+    val br_taken = Output(Bool())
+}
+
 class DS_ES extends Bundle
 {
+    val to_es_valid = Output(Bool())
     val pc = Output(UInt(64.W))
     val alu_in = Flipped(new Alu_in)
     val inst_word = Output(Bool())
@@ -81,8 +96,25 @@ class DS_ES extends Bundle
     val mret = Output(Bool())
 }
 
+class ES_FS extends Bundle
+{
+    val es_allow_in = Output(Bool())
+}
+
+class ES_DS extends Bundle
+{
+    val es_allow_in = Output(Bool())
+    val es_valid = Output(Bool())
+    val to_ms_valid = Output(Bool())
+    val alu_result = Output(UInt(64.W))
+    val rf_waddr = Output(UInt(5.W))
+    val rf_wen = Output(Bool())
+    val mm_ren = Output(Bool())
+}
+
 class ES_MS extends Bundle
 {
+    val to_ms_valid = Output(Bool())
     val pc = Output(UInt(64.W))
     val alu_result = Output(UInt(64.W))
     val rf_wen = Output(Bool())
@@ -100,8 +132,22 @@ class ES_MS extends Bundle
     val mret = Output(Bool())
 }
 
+class MS_DS extends Bundle
+{
+    val to_ws_valid = Output(Bool())
+    val rf_wen = Output(Bool())
+    val rf_waddr = Output(UInt(5.W))
+    val rf_wdata = Output(UInt(64.W))
+}
+
+class MS_ES extends Bundle
+{
+    val ms_allow_in = Output(Bool())
+}
+
 class MS_WS extends Bundle
 {
+    val to_ws_valid = Output(Bool())
     val pc = Output(UInt(64.W))
     val rf_wen = Output(Bool())
     val rf_waddr = Output(UInt(5.W))
@@ -113,6 +159,19 @@ class MS_WS extends Bundle
     val exc = Output(Bool())
     val exc_cause = Output(UInt(64.W))
     val mret = Output(Bool())
+}
+
+class WS_DS extends Bundle
+{
+    val ws_valid = Output(Bool())
+    val rf_wen = Output(Bool())
+    val rf_waddr = Output(UInt(5.W))
+    val rf_wdata = Output(UInt(64.W))
+}
+
+class WS_MS extends Bundle
+{
+    val ws_allow_in = Output(Bool())
 }
 
 class Top extends Module
@@ -132,7 +191,6 @@ class Top extends Module
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
         val rf_wen = Output(Bool())
-        val ready = Output(Bool())
     })
     
     val pf = Module(new PF)
@@ -142,18 +200,19 @@ class Top extends Module
     val ms = Module(new MS)
     val ws = Module(new WS)
     pf.io.pf_fs <> fs.io.pf_fs
-    pf.io.pf_ds <> ds.io.pf_ds
+    fs.io.fs_pf <> pf.io.fs_pf
     fs.io.fs_ds <> ds.io.fs_ds
+    ds.io.ds_pf <> pf.io.ds_pf
+    ds.io.ds_fs <> fs.io.ds_fs
     ds.io.ds_es <> es.io.ds_es
+    es.io.es_fs <> fs.io.es_fs
+    es.io.es_ds <> ds.io.es_ds
     es.io.es_ms <> ms.io.es_ms
+    ms.io.ms_ds <> ds.io.ms_ds
+    ms.io.ms_es <> es.io.ms_es
     ms.io.ms_ws <> ws.io.ms_ws
-    val ready = pf.io.pf_ready && fs.io.fs_ready && ds.io.ds_ready && es.io.es_ready && ms.io.ms_ready && ws.io.ws_ready
-    pf.io.ready := ready
-    fs.io.ready := ready
-    ds.io.ready := ready
-    es.io.ready := ready
-    ms.io.ready := ready
-    ws.io.ready := ready
+    ws.io.ws_ds <> ds.io.ws_ds
+    ws.io.ws_ms <> ms.io.ws_ms
 
     val arbiter = Module(new AXI_Arbiter)
     arbiter.io.inst_master <> pf.io.inst_master
@@ -180,10 +239,9 @@ class Top extends Module
     csr.io.csr_pc <> ds.io.csr_pc
     csr.io.csr_rw <> ws.io.csr_rw
     
-    io.pc := pf.io.pc
+    io.pc := fs.io.pc
     io.inst := fs.io.inst
     io.ebreak := ds.io.ebreak
     io.rf := rf.io.rf
     io.rf_wen := rf.io.rf_wen
-    io.ready := ready
 }
