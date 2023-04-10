@@ -246,7 +246,6 @@ class DS extends Module
 
     io.ds_fs.ds_allow_in := ds_allow_in
     io.ds_fs.to_es_valid := to_es_valid
-    io.ds_fs.br_taken := br_taken
 
     io.ds_es.to_es_valid := to_es_valid
     io.ds_es.pc := pc
