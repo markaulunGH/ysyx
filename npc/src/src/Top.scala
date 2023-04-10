@@ -71,7 +71,6 @@ class DS_FS extends Bundle
 {
     val ds_allow_in = Output(Bool())
     val to_es_valid = Output(Bool())
-    val br_taken = Output(Bool())
 }
 
 class DS_ES extends Bundle
