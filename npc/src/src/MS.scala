@@ -44,33 +44,34 @@ class MS extends Module
 
     val rdata = RegInit(0.U(64.W))
     val rfire = RegInit(false.B)
-    when (io.data_slave.r.fire)
+    when (ms_allow_in)
+    {
+        rfire := false.B
+    }
+    .elsewhen (io.data_slave.r.fire)
     {
         rdata := io.data_slave.r.bits.data
         rfire := true.B
     }
-    .elsewhen (ms_allow_in)
-    {
-        rfire := false.B
-    }
 
     val bfire = RegInit(false.B)
-    when (io.data_slave.b.fire)
-    {
-        bfire := true.B
-    }
-    .elsewhen (ms_allow_in)
+    when (ms_allow_in)
     {
         bfire := false.B
     }
+    .elsewhen (io.data_slave.b.fire)
+    {
+        bfire := true.B
+    }
 
+    val read_data = rfire ? rdata : io.data_slave.r.bits.data
     val mm_rdata = MuxCase(
         0.U(64.W),
         Seq(
-            (mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(mm_unsigned, 0.U(1.W), rdata(7))),  rdata(7, 0)),
-            (mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(mm_unsigned, 0.U(1.W), rdata(15))), rdata(15, 0)),
-            (mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(mm_unsigned, 0.U(1.W), rdata(31))), rdata(31, 0)),
-            (mm_mask === 0xff.U) -> rdata
+            (mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(mm_unsigned, 0.U(1.W), read_data(7))),  read_data(7, 0)),
+            (mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(mm_unsigned, 0.U(1.W), read_data(15))), read_data(15, 0)),
+            (mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(mm_unsigned, 0.U(1.W), read_data(31))), read_data(31, 0)),
+            (mm_mask === 0xff.U) -> read_data
         )
     )
 

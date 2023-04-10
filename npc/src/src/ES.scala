@@ -14,7 +14,7 @@ class ES extends Module
     })
 
     val es_valid = RegInit(false.B)
-    val es_ready = (io.ds_es.mm_ren && arfire) || (io.ds_es.mm_wen && wfire) || (!io.ds_es.mm_ren && !io.ds_es.mm_wen)
+    val es_ready = (io.ds_es.mm_ren && (io.data_master.ar.fire || arfire)) || (io.ds_es.mm_wen && (io.data_master.w.fire || wfire)) || (!io.ds_es.mm_ren && !io.ds_es.mm_wen)
     val es_allow_in = !es_valid || es_ready && io.ms_es.ms_allow_in
     val to_ms_valid = es_valid && es_ready
     when (es_allow_in)
@@ -53,39 +53,39 @@ class ES extends Module
     io.data_master.ar.valid := mm_ren && !arfire
     io.data_master.ar.bits.addr := alu_result
     io.data_master.ar.bits.prot := 0.U(3.W)
-    when (io.data_master.ar.fire)
-    {
-        arfire := true.B
-    }
-    .elsewhen (es_allow_in)
+    when (es_allow_in)
     {
         arfire := false.B
+    }
+    .elsewhen (io.data_master.ar.fire)
+    {
+        arfire := true.B
     }
 
     val awfire = RegInit(false.B)
     io.data_master.aw.valid := mm_wen && !awfire
     io.data_master.aw.bits.addr := alu_result
     io.data_master.aw.bits.prot := 0.U(3.W)
-    when (io.data_master.aw.fire)
-    {
-        awfire := true.B
-    }
-    .elsewhen (es_allow_in)
+    when (es_allow_in)
     {
         awfire := false.B
+    }
+    .elsewhen (io.data_master.aw.fire)
+    {
+        awfire := true.B
     }
 
     val wfire = RegInit(false.B)
     io.data_master.w.valid := mm_wen && !wfire
     io.data_master.w.bits.data := mm_wdata
     io.data_master.w.bits.strb := mm_mask
-    when (io.data_master.w.fire)
-    {
-        wfire := true.B
-    }
-    .elsewhen (es_allow_in)
+    when (es_allow_in)
     {
         wfire := false.B
+    }
+    .elsewhen (io.data_master.w.fire)
+    {
+        wfire := true.B
     }
 
     io.es_ms.pc := pc
