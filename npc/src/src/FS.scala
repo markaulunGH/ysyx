@@ -18,6 +18,7 @@ class FS extends Module
     })
 
     val fs_valid = RegInit(false.B)
+    val rfire = RegInit(true.B) // pretend that there is an instruction in the buffer before the first instruction is fetched; maybe problematic
     val fs_ready = fs_valid && (io.inst_slave.r.fire || rfire)
     val fs_allow_in = !fs_valid || fs_ready && io.ds_fs.ds_allow_in
     val to_ds_valid = fs_valid && fs_ready
@@ -37,7 +38,6 @@ class FS extends Module
     }
 
     val rdata = RegInit(0.U(32.W))
-    val rfire = RegInit(true.B) // pretend that there is an instruction in the buffer before the first instruction is fetched; maybe problematic
 
     io.inst_slave.r.ready := !rfire && !reset.asBool()
     when (fs_allow_in)
