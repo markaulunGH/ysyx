@@ -6,6 +6,7 @@ class DS extends Module
     val io = IO(new Bundle
     {
         val ds_pf = new DS_PF
+        val ds_fs = new DS_FS
         val ds_es = new DS_ES
         val fs_ds = Flipped(new FS_DS)
         val es_ds = Flipped(new ES_DS)
