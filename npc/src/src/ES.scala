@@ -5,6 +5,7 @@ class ES extends Module
 {
     val io = IO(new Bundle
     {
+        val es_fs = new ES_FS
         val es_ds = new ES_DS
         val es_ms = new ES_MS
         val ds_es = Flipped(new DS_ES)
