@@ -94,7 +94,7 @@ class ES extends Module
 
     io.es_ds.es_allow_in := es_allow_in
     io.es_ds.es_valid := es_valid
-    io.es_ds.to_mm_valid := to_mm_valid
+    io.es_ds.to_ms_valid := to_ms_valid
     io.es_ds.alu_result := alu_result
     io.es_ds.rf_waddr := rf_waddr
     io.es_ds.rf_wen := rf_wen
