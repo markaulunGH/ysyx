@@ -200,11 +200,19 @@ class Top extends Module
     val ms = Module(new MS)
     val ws = Module(new WS)
     pf.io.pf_fs <> fs.io.pf_fs
-    pf.io.pf_ds <> ds.io.pf_ds
+    fs.io.fs_pf <> pf.io.fs_pf
     fs.io.fs_ds <> ds.io.fs_ds
+    ds.io.ds_pf <> pf.io.ds_pf
+    ds.io.ds_fs <> fs.io.ds_fs
     ds.io.ds_es <> es.io.ds_es
+    es.io.es_fs <> fs.io.es_fs
+    es.io.es_ds <> ds.io.es_ds
     es.io.es_ms <> ms.io.es_ms
+    ms.io.ms_ds <> ds.io.ms_ds
+    ms.io.ms_es <> es.io.ms_es
     ms.io.ms_ws <> ws.io.ms_ws
+    ws.io.ws_ds <> ds.io.ws_ds
+    ws.io.ws_ms <> ms.io.ws_ms
 
     val arbiter = Module(new AXI_Arbiter)
     arbiter.io.inst_master <> pf.io.inst_master

@@ -13,7 +13,7 @@ class PF extends Module
     })
 
     val pf_ready = io.inst_master.ar.fire || arfire
-    val pf_allow_in = pf_ready && io.fs_ps.fs_allow_in
+    val pf_allow_in = pf_ready && io.fs_pf.fs_allow_in
     val to_fs_valid = pf_ready
     
     val next_pc = Mux(io.ds_pf.br_taken, io.ds_pf.br_target, io.fs_pf.pc + 4.U)
