@@ -90,6 +90,17 @@ class ES extends Module
         wfire := true.B
     }
 
+    io.es_fs.es_allow_in := es_allow_in
+
+    io.es_ds.es_allow_in := es_allow_in
+    io.es_ds.es_valid := es_valid
+    io.es_ds.to_mm_valid := to_mm_valid
+    io.es_ds.alu_result := alu_result
+    io.es_ds.rf_waddr := rf_waddr
+    io.es_ds.rf_wen := rf_wen
+    io.es_ds.mm_ren := mm_ren
+
+    io.es_ms.to_ms_valid := to_ms_valid
     io.es_ms.pc := pc
 
     io.es_ms.alu_result := alu_result
