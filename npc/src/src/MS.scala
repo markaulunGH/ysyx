@@ -14,6 +14,10 @@ class MS extends Module
         val data_slave = new AXI_Lite_Slave
     })
 
+    val rfire = RegInit(false.B)
+    val bfire = RegInit(false.B)
+
+
     val ms_valid = RegInit(false.B)
     val ms_ready = (io.es_ms.mm_ren && (io.data_slave.r.fire || rfire)) || (io.es_ms.mm_wen && (io.data_slave.b.fire || bfire)) || (!io.es_ms.mm_ren && !io.es_ms.mm_wen)
     val ms_allow_in = !ms_valid || ms_ready && io.ws_ms.ws_allow_in
@@ -44,7 +48,6 @@ class MS extends Module
     io.data_slave.b.ready := true.B
 
     val rdata = RegInit(0.U(64.W))
-    val rfire = RegInit(false.B)
     when (ms_allow_in)
     {
         rfire := false.B
@@ -55,7 +58,6 @@ class MS extends Module
         rfire := true.B
     }
 
-    val bfire = RegInit(false.B)
     when (ms_allow_in)
     {
         bfire := false.B
