@@ -12,12 +12,12 @@ class PF extends Module
         val inst_master = new AXI_Lite_Master
     })
 
+    val arfire = RegInit(false.B)
     val pf_ready = io.inst_master.ar.fire || arfire
     val to_fs_valid = pf_ready
     
     val next_pc = Mux(io.ds_pf.br_taken, io.ds_pf.br_target, io.fs_pf.pc + 4.U)
 
-    val arfire = RegInit(false.B)
     io.inst_master.ar.valid := !arfire && !reset.asBool()
     io.inst_master.ar.bits.addr := next_pc
     io.inst_master.ar.bits.prot := 0.U(3.W)
