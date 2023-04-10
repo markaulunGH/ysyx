@@ -21,6 +21,8 @@ class DS extends Module
 
     val read_rf1 = Wire(Bool())
     val read_rf2 = Wire(Bool())
+    val rf1_hazard = Wire(Bool())
+    val rf2_hazard = Wire(Bool())
 
     val ds_valid = RegInit(false.B)
     val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard)
@@ -199,8 +201,8 @@ class DS extends Module
         (io.reg_r.raddr2 =/= 0.U && io.ws_ds.valid       && io.ws_ds.rf_wen && io.reg_r.raddr2 === io.ws_ds.rf_waddr) -> io.ws_ds.rf_wdata
     ))
 
-    val rf1_hazard = (io.es_ds.es_valid && io.es_ds.mm_ren && io.reg_r.raddr1 === io.es_ds.rf_waddr) && io.reg_r.raddr1 =/= 0.U
-    val rf2_hazard = (io.es_ds.es_valid && io.es_ds.mm_ren && io.reg_r.raddr2 === io.es_ds.rf_waddr) && io.reg_r.raddr2 =/= 0.U
+    rf1_hazard := (io.es_ds.es_valid && io.es_ds.mm_ren && io.reg_r.raddr1 === io.es_ds.rf_waddr) && io.reg_r.raddr1 =/= 0.U
+    rf2_hazard := (io.es_ds.es_valid && io.es_ds.mm_ren && io.reg_r.raddr2 === io.es_ds.rf_waddr) && io.reg_r.raddr2 =/= 0.U
 
     val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
