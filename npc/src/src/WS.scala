@@ -5,6 +5,7 @@ class WS extends Module
 {
     val io = IO(new Bundle
     {
+        val ws_ds = new WS_DS
         val ws_ms = new WS_MS
         val ms_ws = Flipped(new MS_WS)
 
