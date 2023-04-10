@@ -13,7 +13,6 @@ class PF extends Module
     })
 
     val pf_ready = io.inst_master.ar.fire || arfire
-    val pf_allow_in = pf_ready && io.fs_pf.fs_allow_in
     val to_fs_valid = pf_ready
     
     val next_pc = Mux(io.ds_pf.br_taken, io.ds_pf.br_target, io.fs_pf.pc + 4.U)
@@ -31,7 +30,7 @@ class PF extends Module
 
     //why pf will not be blocked? if it does not receive ready signal, which stage will it block?
     //problematic, fix later
-    when (pf_allow_in)
+    when (of_ready)
     {
         arfire := false.B
     }
