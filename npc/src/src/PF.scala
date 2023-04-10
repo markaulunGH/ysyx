@@ -30,7 +30,7 @@ class PF extends Module
 
     //why pf will not be blocked? if it does not receive ready signal, which stage will it block?
     //problematic, fix later
-    when (of_ready)
+    when (pf_ready)
     {
         arfire := false.B
     }
