@@ -244,6 +244,10 @@ class DS extends Module
     alu_op(16) := inst_rem || inst_remw
     alu_op(17) := inst_remu || inst_remuw
 
+    io.ds_fs.ds_allow_in := ds_allow_in
+    io.ds_fs.to_es_valid := to_es_valid
+
+    io.ds_es.to_es_valid := to_es_valid
     io.ds_es.pc := pc
 
     io.ds_es.alu_in.alu_op := alu_op
