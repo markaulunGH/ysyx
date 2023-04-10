@@ -105,7 +105,7 @@ class ES_DS extends Bundle
 {
     val es_allow_in = Output(Bool())
     val es_valid = Output(Bool())
-    val to_mm_valid = Output(Bool())
+    val to_ms_valid = Output(Bool())
     val alu_result = Output(UInt(64.W))
     val rf_waddr = Output(UInt(5.W))
     val rf_wen = Output(Bool())
