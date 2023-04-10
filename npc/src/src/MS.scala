@@ -64,7 +64,7 @@ class MS extends Module
         bfire := true.B
     }
 
-    val read_data = rfire ? rdata : io.data_slave.r.bits.data
+    val read_data = Mux(rfire, rdata, io.data_slave.r.bits.data)
     val mm_rdata = MuxCase(
         0.U(64.W),
         Seq(
