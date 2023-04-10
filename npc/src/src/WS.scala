@@ -45,4 +45,6 @@ class WS extends Module
     io.csr_rw.exc := exc
     io.csr_rw.exc_cause := exc_cause
     io.csr_rw.mret := mret
+
+    io.ws_ds.ws_valid := ws_valid
 }
