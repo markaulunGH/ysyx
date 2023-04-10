@@ -77,6 +77,14 @@ class MS extends Module
         )
     )
 
+    io.ms_ds.to_ws_valid := to_ws_valid
+    io.ms_ds.rf_wen := rf_wen
+    io.ms_ds.rf_waddr := rf_waddr
+    io.ms_ds.rf_wdata := Mux(mm_ren, mm_rdata, alu_result)
+
+    io.ms_es.ms_allow_in := ms_allow_in
+
+    io.ms_ws.to_ws_valid := to_ws_valid
     io.ms_ws.pc := pc
 
     io.ms_ws.rf_wen := rf_wen
