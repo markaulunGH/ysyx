@@ -23,12 +23,13 @@ class DS extends Module
     val read_rf2 = Wire(Bool())
     val rf1_hazard = Wire(Bool())
     val rf2_hazard = Wire(Bool())
+    val br_taken = Wire(Bool())
 
     val ds_valid = RegInit(false.B)
     val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard)
     val ds_allow_in = !ds_valid || ds_ready && io.es_ds.es_allow_in
     val to_es_valid = ds_valid && ds_ready
-    when (io.ds_pf.br_taken && to_es_valid && io.es_ds.es_allow_in)
+    when (br_taken && to_es_valid && io.es_ds.es_allow_in)
     {
         ds_valid := false.B
     }
@@ -206,14 +207,14 @@ class DS extends Module
 
     val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
-    io.ds_pf.br_taken := inst_jal || inst_jalr ||
-                         inst_beq  &&  rs1_value === rs2_value ||
-                         inst_bne  &&  rs1_value =/= rs2_value ||
-                         inst_blt  &&  rs1_lt_rs2 ||
-                         inst_bge  && !rs1_lt_rs2 ||
-                         inst_bltu &&  rs1_ltu_rs2 ||
-                         inst_bgeu && !rs1_ltu_rs2 ||
-                         inst_ecall || inst_mret
+    br_taken := inst_jal || inst_jalr ||
+                inst_beq  &&  rs1_value === rs2_value ||
+                inst_bne  &&  rs1_value =/= rs2_value ||
+                inst_blt  &&  rs1_lt_rs2 ||
+                inst_bge  && !rs1_lt_rs2 ||
+                inst_bltu &&  rs1_ltu_rs2 ||
+                inst_bgeu && !rs1_ltu_rs2 ||
+                inst_ecall || inst_mret
     io.ds_pf.br_target := MuxCase(
         0.U(64.W),
         Seq(
@@ -244,8 +245,11 @@ class DS extends Module
     alu_op(16) := inst_rem || inst_remw
     alu_op(17) := inst_remu || inst_remuw
 
+    io.ds_pf.br_taken := br_taken
+
     io.ds_fs.ds_allow_in := ds_allow_in
     io.ds_fs.to_es_valid := to_es_valid
+    io.ds_fs.br_taken := br_taken
 
     io.ds_es.to_es_valid := to_es_valid
     io.ds_es.pc := pc
