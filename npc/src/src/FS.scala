@@ -53,6 +53,8 @@ class FS extends Module
 
     io.inst_slave.b.ready := false.B
 
+    io.fs_pf.pc := pc
+
     io.fs_ds.inst := Mux(rfire, rdata, io.inst_slave.r.bits.data)
     io.fs_ds.pc := pc
 
