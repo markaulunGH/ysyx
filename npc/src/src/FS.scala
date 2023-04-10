@@ -5,6 +5,7 @@ class FS extends Module
 {
     val io = IO(new Bundle
     {
+        val fs_pf = new FS_PF
         val fs_ds = new FS_DS
         val pf_fs = Flipped(new PF_FS)
         val ds_fs = Flipped(new DS_FS)
