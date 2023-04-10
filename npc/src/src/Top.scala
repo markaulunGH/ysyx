@@ -59,7 +59,6 @@ class FS_DS extends Bundle
     val to_ds_valid = Output(Bool())
     val inst = Output(UInt(32.W))
     val pc = Output(UInt(64.W))
-    val br_taken = Input(Bool())
 }
 
 class DS_PF extends Bundle
@@ -72,6 +71,7 @@ class DS_FS extends Bundle
 {
     val ds_allow_in = Output(Bool())
     val to_es_valid = Output(Bool())
+    val br_taken = Output(Bool())
 }
 
 class DS_ES extends Bundle
