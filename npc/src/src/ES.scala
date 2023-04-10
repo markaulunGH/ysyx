@@ -14,6 +14,9 @@ class ES extends Module
         val data_master = new AXI_Lite_Master
     })
 
+    val arfire = RegInit(false.B)
+    val wfire = RegInit(false.B)
+
     val es_valid = RegInit(false.B)
     val es_ready = (io.ds_es.mm_ren && (io.data_master.ar.fire || arfire)) || (io.ds_es.mm_wen && (io.data_master.w.fire || wfire)) || (!io.ds_es.mm_ren && !io.ds_es.mm_wen)
     val es_allow_in = !es_valid || es_ready && io.ms_es.ms_allow_in
@@ -50,7 +53,6 @@ class ES extends Module
     alu.io.in.alu_src2 := alu_src2
     val alu_result = Mux(inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)
 
-    val arfire = RegInit(false.B)
     io.data_master.ar.valid := mm_ren && !arfire
     io.data_master.ar.bits.addr := alu_result
     io.data_master.ar.bits.prot := 0.U(3.W)
@@ -76,7 +78,6 @@ class ES extends Module
         awfire := true.B
     }
 
-    val wfire = RegInit(false.B)
     io.data_master.w.valid := mm_wen && !wfire
     io.data_master.w.bits.data := mm_wdata
     io.data_master.w.bits.strb := mm_mask
