@@ -118,4 +118,9 @@ class ES extends Module
     io.es_ms.exc := exc
     io.es_ms.exc_cause := exc_cause
     io.es_ms.mret := mret
+
+    val inst = RegEnable(io.ds_es.inst, enable)
+    val ebreak = RegEnable(io.ds_es.ebreak, enable)
+    io.es_ms.inst := inst
+    io.es_ms.ebreak := ebreak
 }

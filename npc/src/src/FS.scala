@@ -12,9 +12,6 @@ class FS extends Module
         val es_fs = Flipped(new ES_FS)
 
         val inst_slave = new AXI_Lite_Slave
-
-        val inst = Output(UInt(32.W))
-        val pc = Output(UInt(64.W))
     })
 
     val rfire = RegInit(true.B) // pretend that there is an instruction in the buffer before the first instruction is fetched; maybe problematic

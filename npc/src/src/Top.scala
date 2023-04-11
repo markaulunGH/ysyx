@@ -100,6 +100,8 @@ class DS_ES extends Bundle
     val exc = Output(Bool())
     val exc_cause = Output(UInt(64.W))
     val mret = Output(Bool())
+
+    val inst = Output(UInt(32.W))
 }
 
 class ES_FS extends Bundle
@@ -136,6 +138,8 @@ class ES_MS extends Bundle
     val exc = Output(Bool())
     val exc_cause = Output(UInt(64.W))
     val mret = Output(Bool())
+
+    val inst = Output(UInt(32.W))
 }
 
 class MS_DS extends Bundle
@@ -165,6 +169,8 @@ class MS_WS extends Bundle
     val exc = Output(Bool())
     val exc_cause = Output(UInt(64.W))
     val mret = Output(Bool())
+
+    val inst = Output(UInt(32.W))
 }
 
 class WS_DS extends Bundle
@@ -192,12 +198,12 @@ class Top extends Module
         val mm_wdata = Output(UInt(64.W))
         val mm_mask = Output(UInt(8.W))
 
+        val ws_valid = Output(Bool())
         val pc = Output(UInt(64.W))
         val inst = Output(UInt(32.W))
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
         val rf_wen = Output(Bool())
-        val ws_valid = Output(Bool())
     })
     
     val pf = Module(new PF)
@@ -247,10 +253,10 @@ class Top extends Module
     csr.io.csr_pc <> ds.io.csr_pc
     csr.io.csr_rw <> ws.io.csr_rw
     
-    io.pc := fs.io.pc
-    io.inst := fs.io.inst
-    io.ebreak := ds.io.ebreak
+    io.ws_valid := ws.io.ws_valid
+    io.pc := ws.io.pc
+    io.inst := ws.io.inst
+    io.ebreak := ws.io.ebreak
     io.rf := rf.io.rf
     io.rf_wen := rf.io.rf_wen
-    io.ws_valid := ws.io.ws_valid
 }
