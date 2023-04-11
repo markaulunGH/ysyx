@@ -244,7 +244,7 @@ static void exec_once(Decode *s)
             }
         }
         cycle_end();
-    } while (!top->io_inst_end && top->io_pc != 0x80000000);
+    } while (!top->io_inst_end);
     top->eval();
     update_regs();
     if (top->io_ebreak)
