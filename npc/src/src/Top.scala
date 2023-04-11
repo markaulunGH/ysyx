@@ -49,6 +49,11 @@ class PF_FS extends Bundle
     val next_pc = Output(UInt(64.W))
 }
 
+class PF_DS extends Bundle
+{
+    val pf_ready = Output(Bool())
+}
+
 class FS_PF extends Bundle
 {
     val pc = Output(UInt(64.W))
@@ -63,6 +68,7 @@ class FS_DS extends Bundle
 
 class DS_PF extends Bundle
 {
+    val ds_allow_in = Output(Bool())
     val br_taken = Output(Bool())
     val br_target = Output(UInt(64.W))
 }
@@ -201,6 +207,7 @@ class Top extends Module
     val ms = Module(new MS)
     val ws = Module(new WS)
     pf.io.pf_fs <> fs.io.pf_fs
+    pf.io.pf_ds <> ds.io.pf_ds
     fs.io.fs_pf <> pf.io.fs_pf
     fs.io.fs_ds <> ds.io.fs_ds
     ds.io.ds_pf <> pf.io.ds_pf

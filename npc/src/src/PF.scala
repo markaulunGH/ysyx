@@ -6,6 +6,7 @@ class PF extends Module
     val io = IO(new Bundle
     {
         val pf_fs = new PF_FS
+        val pf_ds = new PF_DS
         val fs_pf = Flipped(new FS_PF)
         val ds_pf = Flipped(new DS_PF)
 
@@ -28,9 +29,7 @@ class PF extends Module
     io.inst_master.w.bits.data := 0.U(64.W)
     io.inst_master.w.bits.strb := 0.U(8.W)
 
-    //why pf will not be blocked? if it does not receive ready signal, which stage will it block?
-    //problematic, fix later
-    when (pf_ready)
+    when (io.ds_pf.ds_allow_in)
     {
         arfire := false.B
     }
@@ -41,4 +40,6 @@ class PF extends Module
 
     io.pf_fs.to_fs_valid := to_fs_valid
     io.pf_fs.next_pc := next_pc
+
+    io.pf_ds.pf_ready := pf_ready
 }
