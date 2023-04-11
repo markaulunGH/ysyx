@@ -102,6 +102,7 @@ class DS_ES extends Bundle
     val mret = Output(Bool())
 
     val inst = Output(UInt(32.W))
+    val ebreak = Output(Bool())
 }
 
 class ES_FS extends Bundle
@@ -140,6 +141,7 @@ class ES_MS extends Bundle
     val mret = Output(Bool())
 
     val inst = Output(UInt(32.W))
+    val ebreak = Output(Bool())
 }
 
 class MS_DS extends Bundle
@@ -171,6 +173,7 @@ class MS_WS extends Bundle
     val mret = Output(Bool())
 
     val inst = Output(UInt(32.W))
+    val ebreak = Output(Bool())
 }
 
 class WS_DS extends Bundle
