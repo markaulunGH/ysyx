@@ -27,7 +27,7 @@ class DS extends Module
     val br_taken = Wire(Bool())
 
     val ds_valid = RegInit(false.B)
-    val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard) && pf_ready
+    val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard) && io.pf_ds.pf_ready
     val ds_allow_in = !ds_valid || ds_ready && io.es_ds.es_allow_in
     val to_es_valid = ds_valid && ds_ready
     when (br_taken && to_es_valid && io.es_ds.es_allow_in)
