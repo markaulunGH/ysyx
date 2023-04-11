@@ -246,7 +246,7 @@ static void exec_once(Decode *s)
         }
         cycle_end();
         // top->eval();
-    } while (!top->io_ws_valid);
+    } while (!top->io_inst_end);
     top->eval();
     update_regs();
     if (top->io_ebreak)
