@@ -40,4 +40,6 @@ class PF extends Module
 
     io.pf_fs.to_fs_valid := to_fs_valid
     io.pf_fs.next_pc := next_pc
+
+    io.pf_ds.pf_ready := pf_ready
 }
