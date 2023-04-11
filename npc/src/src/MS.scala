@@ -98,4 +98,9 @@ class MS extends Module
     io.ms_ws.exc := exc
     io.ms_ws.exc_cause := exc_cause
     io.ms_ws.mret := mret
+
+    val inst = RegEnable(io.es_ms.inst, enable)
+    val ebreak = RegEnable(io.es_ms.ebreak, enable)
+    io.ms_ws.inst := inst
+    io.ms_ws.ebreak := ebreak
 }

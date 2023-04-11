@@ -16,8 +16,6 @@ class DS extends Module
 
         val reg_r = Flipped(new Reg_r)
         val csr_pc = Flipped(new Csr_pc)
-
-        val ebreak = Output(Bool())
     })
 
     val read_rf1 = Wire(Bool())
@@ -333,5 +331,6 @@ class DS extends Module
     io.ds_es.exc_cause := 0xb.U
     io.ds_es.mret := inst_mret
 
-    io.ebreak := inst_ebreak
+    io.ds_es.inst := inst
+    io.ds_es.ebreak := inst_ebreak
 }
