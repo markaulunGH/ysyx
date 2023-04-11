@@ -225,6 +225,7 @@ class DS extends Module
             inst_mret -> io.csr_pc.mepc
         )
     )
+    io.ds_pf.ds_allow_in := ds_allow_in
 
     val alu_op = Wire(Vec(18, UInt(1.W)))
     alu_op(0)  := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi || inst_addiw || inst_add || inst_addw
