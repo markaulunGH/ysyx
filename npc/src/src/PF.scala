@@ -6,6 +6,7 @@ class PF extends Module
     val io = IO(new Bundle
     {
         val pf_fs = new PF_FS
+        val pf_ds = new PF_DS
         val fs_pf = Flipped(new FS_PF)
         val ds_pf = Flipped(new DS_PF)
 
