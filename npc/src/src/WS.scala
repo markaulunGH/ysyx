@@ -58,8 +58,6 @@ class WS extends Module
 
     io.ws_ms.ws_allow_in := ws_allow_in
 
-    io.ws_valid := ws_valid
-
     val inst = RegEnable(io.ms_ws.inst, enable)
     val ebreak = RegEnable(io.ms_ws.ebreak, enable)
     io.ws_valid := ws_valid
