@@ -55,7 +55,4 @@ class FS extends Module
     io.fs_ds.to_ds_valid := to_ds_valid
     io.fs_ds.inst := Mux(rfire, rdata, io.inst_slave.r.bits.data)
     io.fs_ds.pc := pc
-
-    io.inst := Mux(rfire, rdata, io.inst_slave.r.bits.data)
-    io.pc := pc
 }
