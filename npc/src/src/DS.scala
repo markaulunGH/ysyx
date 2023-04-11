@@ -8,6 +8,7 @@ class DS extends Module
         val ds_pf = new DS_PF
         val ds_fs = new DS_FS
         val ds_es = new DS_ES
+        val pf_ds = Flipped(new PF_DS)
         val fs_ds = Flipped(new FS_DS)
         val es_ds = Flipped(new ES_DS)
         val ms_ds = Flipped(new MS_DS)
@@ -26,7 +27,7 @@ class DS extends Module
     val br_taken = Wire(Bool())
 
     val ds_valid = RegInit(false.B)
-    val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard)
+    val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard) && pf_ready
     val ds_allow_in = !ds_valid || ds_ready && io.es_ds.es_allow_in
     val to_es_valid = ds_valid && ds_ready
     when (br_taken && to_es_valid && io.es_ds.es_allow_in)

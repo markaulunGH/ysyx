@@ -11,6 +11,8 @@ class WS extends Module
 
         val reg_w = Flipped(new Reg_w)
         val csr_rw = Flipped(new Csr_rw)
+
+        val ws_valid = Output(Bool())
     })
 
     val ws_valid = RegInit(false.B)
@@ -52,4 +54,6 @@ class WS extends Module
     io.ws_ds.rf_wdata := rf_wdata
 
     io.ws_ms.ws_allow_in := ws_allow_in
+
+    io.ws_valid := ws_valid
 }

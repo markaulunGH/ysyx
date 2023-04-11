@@ -28,9 +28,7 @@ class PF extends Module
     io.inst_master.w.bits.data := 0.U(64.W)
     io.inst_master.w.bits.strb := 0.U(8.W)
 
-    //why pf will not be blocked? if it does not receive ready signal, which stage will it block?
-    //problematic, fix later
-    when (pf_ready)
+    when (io.ds_pf.ds_allow_in)
     {
         arfire := false.B
     }
