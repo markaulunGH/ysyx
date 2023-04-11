@@ -194,7 +194,6 @@ static void exec_once(Decode *s)
     s->npc.inst.val = top->io_inst;
     do
     {
-        // top->eval();
         if (top->io_mm_ren)
         {
             if (in_pmem(top->io_mm_raddr))
@@ -245,8 +244,7 @@ static void exec_once(Decode *s)
             }
         }
         cycle_end();
-        // top->eval();
-    } while (!top->io_inst_end);
+    } while (!top->io_inst_end && top->io_inst != 0x80000000);
     top->eval();
     update_regs();
     if (top->io_ebreak)
