@@ -14,13 +14,13 @@ class AXI_Arbiter extends Module
     })
 
     val widle = RegInit(true.B)
-    when (io.slave.b.fire)
-    {
-        widle := true.B
-    }
-    .elsewhen (io.master.aw.valid)
+    when (io.master.aw.valid)
     {
         widle := false.B
+    }
+    .elsewhen (io.slave.b.fire)
+    {
+        widle := true.B
     }
     
     val ridle = RegInit(true.B)
