@@ -14,23 +14,25 @@ class AXI_Arbiter extends Module
     })
 
     val widle = RegInit(true.B)
-    when (io.slave.b.fire)
+    val awaddr = RegInit(0.U(64.W))
+    when (io.master.aw.valid)
+    {
+        widle := false.B
+        awaddr := io.master.aw.bits.addr
+    }
+    .elsewhen (io.slave.b.fire)
     {
         widle := true.B
     }
-    .elsewhen (io.master.aw.valid)
-    {
-        widle := false.B
-    }
     
     val ridle = RegInit(true.B)
-    when (io.slave.r.fire)
-    {
-        ridle := true.B
-    }
-    .elsewhen (io.master.ar.valid)
+    when (io.master.ar.valid)
     {
         ridle := false.B
+    }
+    .elsewhen (io.slave.r.fire)
+    {
+        ridle := true.B
     }
 
     val data_req = RegInit(false.B)
@@ -62,7 +64,7 @@ class AXI_Arbiter extends Module
     io.inst_slave.b.bits.resp := 0.U(3.W)
 
     //potential bugs down here; maybe fixed when changing to pipeline
-    io.master.ar.valid      := Mux(io.data_master.ar.valid || data_req, io.data_master.ar.valid, io.inst_master.ar.valid) && (widle || io.master.ar.bits.addr =/= io.master.aw.bits.addr) && (ridle || io.slave.r.fire)
+    io.master.ar.valid      := Mux(io.data_master.ar.valid || data_req, io.data_master.ar.valid, io.inst_master.ar.valid) && (widle || io.master.ar.bits.addr =/= awaddr) && (ridle || io.slave.r.fire)
     io.data_master.ar.ready := Mux(io.data_master.ar.valid || data_req, io.master.ar.ready, false.B) && (ridle || io.slave.r.fire)
     io.inst_master.ar.ready := Mux(io.data_master.ar.valid || data_req, false.B, io.master.ar.ready) && (ridle || io.slave.r.fire)
     io.master.ar.bits.addr  := Mux(io.data_master.ar.valid || data_req, io.data_master.ar.bits.addr, io.inst_master.ar.bits.addr)
