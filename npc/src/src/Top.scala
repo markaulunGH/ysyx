@@ -68,6 +68,7 @@ class FS_DS extends Bundle
 
 class DS_PF extends Bundle
 {
+    val ds_valid = Output(Bool())
     val ds_allow_in = Output(Bool())
     val br_taken = Output(Bool())
     val br_target = Output(UInt(64.W))
