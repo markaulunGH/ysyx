@@ -16,9 +16,11 @@ class ES extends Module
 
     val arfire = RegInit(false.B)
     val wfire = RegInit(false.B)
+    val mm_ren = RegInit(false.B)
+    val mm_wen = RegInit(false.B)
 
     val es_valid = RegInit(false.B)
-    val es_ready = (io.ds_es.mm_ren && (io.data_master.ar.fire || arfire)) || (io.ds_es.mm_wen && (io.data_master.w.fire || wfire)) || (!io.ds_es.mm_ren && !io.ds_es.mm_wen)
+    val es_ready = (mm_ren && (io.data_master.ar.fire || arfire)) || (mm_wen && (io.data_master.w.fire || wfire)) || (!mm_ren && !mm_wen)
     val es_allow_in = !es_valid || es_ready && io.ms_es.ms_allow_in
     val to_ms_valid = es_valid && es_ready
     when (es_allow_in)
@@ -34,8 +36,8 @@ class ES extends Module
     val inst_word = RegEnable(io.ds_es.inst_word, enable)
     val rf_wen = RegEnable(io.ds_es.rf_wen, enable)
     val rf_waddr = RegEnable(io.ds_es.rf_waddr, enable)
-    val mm_ren = RegEnable(io.ds_es.mm_ren, enable)
-    val mm_wen = RegEnable(io.ds_es.mm_wen, enable)
+    mm_ren := RegEnable(io.ds_es.mm_ren, enable)
+    mm_wen := RegEnable(io.ds_es.mm_wen, enable)
     val mm_wdata = RegEnable(io.ds_es.mm_wdata, enable)
     val mm_mask = RegEnable(io.ds_es.mm_mask, enable)
     val mm_unsigned = RegEnable(io.ds_es.mm_unsigned, enable)
