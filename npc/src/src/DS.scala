@@ -246,6 +246,7 @@ class DS extends Module
     alu_op(17) := inst_remu || inst_remuw
 
     io.ds_pf.br_taken := br_taken
+    io.ds_pf.ds_valid := ds_valid
 
     io.ds_fs.ds_allow_in := ds_allow_in
     io.ds_fs.to_es_valid := to_es_valid
