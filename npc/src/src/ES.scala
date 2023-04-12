@@ -16,8 +16,8 @@ class ES extends Module
 
     val arfire = RegInit(false.B)
     val wfire = RegInit(false.B)
-    val mm_ren = RegInit(false.B)
-    val mm_wen = RegInit(false.B)
+    val mm_ren = Wire(Bool())
+    val mm_wen = Wire(Bool())
 
     val es_valid = RegInit(false.B)
     val es_ready = (mm_ren && (io.data_master.ar.fire || arfire)) || (mm_wen && (io.data_master.w.fire || wfire)) || (!mm_ren && !mm_wen)
