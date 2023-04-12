@@ -16,9 +16,11 @@ class MS extends Module
 
     val rfire = RegInit(false.B)
     val bfire = RegInit(false.B)
+    val mm_ren = Wire(Bool())
+    val mm_wen = Wire(Bool())
 
     val ms_valid = RegInit(false.B)
-    val ms_ready = (io.es_ms.mm_ren && (io.data_slave.r.fire || rfire)) || (io.es_ms.mm_wen && (io.data_slave.b.fire || bfire)) || (!io.es_ms.mm_ren && !io.es_ms.mm_wen)
+    val ms_ready = (mm_ren && (io.data_slave.r.fire || rfire)) || (mm_wen && (io.data_slave.b.fire || bfire)) || (!mm_ren && !mm_wen)
     val ms_allow_in = !ms_valid || ms_ready && io.ws_ms.ws_allow_in
     val to_ws_valid = ms_valid && ms_ready
     when (ms_allow_in)
@@ -31,8 +33,8 @@ class MS extends Module
     val alu_result = RegEnable(io.es_ms.alu_result, enable)
     val rf_wen = RegEnable(io.es_ms.rf_wen, enable)
     val rf_waddr = RegEnable(io.es_ms.rf_waddr, enable)
-    val mm_ren = RegEnable(io.es_ms.mm_ren, enable)
-    val mm_wen = RegEnable(io.es_ms.mm_wen, enable)
+    mm_ren := RegEnable(io.es_ms.mm_ren, enable)
+    mm_wen := RegEnable(io.es_ms.mm_wen, enable)
     val mm_mask = RegEnable(io.es_ms.mm_mask, enable)
     val mm_unsigned = RegEnable(io.es_ms.mm_unsigned, enable)
     val csr_wen = RegEnable(io.es_ms.csr_wen, enable)
