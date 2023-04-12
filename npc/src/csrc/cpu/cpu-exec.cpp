@@ -245,6 +245,11 @@ static void exec_once(Decode *s)
             }
         }
         cycle_end();
+        if (g_nr_guest_inst > 10000000)
+        {
+            npc_state.state = NPC_ABORT;
+            break;
+        }
     } while (!top->io_inst_end || top->io_pc == 0x00000000);
     top->eval();
     update_regs();
