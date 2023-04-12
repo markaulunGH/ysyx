@@ -196,7 +196,7 @@ static void exec_once(Decode *s)
     {
         if (top->io_mm_ren)
         {
-            printf("%d\n", top->io_mm_raddr);
+            printf("%x\n", top->io_mm_raddr);
             if (in_pmem(top->io_mm_raddr))
             {
 #ifdef CONFIG_MTRACE
