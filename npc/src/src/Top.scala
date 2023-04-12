@@ -201,7 +201,7 @@ class Top extends Module
         val mm_wdata = Output(UInt(64.W))
         val mm_mask = Output(UInt(8.W))
 
-        val ws_valid = Output(Bool())
+        val inst_end = Output(Bool())
         val pc = Output(UInt(64.W))
         val inst = Output(UInt(32.W))
         val ebreak = Output(Bool())
@@ -256,7 +256,7 @@ class Top extends Module
     csr.io.csr_pc <> ds.io.csr_pc
     csr.io.csr_rw <> ws.io.csr_rw
     
-    io.ws_valid := ws.io.ws_valid
+    io.inst_end := ws.io.inst_end
     io.pc := ws.io.pc
     io.inst := ws.io.inst
     io.ebreak := ws.io.ebreak

@@ -12,7 +12,7 @@ class WS extends Module
         val reg_w = Flipped(new Reg_w)
         val csr_rw = Flipped(new Csr_rw)
 
-        val ws_valid = Output(Bool())
+        val inst_end = Output(Bool())
         val pc = Output(UInt(64.W))
         val inst = Output(UInt(32.W))
         val ebreak = Output(Bool())
@@ -60,7 +60,7 @@ class WS extends Module
 
     val inst = RegEnable(io.ms_ws.inst, enable)
     val ebreak = RegEnable(io.ms_ws.ebreak, enable)
-    io.ws_valid := ws_valid
+    io.inst_end := enable
     io.pc := pc
     io.inst := io.ms_ws.inst
     io.ebreak := ebreak
