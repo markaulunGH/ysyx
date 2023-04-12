@@ -245,7 +245,7 @@ static void exec_once(Decode *s)
             }
         }
         cycle_end();
-        if (g_nr_guest_inst > 10000000)
+        if (g_nr_guest_inst > 1000000)
         {
             npc_state.state = NPC_ABORT;
             break;
@@ -293,7 +293,7 @@ static void execute(uint64_t n)
         exec_once(&s);
         g_nr_guest_inst++;
         trace_and_difftest(&s, cpu.pc);
-        if (g_nr_guest_inst > 10000000)
+        if (g_nr_guest_inst > 1000000)
             npc_state.state = NPC_ABORT;
         if (npc_state.state != NPC_RUNNING)
             break;
