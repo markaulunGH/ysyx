@@ -247,11 +247,11 @@ static void exec_once(Decode *s)
         }
         cycle_end();
         ++ cnt;
-        // if (cnt > 100)
-        // {
-        //     npc_state.state = NPC_ABORT;
-        //     break;
-        // }
+        if (cnt > 100)
+        {
+            npc_state.state = NPC_ABORT;
+            break;
+        }
     } while (!top->io_inst_end || top->io_pc == 0x00000000);
     top->eval();
     update_regs();
