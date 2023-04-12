@@ -18,7 +18,7 @@ class AXI_Arbiter extends Module
     {
         widle := true.B
     }
-    .elsewhen (io.master.aw.fire)
+    .elsewhen (io.master.aw.valid)
     {
         widle := false.B
     }
@@ -28,19 +28,19 @@ class AXI_Arbiter extends Module
     {
         ridle := true.B
     }
-    .elsewhen (io.master.ar.fire)
+    .elsewhen (io.master.ar.valid)
     {
         ridle := false.B
     }
 
     val data_req = RegInit(false.B)
-    when (io.data_master.ar.valid && (ridle || io.slave.r.fire))
-    {
-        data_req := true.B
-    }
-    .elsewhen (io.data_slave.r.fire)
+    when (io.data_slave.r.fire)
     {
         data_req := false.B
+    }
+    .elsewhen (io.data_master.ar.valid && (ridle || io.slave.r.fire))
+    {
+        data_req := true.B
     }
 
     io.master.aw.valid      := io.data_master.aw.valid
