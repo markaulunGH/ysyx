@@ -64,8 +64,8 @@ class AXI_Arbiter extends Module
     io.inst_slave.b.bits.resp := 0.U(3.W)
 
     io.master.ar.valid      := Mux(io.data_master.ar.valid, io.data_master.ar.valid, io.inst_master.ar.valid) && (widle || io.master.ar.bits.addr =/= awaddr) && (ridle || io.slave.r.fire)
-    io.data_master.ar.ready := Mux(io.data_master.ar.valid, io.master.ar.ready, false.B) && (ridle || io.slave.r.fire)
-    io.inst_master.ar.ready := Mux(io.data_master.ar.valid, false.B, io.master.ar.ready) && (ridle || io.slave.r.fire)
+    io.data_master.ar.ready := Mux(io.data_master.ar.valid, io.master.ar.ready, false.B) && (widle || io.master.ar.bits.addr =/= awaddr) && (ridle || io.slave.r.fire) && (ridle || io.slave.r.fire)
+    io.inst_master.ar.ready := Mux(io.data_master.ar.valid, false.B, io.master.ar.ready) && (widle || io.master.ar.bits.addr =/= awaddr) && (ridle || io.slave.r.fire) && (ridle || io.slave.r.fire)
     io.master.ar.bits.addr  := Mux(io.data_master.ar.valid, io.data_master.ar.bits.addr, io.inst_master.ar.bits.addr)
     io.master.ar.bits.prot  := Mux(io.data_master.ar.valid, io.data_master.ar.bits.prot, io.inst_master.ar.bits.prot)
 
