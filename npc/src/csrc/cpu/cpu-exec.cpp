@@ -192,7 +192,6 @@ static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
-    int cnt = 0;
     do
     {
         top->eval();
@@ -246,12 +245,6 @@ static void exec_once(Decode *s)
             }
         }
         cycle_end();
-        ++ cnt;
-        // if (cnt > 100)
-        // {
-        //     npc_state.state = NPC_ABORT;
-        //     break;
-        // }
     } while (!top->io_inst_end || top->io_pc == 0x00000000);
     top->eval();
     update_regs();
@@ -295,8 +288,6 @@ static void execute(uint64_t n)
         exec_once(&s);
         g_nr_guest_inst++;
         trace_and_difftest(&s, cpu.pc);
-        if (g_nr_guest_inst > 1000000)
-            npc_state.state = NPC_ABORT;
         if (npc_state.state != NPC_RUNNING)
             break;
     }
