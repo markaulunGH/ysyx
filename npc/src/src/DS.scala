@@ -22,7 +22,6 @@ class DS extends Module
     val read_rf2 = Wire(Bool())
     val rf1_hazard = Wire(Bool())
     val rf2_hazard = Wire(Bool())
-    val csr_hazard = Wire(Bool())
     val br_taken = Wire(Bool())
 
     val ds_valid = RegInit(false.B)
