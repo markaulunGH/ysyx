@@ -22,6 +22,7 @@ class DS extends Module
     val read_rf2 = Wire(Bool())
     val rf1_hazard = Wire(Bool())
     val rf2_hazard = Wire(Bool())
+    val csr_hazard = Wire(Bool())
     val br_taken = Wire(Bool())
 
     val ds_valid = RegInit(false.B)
@@ -201,8 +202,12 @@ class DS extends Module
         (io.reg_r.raddr2 =/= 0.U && io.ws_ds.ws_valid    && io.ws_ds.rf_wen && io.reg_r.raddr2 === io.ws_ds.rf_waddr) -> io.ws_ds.rf_wdata
     ))
 
-    rf1_hazard := (io.es_ds.es_valid && io.es_ds.mm_ren && io.reg_r.raddr1 === io.es_ds.rf_waddr) && io.reg_r.raddr1 =/= 0.U
-    rf2_hazard := (io.es_ds.es_valid && io.es_ds.mm_ren && io.reg_r.raddr2 === io.es_ds.rf_waddr) && io.reg_r.raddr2 =/= 0.U
+    rf1_hazard := (io.es_ds.es_valid && (io.es_ds.mm_ren || io.es_ds.csr_wen) && io.reg_r.raddr1 === io.es_ds.rf_waddr ||
+                   io.ms_ds.ms_valid && ((io.ms_ds.mm_ren && !io.ms_ds.to_ws_valid) || io.ms_ds.csr_wen) && io.reg_r.raddr1 === io.ms_ds.rf_waddr) &&
+                   io.reg_r.raddr1 =/= 0.U
+    rf2_hazard := (io.es_ds.es_valid && (io.es_ds.mm_ren || io.es_ds.csr_wen) && io.reg_r.raddr2 === io.es_ds.rf_waddr ||
+                   io.ms_ds.ms_valid && ((io.ms_ds.mm_ren || !io.ms_ds.to_ws_valid) || io.ms_ds.csr_wen) && io.reg_r.raddr1 === io.ms_ds.rf_waddr) &&
+                   io.reg_r.raddr2 =/= 0.U
 
     val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
