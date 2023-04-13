@@ -153,6 +153,7 @@ class MS_DS extends Bundle
     val rf_wen = Output(Bool())
     val rf_waddr = Output(UInt(5.W))
     val rf_wdata = Output(UInt(64.W))
+    val mm_ren = Output(Bool())
     val csr_wen = Output(Bool())
 }
 
