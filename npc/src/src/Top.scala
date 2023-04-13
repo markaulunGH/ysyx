@@ -120,6 +120,7 @@ class ES_DS extends Bundle
     val rf_waddr = Output(UInt(5.W))
     val rf_wen = Output(Bool())
     val mm_ren = Output(Bool())
+    val csr_wen = Output(Bool())
 }
 
 class ES_MS extends Bundle
@@ -151,6 +152,7 @@ class MS_DS extends Bundle
     val rf_wen = Output(Bool())
     val rf_waddr = Output(UInt(5.W))
     val rf_wdata = Output(UInt(64.W))
+    val csr_wen = Output(Bool())
 }
 
 class MS_ES extends Bundle
