@@ -192,6 +192,7 @@ bool skip;
 
 static void exec_once(Decode *s)
 {
+    skip = false;
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
     do
