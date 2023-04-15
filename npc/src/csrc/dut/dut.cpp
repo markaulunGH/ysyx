@@ -96,6 +96,7 @@ void difftest_step(vaddr_t pc, vaddr_t next_pc)
 
     if (is_skip_ref)
     {
+        printf("skip\n");
         ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
         is_skip_ref = false;
         return;
