@@ -295,7 +295,7 @@ static void execute(uint64_t n)
         g_nr_guest_inst++;
         if (skip)
         {
-            printf("skkip\n");
+            printf("skkip:%x\n", top->io_pc);
         }
         trace_and_difftest(&s, cpu.pc);
         if (npc_state.state != NPC_RUNNING)
