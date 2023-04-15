@@ -188,7 +188,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 
 #define likely(x) __builtin_expect(!!(x), 1)
 
-bool skkip;
+bool skip;
 
 static void exec_once(Decode *s)
 {
@@ -212,9 +212,9 @@ static void exec_once(Decode *s)
                 log_write("read  device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
 #endif
                 top->io_mm_rdata = mmio_read(top->io_mm_raddr, 8);
-                difftest_skkip_ref();
+                difftest_skip_ref();
                 printf("%x\n", top->io_pc);
-                skkip = true;
+                skip = true;
             }
             top->eval();
         }
@@ -245,9 +245,9 @@ static void exec_once(Decode *s)
                     case 0xf:  mmio_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
                     case 0xff: mmio_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
                 }
-                difftest_skkip_ref();
+                difftest_skip_ref();
                 printf("%x\n", top->io_pc);
-                skkip = true;
+                skip = true;
             }
         }
         cycle_end();
@@ -256,7 +256,7 @@ static void exec_once(Decode *s)
     update_regs();
     if (top->io_ebreak)
     {
-        difftest_skkip_ref();
+        difftest_skip_ref();
         npc_state.state = NPC_END;
         npc_state.halt_pc = top->io_pc;
         npc_state.halt_ret= top->io_rf_10;
@@ -293,7 +293,7 @@ static void execute(uint64_t n)
     {
         exec_once(&s);
         g_nr_guest_inst++;
-        if (skkip)
+        if (skip)
         {
             printf("skkip\n");
         }
