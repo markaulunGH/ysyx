@@ -247,13 +247,13 @@ static void exec_once(Decode *s)
         }
         cycle_end();
     } while (!top->io_inst_end || top->io_pc == 0x00000000);
-    top->eval();
-    update_regs();
     if (top->io_pc == skip_pc)
     {
         difftest_skip_ref();
         skip_pc = 0;
     }
+    top->eval();
+    update_regs();
     if (top->io_ebreak)
     {
         difftest_skip_ref();
