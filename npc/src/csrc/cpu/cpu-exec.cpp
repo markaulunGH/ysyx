@@ -188,8 +188,6 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 
 #define likely(x) __builtin_expect(!!(x), 1)
 
-bool skip;
-
 static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
@@ -297,10 +295,6 @@ static void execute(uint64_t n)
     {
         exec_once(&s);
         g_nr_guest_inst++;
-        if (skip)
-        {
-            printf("cpu skip:%x\n", cpu.pc);
-        }
         trace_and_difftest(&s, cpu.pc);
         if (npc_state.state != NPC_RUNNING)
             break;
