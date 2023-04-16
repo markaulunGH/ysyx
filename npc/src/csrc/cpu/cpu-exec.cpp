@@ -246,6 +246,7 @@ static void exec_once(Decode *s)
                     case 0xf:  mmio_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
                     case 0xff: mmio_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
                 }
+                printf("skip pc:%x\n", top->io_pc);
                 difftest_skip_ref();
                 skip = true;
             }
