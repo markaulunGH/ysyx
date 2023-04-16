@@ -255,7 +255,7 @@ static void exec_once(Decode *s)
     } while (!top->io_inst_end || top->io_pc == 0x00000000);
     top->eval();
     update_regs();
-    printf("%x\n", top->io_pc);
+    printf("%x\n", cpu.pc);
     if (top->io_ebreak)
     {
         difftest_skip_ref();
