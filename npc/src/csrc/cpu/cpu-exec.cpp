@@ -243,20 +243,17 @@ static void exec_once(Decode *s)
                     case 0xff: mmio_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
                 }
                 skip_pc = top->io_mm_pc;
-                printf("to skip: %x\n", skip_pc);
             }
         }
         cycle_end();
     } while (!top->io_inst_end || top->io_pc == 0x00000000);
-    printf("cpu pc:%x\n", top->io_pc);
+    top->eval();
+    update_regs();
     if (top->io_pc == skip_pc)
     {
-        printf("%x\n", skip_pc);
         difftest_skip_ref();
         skip_pc = 0;
     }
-    top->eval();
-    update_regs();
     if (top->io_ebreak)
     {
         difftest_skip_ref();
