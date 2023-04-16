@@ -16,7 +16,7 @@ static int skip_dut_nr_inst = 0;
 void difftest_skip_ref()
 {
     is_skip_ref = true;
-    skip_dut_nr_inst = 0;
+    skip_dut_nr_inst = 1;
 }
 
 void difftest_skip_dut(int nr_ref, int nr_dut)
