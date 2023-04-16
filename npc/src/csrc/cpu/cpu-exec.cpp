@@ -214,6 +214,7 @@ static void exec_once(Decode *s)
 #endif
                 top->io_mm_rdata = mmio_read(top->io_mm_raddr, 8);
                 difftest_skip_ref();
+                printf("skip pc:%x\n", top->io_pc);
                 skip = true;
             }
             top->eval();
