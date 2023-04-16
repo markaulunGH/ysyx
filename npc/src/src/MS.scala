@@ -12,6 +12,8 @@ class MS extends Module
         val ws_ms = Flipped(new WS_MS)
 
         val data_slave = new AXI_Lite_Slave
+
+        val pc = Output(UInt(64.W))
     })
 
     val rfire = RegInit(false.B)
@@ -79,10 +81,13 @@ class MS extends Module
         )
     )
 
+    io.ms_ds.ms_valid := ms_valid
     io.ms_ds.to_ws_valid := to_ws_valid
     io.ms_ds.rf_wen := rf_wen
     io.ms_ds.rf_waddr := rf_waddr
     io.ms_ds.rf_wdata := Mux(mm_ren, mm_rdata, alu_result)
+    io.ms_ds.mm_ren := mm_ren
+    io.ms_ds.csr_wen := csr_wen
 
     io.ms_es.ms_allow_in := ms_allow_in
 
@@ -105,4 +110,6 @@ class MS extends Module
     val ebreak = RegEnable(io.es_ms.ebreak, enable)
     io.ms_ws.inst := inst
     io.ms_ws.ebreak := ebreak
+
+    io.pc := pc
 }

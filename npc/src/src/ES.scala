@@ -101,6 +101,7 @@ class ES extends Module
     io.es_ds.rf_waddr := rf_waddr
     io.es_ds.rf_wen := rf_wen
     io.es_ds.mm_ren := mm_ren
+    io.es_ds.csr_wen := csr_wen
 
     io.es_ms.to_ms_valid := to_ms_valid
     io.es_ms.pc := pc

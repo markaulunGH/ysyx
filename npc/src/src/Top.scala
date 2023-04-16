@@ -120,6 +120,7 @@ class ES_DS extends Bundle
     val rf_waddr = Output(UInt(5.W))
     val rf_wen = Output(Bool())
     val mm_ren = Output(Bool())
+    val csr_wen = Output(Bool())
 }
 
 class ES_MS extends Bundle
@@ -147,10 +148,13 @@ class ES_MS extends Bundle
 
 class MS_DS extends Bundle
 {
+    val ms_valid = Output(Bool())
     val to_ws_valid = Output(Bool())
     val rf_wen = Output(Bool())
     val rf_waddr = Output(UInt(5.W))
     val rf_wdata = Output(UInt(64.W))
+    val mm_ren = Output(Bool())
+    val csr_wen = Output(Bool())
 }
 
 class MS_ES extends Bundle
@@ -208,6 +212,7 @@ class Top extends Module
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
         val rf_wen = Output(Bool())
+        val mm_pc = Output(UInt(64.W))
     })
     
     val pf = Module(new PF)
@@ -263,4 +268,5 @@ class Top extends Module
     io.ebreak := ws.io.ebreak
     io.rf := rf.io.rf
     io.rf_wen := rf.io.rf_wen
+    io.mm_pc := ms.io.pc
 }
