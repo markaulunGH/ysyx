@@ -249,6 +249,7 @@ static void exec_once(Decode *s)
     } while (!top->io_inst_end || top->io_pc == 0x00000000);
     if (top->io_pc == skip_pc)
     {
+        printf("%x\n", skip_pc);
         difftest_skip_ref();
         skip_pc = 0;
     }
