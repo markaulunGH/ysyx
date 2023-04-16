@@ -192,7 +192,7 @@ static void exec_once(Decode *s)
 {
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
-    uint64_t skip_pc = 0;
+    static uint64_t skip_pc = 0;
     do
     {
         top->eval();
