@@ -248,6 +248,7 @@ static void exec_once(Decode *s)
         }
         cycle_end();
     } while (!top->io_inst_end || top->io_pc == 0x00000000);
+    printf("cpu pc:%x\n", top->io_pc);
     if (top->io_pc == skip_pc)
     {
         printf("%x\n", skip_pc);
