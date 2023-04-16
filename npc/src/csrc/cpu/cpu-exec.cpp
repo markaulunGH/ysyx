@@ -213,7 +213,6 @@ static void exec_once(Decode *s)
                 log_write("read  device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
 #endif
                 top->io_mm_rdata = mmio_read(top->io_mm_raddr, 8);
-                printf("skip pc:%x\n", top->io_pc);
                 skip_pc = top->io_mm_pc;
             }
             top->eval();
@@ -245,7 +244,6 @@ static void exec_once(Decode *s)
                     case 0xf:  mmio_write(top->io_mm_waddr, 4, top->io_mm_wdata); break;
                     case 0xff: mmio_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
                 }
-                printf("skip pc:%x\n", top->io_pc);
                 skip_pc = top->io_mm_pc;
             }
         }
@@ -255,10 +253,10 @@ static void exec_once(Decode *s)
     update_regs();
     if (top->io_pc == skip_pc)
     {
+        printf("%x\n", top->io_pc);
         difftest_skip_ref();
         skip_pc = 0;
     }
-    printf("%x\n", cpu.pc);
     if (top->io_ebreak)
     {
         difftest_skip_ref();
@@ -300,7 +298,7 @@ static void execute(uint64_t n)
         g_nr_guest_inst++;
         if (skip)
         {
-            printf("skkip:%x\n", cpu.pc);
+            printf("cpu skip:%x\n", cpu.pc);
         }
         trace_and_difftest(&s, cpu.pc);
         if (npc_state.state != NPC_RUNNING)
