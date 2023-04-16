@@ -254,7 +254,7 @@ static void exec_once(Decode *s)
     update_regs();
     if (top->io_pc == skip_pc)
     {
-        printf("%x\n", top->io_pc);
+        printf("skip pc: %x\n", top->io_pc);
         difftest_skip_ref();
         skip_pc = 0;
     }
