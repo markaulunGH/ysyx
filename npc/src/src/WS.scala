@@ -54,7 +54,7 @@ class WS extends Module
     io.ws_ds.ws_valid := ws_valid
     io.ws_ds.rf_wen := rf_wen
     io.ws_ds.rf_waddr := rf_waddr
-    io.ws_ds.rf_wdata := rf_wdata
+    io.ws_ds.rf_wdata := Mux(csr_wen, io.csr_rw.rdata, rf_wdata)
 
     io.ws_ms.ws_allow_in := ws_allow_in
 
