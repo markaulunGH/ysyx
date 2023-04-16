@@ -243,7 +243,7 @@ static void exec_once(Decode *s)
                     case 0xff: mmio_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
                 }
                 skip_pc = top->io_mm_pc;
-                printf("to skip: %x", skip_pc);
+                printf("to skip: %x\n", skip_pc);
             }
         }
         cycle_end();
