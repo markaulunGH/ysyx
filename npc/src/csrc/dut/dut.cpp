@@ -99,7 +99,7 @@ void difftest_step(vaddr_t pc, vaddr_t next_pc)
     {
         printf("skip\n");
         ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
-        printf("copy: %016lx\n", cpu.pc);
+        printf("copy: %x\n", cpu.pc);
         is_skip_ref = false;
         return;
     }
