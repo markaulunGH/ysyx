@@ -214,7 +214,6 @@ static void exec_once(Decode *s)
 #endif
                 top->io_mm_rdata = mmio_read(top->io_mm_raddr, 8);
                 difftest_skip_ref();
-                printf("%x\n", top->io_pc);
                 skip = true;
             }
             top->eval();
@@ -247,7 +246,6 @@ static void exec_once(Decode *s)
                     case 0xff: mmio_write(top->io_mm_waddr, 8, top->io_mm_wdata); break;
                 }
                 difftest_skip_ref();
-                printf("%x\n", top->io_pc);
                 skip = true;
             }
         }
