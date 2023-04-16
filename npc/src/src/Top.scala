@@ -212,6 +212,7 @@ class Top extends Module
         val ebreak = Output(Bool())
         val rf = Output(Vec(32, UInt(64.W)))
         val rf_wen = Output(Bool())
+        val mm_pc = Output(UInt(64.W))
     })
     
     val pf = Module(new PF)
@@ -267,4 +268,5 @@ class Top extends Module
     io.ebreak := ws.io.ebreak
     io.rf := rf.io.rf
     io.rf_wen := rf.io.rf_wen
+    io.mm_pc := ms.io.pc
 }
