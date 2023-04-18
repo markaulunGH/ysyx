@@ -28,26 +28,30 @@ class ES extends Module
         es_valid := io.ds_es.to_es_valid
     }
 
+
     val enable = io.ds_es.to_es_valid && es_allow_in
-    val pc = RegEnable(io.ds_es.pc, enable)
-    val alu_op = RegEnable(io.ds_es.alu_in.alu_op, enable)
-    val alu_src1 = RegEnable(io.ds_es.alu_in.alu_src1, enable)
-    val alu_src2 = RegEnable(io.ds_es.alu_in.alu_src2, enable)
-    val inst_word = RegEnable(io.ds_es.inst_word, enable)
-    val rf_wen = RegEnable(io.ds_es.rf_wen, enable)
-    val rf_waddr = RegEnable(io.ds_es.rf_waddr, enable)
-    mm_ren := RegEnable(io.ds_es.mm_ren, enable)
-    mm_wen := RegEnable(io.ds_es.mm_wen, enable)
-    val mm_wdata = RegEnable(io.ds_es.mm_wdata, enable)
-    val mm_mask = RegEnable(io.ds_es.mm_mask, enable)
-    val mm_unsigned = RegEnable(io.ds_es.mm_unsigned, enable)
-    val csr_wen = RegEnable(io.ds_es.csr_wen, enable)
-    val csr_addr = RegEnable(io.ds_es.csr_addr, enable)
-    val csr_wmask = RegEnable(io.ds_es.csr_wmask, enable)
-    val csr_wdata = RegEnable(io.ds_es.csr_wdata, enable)
-    val exc = RegEnable(io.ds_es.exc, enable)
-    val exc_cause = RegEnable(io.ds_es.exc_cause, enable)
-    val mret = RegEnable(io.ds_es.mret, enable)
+    val ds_es = RegEnable(io.ds_es, enable)
+
+    // val enable = io.ds_es.to_es_valid && es_allow_in
+    // val pc = RegEnable(io.ds_es.pc, enable)
+    // val alu_op = RegEnable(io.ds_es.alu_in.alu_op, enable)
+    // val alu_src1 = RegEnable(io.ds_es.alu_in.alu_src1, enable)
+    // val alu_src2 = RegEnable(io.ds_es.alu_in.alu_src2, enable)
+    // val inst_word = RegEnable(io.ds_es.inst_word, enable)
+    // val rf_wen = RegEnable(io.ds_es.rf_wen, enable)
+    // val rf_waddr = RegEnable(io.ds_es.rf_waddr, enable)
+    // mm_ren := RegEnable(io.ds_es.mm_ren, enable)
+    // mm_wen := RegEnable(io.ds_es.mm_wen, enable)
+    // val mm_wdata = RegEnable(io.ds_es.mm_wdata, enable)
+    // val mm_mask = RegEnable(io.ds_es.mm_mask, enable)
+    // val mm_unsigned = RegEnable(io.ds_es.mm_unsigned, enable)
+    // val csr_wen = RegEnable(io.ds_es.csr_wen, enable)
+    // val csr_addr = RegEnable(io.ds_es.csr_addr, enable)
+    // val csr_wmask = RegEnable(io.ds_es.csr_wmask, enable)
+    // val csr_wdata = RegEnable(io.ds_es.csr_wdata, enable)
+    // val exc = RegEnable(io.ds_es.exc, enable)
+    // val exc_cause = RegEnable(io.ds_es.exc_cause, enable)
+    // val mret = RegEnable(io.ds_es.mret, enable)
 
     val alu = Module(new Alu)
     alu.io.in.alu_op := alu_op
