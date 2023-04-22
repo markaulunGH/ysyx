@@ -20,7 +20,7 @@ class ES extends Module
     // val mm_wen = Wire(Bool())
 
     val es_valid = RegInit(false.B)
-    val es_ready = (mm_ren && (io.data_master.ar.fire || arfire)) || (mm_wen && (io.data_master.w.fire || wfire)) || (!mm_ren && !mm_wen)
+    val es_ready = (es_reg.mm_ren && (io.data_master.ar.fire || arfire)) || (mm_wen && (io.data_master.w.fire || wfire)) || (!es_reg.mm_ren && !es_reg.mm_wen)
     val es_allow_in = !es_valid || es_ready && io.ms_es.ms_allow_in
     val to_ms_valid = es_valid && es_ready
     when (es_allow_in)
@@ -33,12 +33,12 @@ class ES extends Module
     // mm_wen := es_reg.mm_wen
 
     val alu = Module(new Alu)
-    alu.io.in.alu_op := alu_op
-    alu.io.in.alu_src1 := alu_src1
-    alu.io.in.alu_src2 := alu_src2
-    val alu_result = Mux(inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)
+    alu.io.in.alu_op := es_reg.alu_op
+    alu.io.in.alu_src1 := es_reg.alu_src1
+    alu.io.in.alu_src2 := es_reg.alu_src2
+    val alu_result = Mux(es_reg.inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)
 
-    io.data_master.ar.valid := mm_ren && !arfire && es_valid
+    io.data_master.ar.valid := es_reg.mm_ren && !arfire && es_valid
     io.data_master.ar.bits.addr := alu_result
     io.data_master.ar.bits.prot := 0.U(3.W)
     when (es_allow_in)
@@ -51,7 +51,7 @@ class ES extends Module
     }
 
     val awfire = RegInit(false.B)
-    io.data_master.aw.valid := mm_wen && !awfire && es_valid
+    io.data_master.aw.valid := es_reg.mm_wen && !awfire && es_valid
     io.data_master.aw.bits.addr := alu_result
     io.data_master.aw.bits.prot := 0.U(3.W)
     when (es_allow_in)
