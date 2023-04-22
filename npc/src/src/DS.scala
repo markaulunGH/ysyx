@@ -38,6 +38,7 @@ class DS extends Module
     }
 
     val ds_reg = RegEnable(io.fs_ds, io.fs_ds.to_ds_valid && ds_allow_in)
+    val inst = ds_reg.inst
 
     val opcode = inst(6, 0)
     val funct3 = inst(14, 12)
