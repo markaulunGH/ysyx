@@ -26,19 +26,7 @@ class WS extends Module
         ws_valid := io.ms_ws.to_ws_valid
     }
 
-    val enable = io.ms_ws.to_ws_valid && ws_allow_in
-    val ws_reg = RegEnable(io.ms_ws, enable)
-    val pc = RegEnable(io.ms_ws.pc, enable)
-    val rf_wen = RegEnable(io.ms_ws.rf_wen, enable)
-    val rf_waddr = RegEnable(io.ms_ws.rf_waddr, enable)
-    val rf_wdata = RegEnable(io.ms_ws.rf_wdata, enable)
-    val csr_wen = RegEnable(io.ms_ws.csr_wen, enable)
-    val csr_addr = RegEnable(io.ms_ws.csr_addr, enable)
-    val csr_wmask = RegEnable(io.ms_ws.csr_wmask, enable)
-    val csr_wdata = RegEnable(io.ms_ws.csr_wdata, enable)
-    val exc = RegEnable(io.ms_ws.exc, enable)
-    val exc_cause = RegEnable(io.ms_ws.exc_cause, enable)
-    val mret = RegEnable(io.ms_ws.mret, enable)
+    val ws_reg = RegEnable(io.ms_ws, io.ms_ws.to_ws_valid && ws_allow_in)
 
     io.reg_w.wen := rf_wen
     io.reg_w.waddr := rf_waddr
