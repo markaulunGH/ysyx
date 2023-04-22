@@ -38,8 +38,8 @@ class DS extends Module
     }
 
     val ds_reg = RegEnable(io.fs_ds, io.fs_ds.to_ds_valid && ds_allow_in)
-    val inst = ds_reg.inst
 
+    val inst = ds_reg.inst
     val opcode = inst(6, 0)
     val funct3 = inst(14, 12)
     val funct7 = inst(31, 25)
@@ -220,7 +220,7 @@ class DS extends Module
     io.ds_pf.br_target := MuxCase(
         0.U(64.W),
         Seq(
-            (inst_jal || inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> (pc + imm),
+            (inst_jal || inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> (ds_reg.pc + imm),
             inst_jalr -> (imm + Cat(rs1_value(63, 1), 0.U(1.W))),
             inst_ecall -> io.csr_pc.mtvec,
             inst_mret -> io.csr_pc.mepc
