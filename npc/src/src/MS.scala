@@ -58,15 +58,12 @@ class MS extends Module
     }
 
     val read_data = Mux(rfire, rdata, data_slave.r.bits.data)
-    val mm_rdata = MuxCase(
-        0.U(64.W),
-        Seq(
-            (ms_reg.mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(7))),  read_data(7, 0)),
-            (ms_reg.mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(15))), read_data(15, 0)),
-            (ms_reg.mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(31))), read_data(31, 0)),
-            (ms_reg.mm_mask === 0xff.U) -> read_data
-        )
-    )
+    val mm_rdata = MuxCase(0.U(64.W), Seq(
+        (ms_reg.mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(7))),  read_data(7, 0)),
+        (ms_reg.mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(15))), read_data(15, 0)),
+        (ms_reg.mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(31))), read_data(31, 0)),
+        (ms_reg.mm_mask === 0xff.U) -> read_data
+    ))
 
     ms_ds.ms_valid := ms_valid
     ms_ds.to_ws_valid := to_ws_valid
