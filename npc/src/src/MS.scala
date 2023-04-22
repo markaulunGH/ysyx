@@ -61,28 +61,28 @@ class MS extends Module
     val mm_rdata = MuxCase(
         0.U(64.W),
         Seq(
-            (ms_reg.mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(mm_unsigned, 0.U(1.W), read_data(7))),  read_data(7, 0)),
-            (ms_reg.mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(mm_unsigned, 0.U(1.W), read_data(15))), read_data(15, 0)),
-            (ms_reg.mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(mm_unsigned, 0.U(1.W), read_data(31))), read_data(31, 0)),
+            (ms_reg.mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(7))),  read_data(7, 0)),
+            (ms_reg.mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(15))), read_data(15, 0)),
+            (ms_reg.mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(31))), read_data(31, 0)),
             (ms_reg.mm_mask === 0xff.U) -> read_data
         )
     )
 
     io.ms_ds.ms_valid := ms_valid
     io.ms_ds.to_ws_valid := to_ws_valid
-    io.ms_ds.rf_wen := rf_wen
-    io.ms_ds.rf_waddr := rf_waddr
-    io.ms_ds.rf_wdata := Mux(mm_ren, mm_rdata, alu_result)
+    io.ms_ds.rf_wen := ms_reg.rf_wen
+    io.ms_ds.rf_waddr := ms_reg.rf_waddr
+    io.ms_ds.rf_wdata := Mux(mm_ren, mm_rdata, ms_reg.alu_result)
     io.ms_ds.mm_ren := mm_ren
-    io.ms_ds.csr_wen := csr_wen
+    io.ms_ds.csr_wen := ms_reg.csr_wen
 
     io.ms_es.ms_allow_in := ms_allow_in
 
     io.ms_ws.to_ws_valid := to_ws_valid
-    io.ms_ws.pc := pc
+    io.ms_ws.pc := ms_reg.pc
 
-    io.ms_ws.rf_wen := rf_wen
-    io.ms_ws.rf_waddr := rf_waddr
+    io.ms_ws.rf_wen := ms_reg.rf_wen
+    io.ms_ws.rf_waddr := ms_reg.rf_waddr
     io.ms_ws.rf_wdata := Mux(mm_ren, mm_rdata, alu_result)
 
     io.ms_ws.csr_wen := csr_wen
