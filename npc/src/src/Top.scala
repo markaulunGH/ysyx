@@ -95,13 +95,13 @@ class Top extends Module
     val sram = Module(new SRAM)
     sram.io.master <> arbiter.io.master
     sram.io.slave  <> arbiter.io.slave
-    io.mm_ren := sram.io.mm_ren
-    io.mm_raddr := sram.io.mm_raddr
-    sram.io.mm_rdata := io.mm_rdata
-    io.mm_wen := sram.io.mm_wen
-    io.mm_waddr := sram.io.mm_waddr
-    io.mm_wdata := sram.io.mm_wdata
-    io.mm_mask := sram.io.mm_mask
+    io.mm_ren := sram.sim.mm_ren
+    io.mm_raddr := sram.sim.mm_raddr
+    sram.io.mm_rdata := sim.mm_rdata
+    io.mm_wen := sram.sim.mm_wen
+    io.mm_waddr := sram.sim.mm_waddr
+    io.mm_wdata := sram.sim.mm_wdata
+    io.mm_mask := sram.sim.mm_mask
     
     val rf = Module(new Regfile)
     rf.reg_r <> ds.reg_r
