@@ -68,6 +68,6 @@ class SRAM extends Module
     sim.mm_ren := arfire
     sim.mm_raddr := araddr
     slave.r.valid := arfire
-    slave.r.bits.data := mm_rdata
+    slave.r.bits.data := sim.mm_rdata
     slave.r.bits.resp := 0.U(2.W)
 }
