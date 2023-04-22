@@ -18,11 +18,11 @@ class MS extends Module
 
     val rfire = RegInit(false.B)
     val bfire = RegInit(false.B)
-    // val mm_ren = Wire(Bool())
-    // val mm_wen = Wire(Bool())
+    val mm_ren = Wire(Bool())
+    val mm_wen = Wire(Bool())
 
     val ms_valid = RegInit(false.B)
-    val ms_ready = (ms_reg.mm_ren && (io.data_slave.r.fire || rfire)) || (ms_reg.mm_wen && (io.data_slave.b.fire || bfire)) || (!ms_reg.mm_ren && !ms_reg.mm_wen)
+    val ms_ready = (mm_ren && (io.data_slave.r.fire || rfire)) || (mm_wen && (io.data_slave.b.fire || bfire)) || (!mm_ren && !mm_wen)
     val ms_allow_in = !ms_valid || ms_ready && io.ws_ms.ws_allow_in
     val to_ws_valid = ms_valid && ms_ready
     when (ms_allow_in)
@@ -31,8 +31,8 @@ class MS extends Module
     }
 
     val ms_reg = RegEnable(io.es_ms, io.es_ms.to_ms_valid && ms_allow_in)
-    // mm_ren := ms_reg.mm_ren
-    // mm_wen := ms_reg.mm_wen
+    mm_ren := ms_reg.mm_ren
+    mm_wen := ms_reg.mm_wen
 
     io.data_slave.r.ready := true.B
     io.data_slave.b.ready := true.B
