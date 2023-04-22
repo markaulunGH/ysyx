@@ -97,7 +97,7 @@ class Top extends Module
     sram.io.slave  <> arbiter.io.slave
     io.mm_ren := sram.sim.mm_ren
     io.mm_raddr := sram.sim.mm_raddr
-    sram.io.mm_rdata := sim.mm_rdata
+    sram.sim.mm_rdata := io.mm_rdata
     io.mm_wen := sram.sim.mm_wen
     io.mm_waddr := sram.sim.mm_waddr
     io.mm_wdata := sram.sim.mm_wdata
