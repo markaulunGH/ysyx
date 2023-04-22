@@ -33,9 +33,9 @@ class ES extends Module
     mm_wen := es_reg.mm_wen
 
     val alu = Module(new Alu)
-    alu.io.in.alu_op := es_reg.alu_op
-    alu.io.in.alu_src1 := es_reg.alu_src1
-    alu.io.in.alu_src2 := es_reg.alu_src2
+    alu.io.in.alu_op := es_reg.alu_in.alu_op
+    alu.io.in.alu_src1 := es_reg.alu_in.alu_src1
+    alu.io.in.alu_src2 := es_reg.alu_in.alu_src2
     // alu.io.in.alu_op := Wire(Vec(18, UInt(1.W)))
     // alu.io.in.alu_src1 := 0.U(64.W)
     // alu.io.in.alu_src2 := 0.U(64.W)

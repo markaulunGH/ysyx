@@ -229,7 +229,7 @@ class DS extends Module
     )
     io.ds_pf.ds_allow_in := ds_allow_in
 
-    val alu_op = Wire(Vec(18, UInt(1.W)))
+    val alu_op = Wire(Vec(18, Bool()))
     alu_op(0)  := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi || inst_addiw || inst_add || inst_addw
     alu_op(1)  := inst_sub || inst_subw
     alu_op(2)  := inst_slti || inst_slt
@@ -259,8 +259,8 @@ class DS extends Module
     io.ds_es.to_es_valid := to_es_valid
     io.ds_es.pc := pc
 
-    io.ds_es.alu_op := alu_op
-    io.ds_es.alu_src1 := Mux(src1_is_pc, pc, 
+    io.ds_es.alu_in.alu_op := alu_op
+    io.ds_es.alu_in.alu_src1 := Mux(src1_is_pc, pc, 
         MuxCase(
             rs1_value,
             Seq(
@@ -269,7 +269,7 @@ class DS extends Module
             )
         )
     )
-    io.ds_es.alu_src2 := Mux(src2_is_imm,
+    io.ds_es.alu_in.alu_src2 := Mux(src2_is_imm,
         MuxCase(
             imm,
             Seq(
