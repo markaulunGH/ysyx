@@ -1,7 +1,7 @@
 import chisel3._
 import chisel3.util._
 
-class Multiplier_in extends Bundle
+class Multiplier_In extends Bundle
 {
     val flush = Input(Bool())
     val multiplicand = Input(UInt(64.W))
@@ -10,20 +10,20 @@ class Multiplier_in extends Bundle
     val signed = Input(UInt(2.W))
 }
 
-class Multiplier_out extends Bundle
+class Multiplier_Out extends Bundle
 {
     val result_hi = Output(UInt(64.W))
     val result_lo = Output(UInt(64.W))
 }
 
-class Multiplier extends Module
+class Base_Multipiler extends Module
 {
-    val io = IO(new Bundle
-    {
-        val in = Decoupled(new Multiplier_in)
-        val out = Decoupled(new Multiplier_out)
-    })
+    val in = IO(new Multiplier_In)
+    val out = IO(new Multiplier_Out)
+}
 
+class Multiplier extends Base_Multipiler
+{
     val x = RegInit(0.U(64.W))
     val y = RegInit(0.U(64.W))
     val res = RegInit(0.U(128.W))
