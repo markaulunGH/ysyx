@@ -85,6 +85,9 @@ class DS_ES extends Bundle
 {
     val to_es_valid = Output(Bool())
     val pc = Output(UInt(64.W))
+        val alu_op = Output(Vec(18, Bool()))
+    val alu_src1 = Output(UInt(64.W))
+    val alu_src2 = Output(UInt(64.W))
     // val alu_in = Flipped(new Alu_in)
     val inst_word = Output(Bool())
     val rf_wen = Output(Bool())
