@@ -17,8 +17,8 @@ class Multiplier_Out extends Bundle
 
 class Base_Multipiler extends Module
 {
-    val in = IO(new Multiplier_In)
-    val out = IO(new Multiplier_Out)
+    val in = IO(Decoupled(new Multiplier_In))
+    val out = IO(Decoupled(new Multiplier_Out))
     val io = IO(new Bundle
     {
         val flush = Input(Bool())
