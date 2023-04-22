@@ -3,79 +3,76 @@ import chisel3.util._
 
 class AXI_Arbiter extends Module
 {
-    val io = IO(new Bundle
-    {
-        val inst_master  = Flipped(new AXI_Lite_Master)
-        val inst_slave   = Flipped(new AXI_Lite_Slave)
-        val data_master  = Flipped(new AXI_Lite_Master)
-        val data_slave   = Flipped(new AXI_Lite_Slave)
-        val master       = new AXI_Lite_Master
-        val slave        = new AXI_Lite_Slave
-    })
+    val inst_master  = IO(Flipped(new AXI_Lite_Master))
+    val inst_slave   = IO(Flipped(new AXI_Lite_Slave))
+    val data_master  = IO(Flipped(new AXI_Lite_Master))
+    val data_slave   = IO(Flipped(new AXI_Lite_Slave))
+    val master       = IO(new AXI_Lite_Master)
+    val slave        = IO(new AXI_Lite_Slave)
 
     val widle = RegInit(true.B)
     val awaddr = RegInit(0.U(64.W))
-    when (io.master.aw.valid)
+    when (master.aw.valid)
     {
         widle := false.B
-        awaddr := io.master.aw.bits.addr
+        awaddr := master.aw.bits.addr
     }
-    .elsewhen (io.slave.b.fire)
+    .elsewhen (slave.b.fire)
     {
         widle := true.B
     }
     
     val ridle = RegInit(true.B)
-    when (io.master.ar.valid)
+    when (master.ar.valid)
     {
         ridle := false.B
     }
-    .elsewhen (io.slave.r.fire)
+    .elsewhen (slave.r.fire)
     {
         ridle := true.B
     }
 
     val data_req = RegInit(false.B)
-    when (io.data_slave.r.fire)
+    when (data_slave.r.fire)
     {
         data_req := false.B
     }
-    .elsewhen (io.data_master.ar.valid && (ridle || io.slave.r.fire))
+    .elsewhen (data_master.ar.valid && (ridle || slave.r.fire))
     {
         data_req := true.B
     }
 
-    io.master.aw.valid      := io.data_master.aw.valid
-    io.data_master.aw.ready := io.master.aw.ready
-    io.inst_master.aw.ready := false.B
-    io.master.aw.bits.addr  := io.data_master.aw.bits.addr
-    io.master.aw.bits.prot  := io.data_master.aw.bits.prot
+    master.aw.valid      := data_master.aw.valid
+    data_master.aw.ready := master.aw.ready
+    inst_master.aw.ready := false.B
+    master.aw.bits.addr  := data_master.aw.bits.addr
+    master.aw.bits.prot  := data_master.aw.bits.prot
 
-    io.master.w.valid      := io.data_master.w.valid
-    io.data_master.w.ready := io.master.w.ready
-    io.inst_master.w.ready := false.B
-    io.master.w.bits.data  := io.data_master.w.bits.data
-    io.master.w.bits.strb  := io.data_master.w.bits.strb
+    master.w.valid      := data_master.w.valid
+    data_master.w.ready := master.w.ready
+    inst_master.w.ready := false.B
+    master.w.bits.data  := data_master.w.bits.data
+    master.w.bits.strb  := data_master.w.bits.strb
 
-    io.data_slave.b.valid     := io.slave.b.valid
-    io.inst_slave.b.valid     := false.B
-    io.slave.b.ready          := io.data_slave.b.ready
-    io.data_slave.b.bits.resp := io.slave.b.bits.resp
-    io.inst_slave.b.bits.resp := 0.U(3.W)
+    data_slave.b.valid     := slave.b.valid
+    inst_slave.b.valid     := false.B
+    slave.b.ready          := data_slave.b.ready
+    data_slave.b.bits.resp := slave.b.bits.resp
+    inst_slave.b.bits.resp := 0.U(3.W)
 
-    io.master.ar.valid      := Mux(io.data_master.ar.valid, io.data_master.ar.valid, io.inst_master.ar.valid) && (widle || io.master.ar.bits.addr =/= awaddr) && (ridle || io.slave.r.fire)
-    io.data_master.ar.ready := Mux(io.data_master.ar.valid, io.master.ar.ready, false.B) && (widle || io.data_master.ar.bits.addr =/= awaddr) && (ridle || io.slave.r.fire)
+    master.ar.valid      := Mux(data_master.ar.valid, data_master.ar.valid, inst_master.ar.valid) && (widle || master.ar.bits.addr =/= awaddr) && (ridle || slave.r.fire)
+    data_master.ar.ready := Mux(data_master.ar.valid, master.ar.ready, false.B) && (widle || data_master.ar.bits.addr =/= awaddr) && (ridle || slave.r.fire)
     // combinational cycle?
-    // io.data_master.ar.ready := Mux(io.data_master.ar.valid, io.master.ar.ready, false.B) && (widle || io.master.ar.bits.addr =/= awaddr) && (ridle || io.slave.r.fire)
-    io.inst_master.ar.ready := Mux(io.data_master.ar.valid, false.B, io.master.ar.ready) && (widle || io.inst_master.ar.bits.addr =/= awaddr) && (ridle || io.slave.r.fire)
-    io.master.ar.bits.addr  := Mux(io.data_master.ar.valid, io.data_master.ar.bits.addr, io.inst_master.ar.bits.addr)
-    io.master.ar.bits.prot  := Mux(io.data_master.ar.valid, io.data_master.ar.bits.prot, io.inst_master.ar.bits.prot)
+    // data_master.ar.ready := Mux(data_master.ar.valid, master.ar.ready, false.B) && (widle || master.ar.bits.addr =/= awaddr) && (ridle || slave.r.fire)
+    inst_master.ar.ready := Mux(data_master.ar.valid, false.B, master.ar.ready) && (widle || inst_master.ar.bits.addr =/= awaddr) && (ridle || slave.r.fire)
+    master.ar.bits.addr  := Mux(data_master.ar.valid, data_master.ar.bits.addr, inst_master.ar.bits.addr)
+    master.ar.bits.prot  := Mux(data_master.ar.valid, data_master.ar.bits.prot, inst_master.ar.bits.prot)
 
-    io.data_slave.r.valid     := Mux(data_req, io.slave.r.valid, false.B)
-    io.inst_slave.r.valid     := Mux(data_req, false.B, io.slave.r.valid)
-    io.slave.r.ready          := Mux(data_req, io.data_slave.r.ready, io.inst_slave.r.ready)
-    io.data_slave.r.bits.data := io.slave.r.bits.data
-    io.inst_slave.r.bits.data := io.slave.r.bits.data
-    io.data_slave.r.bits.resp := io.slave.r.bits.resp
-    io.inst_slave.r.bits.resp := io.slave.r.bits.resp
+    data_slave.r.valid     := Mux(data_req, slave.r.valid, false.B)
+    inst_slave.r.valid     := Mux(data_req, false.B, slave.r.valid)
+    slave.r.ready          := Mux(data_req, data_slave.r.ready, inst_slave.r.ready)
+    data_slave.r.bits.data := slave.r.bits.data
+    inst_slave.r.bits.data := slave.r.bits.data
+    data_slave.r.bits.resp := slave.r.bits.resp
+    inst_slave.r.bits.resp := slave.r.bits.resp
 }
