@@ -1,7 +1,7 @@
 import chisel3._
 import chisel3.util._
 
-class Reg_r extends Bundle
+class Regfile_R extends Bundle
 {
     val raddr1 = Input(UInt(5.W))
     val rdata1 = Output(UInt(64.W))
@@ -10,7 +10,7 @@ class Reg_r extends Bundle
     val rdata2 = Output(UInt(64.W))
 }
 
-class Reg_w extends Bundle
+class Regfile_W extends Bundle
 {
     val wen = Input(Bool())
     val waddr = Input(UInt(5.W))
@@ -19,25 +19,25 @@ class Reg_w extends Bundle
 
 class Regfile extends Module
 {
-    val io = IO(new Bundle
-    {
-        val reg_r = new Reg_r
-        val reg_w = new Reg_w
+    val rf_r = IO(new Regfile_R)
+    val rf_w = IO(new Regfile_W)
 
+    val sim = IO(new Bundle
+    {
         val rf = Output(Vec(32, UInt(64.W)))
         val rf_wen = Output(Bool())
     })
 
     val rf = Reg(Vec(32, UInt(64.W)))
 
-    when (io.reg_w.wen)
+    when (rf_w.wen)
     {
-        rf(io.reg_w.waddr) := io.reg_w.wdata
+        rf(rf_w.waddr) := rf_w.wdata
     }
 
-    io.reg_r.rdata1 := Mux(io.reg_r.raddr1 === 0.U, 0.U, rf(io.reg_r.raddr1))
-    io.reg_r.rdata2 := Mux(io.reg_r.raddr2 === 0.U, 0.U, rf(io.reg_r.raddr2))
+    rf_r.rdata1 := Mux(rf_r.raddr1 === 0.U, 0.U, rf(rf_r.raddr1))
+    rf_r.rdata2 := Mux(rf_r.raddr2 === 0.U, 0.U, rf(rf_r.raddr2))
 
-    io.rf := rf
-    io.rf_wen := io.reg_w.wen
+    sim.rf := rf
+    sim.rf_wen := rf_w.wen
 }

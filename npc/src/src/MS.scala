@@ -1,18 +1,53 @@
 import chisel3._
 import chisel3.util._
 
+class MS_DS extends Bundle
+{
+    val ms_valid = Output(Bool())
+    val to_ws_valid = Output(Bool())
+    val rf_wen = Output(Bool())
+    val rf_waddr = Output(UInt(5.W))
+    val rf_wdata = Output(UInt(64.W))
+    val mm_ren = Output(Bool())
+    val csr_wen = Output(Bool())
+}
+
+class MS_ES extends Bundle
+{
+    val ms_allow_in = Output(Bool())
+}
+
+class MS_WS extends Bundle
+{
+    val to_ws_valid = Output(Bool())
+    val pc = Output(UInt(64.W))
+    val rf_wen = Output(Bool())
+    val rf_waddr = Output(UInt(5.W))
+    val rf_wdata = Output(UInt(64.W))
+    val csr_wen = Output(Bool())
+    val csr_addr = Output(UInt(64.W))
+    val csr_wmask = Output(UInt(64.W))
+    val csr_wdata = Output(UInt(64.W))
+    val exc = Output(Bool())
+    val exc_cause = Output(UInt(64.W))
+    val mret = Output(Bool())
+
+    val inst = Output(UInt(32.W))
+    val ebreak = Output(Bool())
+}
+
 class MS extends Module
 {
-    val io = IO(new Bundle
+    val ms_ds = IO(new MS_DS)
+    val ms_es = IO(new MS_ES)
+    val ms_ws = IO(new MS_WS)
+    val es_ms = IO(Flipped(new ES_MS))
+    val ws_ms = IO(Flipped(new WS_MS))
+
+    val data_slave = IO(new AXI_Lite_Slave)
+
+    val sim = IO(new Bundle
     {
-        val ms_ds = new MS_DS
-        val ms_es = new MS_ES
-        val ms_ws = new MS_WS
-        val es_ms = Flipped(new ES_MS)
-        val ws_ms = Flipped(new WS_MS)
-
-        val data_slave = new AXI_Lite_Slave
-
         val pc = Output(UInt(64.W))
     })
 
@@ -22,42 +57,29 @@ class MS extends Module
     val mm_wen = Wire(Bool())
 
     val ms_valid = RegInit(false.B)
-    val ms_ready = (mm_ren && (io.data_slave.r.fire || rfire)) || (mm_wen && (io.data_slave.b.fire || bfire)) || (!mm_ren && !mm_wen)
-    val ms_allow_in = !ms_valid || ms_ready && io.ws_ms.ws_allow_in
+    val ms_ready = (mm_ren && (data_slave.r.fire || rfire)) || (mm_wen && (data_slave.b.fire || bfire)) || (!mm_ren && !mm_wen)
+    val ms_allow_in = !ms_valid || ms_ready && ws_ms.ws_allow_in
     val to_ws_valid = ms_valid && ms_ready
     when (ms_allow_in)
     {
-        ms_valid := io.es_ms.to_ms_valid
+        ms_valid := es_ms.to_ms_valid
     }
 
-    val enable = io.es_ms.to_ms_valid && ms_allow_in
-    val pc = RegEnable(io.es_ms.pc, enable)
-    val alu_result = RegEnable(io.es_ms.alu_result, enable)
-    val rf_wen = RegEnable(io.es_ms.rf_wen, enable)
-    val rf_waddr = RegEnable(io.es_ms.rf_waddr, enable)
-    mm_ren := RegEnable(io.es_ms.mm_ren, enable)
-    mm_wen := RegEnable(io.es_ms.mm_wen, enable)
-    val mm_mask = RegEnable(io.es_ms.mm_mask, enable)
-    val mm_unsigned = RegEnable(io.es_ms.mm_unsigned, enable)
-    val csr_wen = RegEnable(io.es_ms.csr_wen, enable)
-    val csr_addr = RegEnable(io.es_ms.csr_addr, enable)
-    val csr_wdata = RegEnable(io.es_ms.csr_wdata, enable)
-    val csr_wmask = RegEnable(io.es_ms.csr_wmask, enable)
-    val exc = RegEnable(io.es_ms.exc, enable)
-    val exc_cause = RegEnable(io.es_ms.exc_cause, enable)
-    val mret = RegEnable(io.es_ms.mret, enable)
+    val ms_reg = RegEnable(es_ms, es_ms.to_ms_valid && ms_allow_in)
+    mm_ren := ms_reg.mm_ren
+    mm_wen := ms_reg.mm_wen
 
-    io.data_slave.r.ready := true.B
-    io.data_slave.b.ready := true.B
+    data_slave.r.ready := true.B
+    data_slave.b.ready := true.B
 
     val rdata = RegInit(0.U(64.W))
     when (ms_allow_in)
     {
         rfire := false.B
     }
-    .elsewhen (io.data_slave.r.fire)
+    .elsewhen (data_slave.r.fire)
     {
-        rdata := io.data_slave.r.bits.data
+        rdata := data_slave.r.bits.data
         rfire := true.B
     }
 
@@ -65,51 +87,46 @@ class MS extends Module
     {
         bfire := false.B
     }
-    .elsewhen (io.data_slave.b.fire)
+    .elsewhen (data_slave.b.fire)
     {
         bfire := true.B
     }
 
-    val read_data = Mux(rfire, rdata, io.data_slave.r.bits.data)
-    val mm_rdata = MuxCase(
-        0.U(64.W),
-        Seq(
-            (mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(mm_unsigned, 0.U(1.W), read_data(7))),  read_data(7, 0)),
-            (mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(mm_unsigned, 0.U(1.W), read_data(15))), read_data(15, 0)),
-            (mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(mm_unsigned, 0.U(1.W), read_data(31))), read_data(31, 0)),
-            (mm_mask === 0xff.U) -> read_data
-        )
-    )
+    val read_data = Mux(rfire, rdata, data_slave.r.bits.data)
+    val mm_rdata = MuxCase(0.U(64.W), Seq(
+        (ms_reg.mm_mask === 0x1.U)  -> Cat(Fill(56, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(7))),  read_data(7, 0)),
+        (ms_reg.mm_mask === 0x3.U)  -> Cat(Fill(48, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(15))), read_data(15, 0)),
+        (ms_reg.mm_mask === 0xf.U)  -> Cat(Fill(32, Mux(ms_reg.mm_unsigned, 0.U(1.W), read_data(31))), read_data(31, 0)),
+        (ms_reg.mm_mask === 0xff.U) -> read_data
+    ))
 
-    io.ms_ds.ms_valid := ms_valid
-    io.ms_ds.to_ws_valid := to_ws_valid
-    io.ms_ds.rf_wen := rf_wen
-    io.ms_ds.rf_waddr := rf_waddr
-    io.ms_ds.rf_wdata := Mux(mm_ren, mm_rdata, alu_result)
-    io.ms_ds.mm_ren := mm_ren
-    io.ms_ds.csr_wen := csr_wen
+    ms_ds.ms_valid := ms_valid
+    ms_ds.to_ws_valid := to_ws_valid
+    ms_ds.rf_wen := ms_reg.rf_wen
+    ms_ds.rf_waddr := ms_reg.rf_waddr
+    ms_ds.rf_wdata := Mux(ms_reg.mm_ren, mm_rdata, ms_reg.alu_result)
+    ms_ds.mm_ren := ms_reg.mm_ren
+    ms_ds.csr_wen := ms_reg.csr_wen
 
-    io.ms_es.ms_allow_in := ms_allow_in
+    ms_es.ms_allow_in := ms_allow_in
 
-    io.ms_ws.to_ws_valid := to_ws_valid
-    io.ms_ws.pc := pc
+    ms_ws.to_ws_valid := to_ws_valid
+    ms_ws.pc := ms_reg.pc
 
-    io.ms_ws.rf_wen := rf_wen
-    io.ms_ws.rf_waddr := rf_waddr
-    io.ms_ws.rf_wdata := Mux(mm_ren, mm_rdata, alu_result)
+    ms_ws.rf_wen := ms_reg.rf_wen
+    ms_ws.rf_waddr := ms_reg.rf_waddr
+    ms_ws.rf_wdata := Mux(ms_reg.mm_ren, mm_rdata, ms_reg.alu_result)
 
-    io.ms_ws.csr_wen := csr_wen
-    io.ms_ws.csr_addr := csr_addr
-    io.ms_ws.csr_wdata := csr_wdata
-    io.ms_ws.csr_wmask := csr_wmask
-    io.ms_ws.exc := exc
-    io.ms_ws.exc_cause := exc_cause
-    io.ms_ws.mret := mret
+    ms_ws.csr_wen := ms_reg.csr_wen
+    ms_ws.csr_addr := ms_reg.csr_addr
+    ms_ws.csr_wdata := ms_reg.csr_wdata
+    ms_ws.csr_wmask := ms_reg.csr_wmask
+    ms_ws.exc := ms_reg.exc
+    ms_ws.exc_cause := ms_reg.exc_cause
+    ms_ws.mret := ms_reg.mret
 
-    val inst = RegEnable(io.es_ms.inst, enable)
-    val ebreak = RegEnable(io.es_ms.ebreak, enable)
-    io.ms_ws.inst := inst
-    io.ms_ws.ebreak := ebreak
+    ms_ws.inst := ms_reg.inst
+    ms_ws.ebreak := ms_reg.ebreak
 
-    io.pc := pc
+    sim.pc := ms_reg.pc
 }
