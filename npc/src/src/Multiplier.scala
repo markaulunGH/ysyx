@@ -16,7 +16,7 @@ class Multiplier_out extends Bundle
     val result_lo = Output(UInt(64.W))
 }
 
-class Multiplier extends Bundle
+class Multiplier extends Module
 {
     val io = IO(new Bundle
     {
