@@ -1,7 +1,7 @@
 import chisel3._
 import chisel3.util._
 
-class Alu extends Module
+class ALU extends Module
 {
     val io = IO(new Bundle
     {
@@ -21,9 +21,6 @@ class Alu extends Module
     val adder_cout_result = Cat(0.U(1.W), adder_a) + Cat(0.U(1.W), adder_b) + adder_cin
     val adder_result = adder_cout_result(63, 0)
     val adder_cout = adder_cout_result(64)
-
-    // val multiplier = Module(new Multiplier)
-    // val divider = Module(new Divider)
 
     io.alu_result := MuxCase (
         0.U(64.W),
