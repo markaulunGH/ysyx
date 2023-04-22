@@ -16,8 +16,8 @@ class ES extends Module
 
     val arfire = RegInit(false.B)
     val wfire = RegInit(false.B)
-    val mm_ren = Wire(Bool())
-    val mm_wen = Wire(Bool())
+    // val mm_ren = Wire(Bool())
+    // val mm_wen = Wire(Bool())
 
     val es_valid = RegInit(false.B)
     val es_ready = (mm_ren && (io.data_master.ar.fire || arfire)) || (mm_wen && (io.data_master.w.fire || wfire)) || (!mm_ren && !mm_wen)
@@ -29,8 +29,8 @@ class ES extends Module
     }
 
     val es_reg = RegEnable(io.ds_es, io.ds_es.to_es_valid && es_allow_in)
-    mm_ren := es_reg.mm_ren
-    mm_wen := es_reg.mm_wen
+    // mm_ren := es_reg.mm_ren
+    // mm_wen := es_reg.mm_wen
 
     val alu = Module(new Alu)
     alu.io.in.alu_op := alu_op
@@ -65,7 +65,7 @@ class ES extends Module
 
     io.data_master.w.valid := mm_wen && !wfire && es_valid
     io.data_master.w.bits.data := mm_wdata
-    io.data_master.w.bits.strb := mm_mask
+    io.data_master.w.bits.strb := es_reg.mm_mask
     when (es_allow_in)
     {
         wfire := false.B
@@ -81,13 +81,13 @@ class ES extends Module
     io.es_ds.es_valid := es_valid
     io.es_ds.to_ms_valid := to_ms_valid
     io.es_ds.alu_result := alu_result
-    io.es_ds.rf_waddr := rf_waddr
-    io.es_ds.rf_wen := rf_wen
+    io.es_ds.rf_waddr := es_reg.rf_waddr
+    io.es_ds.rf_wen := es_reg.rf_wen
     io.es_ds.mm_ren := mm_ren
-    io.es_ds.csr_wen := csr_wen
+    io.es_ds.csr_wen := es_reg.csr_wen
 
     io.es_ms.to_ms_valid := to_ms_valid
-    io.es_ms.pc := pc
+    io.es_ms.pc := es_reg.pc
 
     io.es_ms.alu_result := alu_result
     io.es_ms.rf_wen := rf_wen
