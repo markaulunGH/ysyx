@@ -42,14 +42,14 @@ class Multiplier extends Bundle
         y := y >> 2
         x := x << 2
         res := MuxCase(0.U(64.W), Seq(
-            (y(2, 0) === 0.U(3.W)) -> res,
-            (y(2, 0) === 1.U(3.W)) -> res + io.in.bits.multiplicand,
-            (y(2, 0) === 2.U(3.W)) -> res + io.in.bits.multiplicand,
-            (y(2, 0) === 3.U(3.W)) -> res + (io.in.bits.multiplicand << 1),
-            (y(2, 0) === 4.U(3.W)) -> res - (io.in.bits.multiplicand << 1),
-            (y(2, 0) === 5.U(3.W)) -> res - (io.in.bits.multiplicand << 2),
-            (y(2, 0) === 6.U(3.W)) -> res - (io.in.bits.multiplicand << 2),
-            (y(2, 0) === 7.U(3.W)) -> res
+            (y(2, 0) === 0.U(3.W)) -> (res),
+            (y(2, 0) === 1.U(3.W)) -> (res + io.in.bits.multiplicand),
+            (y(2, 0) === 2.U(3.W)) -> (res + io.in.bits.multiplicand),
+            (y(2, 0) === 3.U(3.W)) -> (res + (io.in.bits.multiplicand << 1)),
+            (y(2, 0) === 4.U(3.W)) -> (res - (io.in.bits.multiplicand << 1)),
+            (y(2, 0) === 5.U(3.W)) -> (res - (io.in.bits.multiplicand << 2)),
+            (y(2, 0) === 6.U(3.W)) -> (res - (io.in.bits.multiplicand << 2)),
+            (y(2, 0) === 7.U(3.W)) -> (res)
         ))
     }
 }
