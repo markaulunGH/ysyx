@@ -30,10 +30,10 @@ class ES extends Module
     mm_wen := es_reg.mm_wen
 
     val alu = Module(new ALU)
-    alu.alu_op := es_reg.alu_op
-    alu.alu_src1 := es_reg.alu_src1
-    alu.alu_src2 := es_reg.alu_src2
-    val alu_result = Mux(es_reg.inst_word, Cat(Fill(32, alu.alu_result(31)), alu.alu_result(31, 0)), alu.io.alu_result)
+    alu.io.alu_op := es_reg.alu_op
+    alu.io.alu_src1 := es_reg.alu_src1
+    alu.io.alu_src2 := es_reg.alu_src2
+    val alu_result = Mux(es_reg.inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)
 
     data_master.ar.valid := es_reg.mm_ren && !arfire && es_valid
     data_master.ar.bits.addr := alu_result
