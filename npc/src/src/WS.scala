@@ -34,21 +34,21 @@ class WS extends Module
 
     io.csr_rw.addr := ws_reg.csr_addr
     io.csr_rw.wen := ws_reg.csr_wen
-    io.csr_rw.wdata := (ws_reg.csr_wdata & csr_wmask) | (io.csr_rw.rdata & ~ws_reg.csr_wmask)
+    io.csr_rw.wdata := (ws_reg.csr_wdata & ws_reg.csr_wmask) | (io.csr_rw.rdata & ~ws_reg.csr_wmask)
     io.csr_rw.pc := ws_reg.pc
     io.csr_rw.exc := ws_reg.exc
-    io.csr_rw.exc_cause := exc_cause
-    io.csr_rw.mret := mret
+    io.csr_rw.exc_cause := ws_reg.exc_cause
+    io.csr_rw.mret := ws_reg.mret
 
     io.ws_ds.ws_valid := ws_valid
-    io.ws_ds.rf_wen := rf_wen
-    io.ws_ds.rf_waddr := rf_waddr
-    io.ws_ds.rf_wdata := Mux(csr_wen, io.csr_rw.rdata, rf_wdata)
+    io.ws_ds.rf_wen := ws_reg.rf_wen
+    io.ws_ds.rf_waddr := ws_reg.rf_waddr
+    io.ws_ds.rf_wdata := Mux(ws_reg.csr_wen, io.csr_rw.rdata, ws_reg.rf_wdata)
 
     io.ws_ms.ws_allow_in := ws_allow_in
 
-    val inst = RegEnable(io.ms_ws.inst, enable)
-    val ebreak = RegEnable(io.ms_ws.ebreak, enable)
+    val inst = RegEnable(io.ms_ws.inst, io.ms_ws.to_ws_valid && ws_allow_in)
+    val ebreak = RegEnable(io.ms_ws.ebreak, io.ms_ws.to_ws_valid && ws_allow_in)
     io.inst_end := enable
     io.pc := pc
     io.inst := io.ms_ws.inst
