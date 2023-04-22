@@ -259,16 +259,16 @@ class DS extends Module
     io.ds_es.to_es_valid := to_es_valid
     io.ds_es.pc := pc
 
-    io.ds_es.alu_in.alu_op := alu_op
-    io.ds_es.alu_in.alu_src1 := Mux(src1_is_pc, pc, 
-        MuxCase(
-            rs1_value,
-            Seq(
-                (inst_addiw || inst_slliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_sraw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs1_value(31)), rs1_value(31, 0)),
-                (inst_srlw || inst_srliw || inst_divuw || inst_remuw) -> rs1_value(31, 0)
-            )
-        )
-    )
+    // io.ds_es.alu_in.alu_op := alu_op
+    // io.ds_es.alu_in.alu_src1 := Mux(src1_is_pc, pc, 
+    //     MuxCase(
+    //         rs1_value,
+    //         Seq(
+    //             (inst_addiw || inst_slliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_sraw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs1_value(31)), rs1_value(31, 0)),
+    //             (inst_srlw || inst_srliw || inst_divuw || inst_remuw) -> rs1_value(31, 0)
+    //         )
+    //     )
+    // )
     // io.ds_es.alu_in.alu_src2 := Mux(src2_is_imm,
     //     MuxCase(
     //         imm,
