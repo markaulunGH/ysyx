@@ -28,7 +28,7 @@ class WS extends Module
 
     val ws_reg = RegEnable(io.ms_ws, io.ms_ws.to_ws_valid && ws_allow_in)
 
-    io.reg_w.wen := rf_wen
+    io.reg_w.wen := ws_reg.rf_wen
     io.reg_w.waddr := rf_waddr
     io.reg_w.wdata := Mux(csr_wen, io.csr_rw.rdata, rf_wdata)
 
