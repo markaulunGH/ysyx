@@ -1,6 +1,46 @@
 import chisel3._
 import chisel3.util._
 
+class ES_FS extends Bundle
+{
+    val es_allow_in = Output(Bool())
+}
+
+class ES_DS extends Bundle
+{
+    val es_allow_in = Output(Bool())
+    val es_valid = Output(Bool())
+    val to_ms_valid = Output(Bool())
+    val alu_result = Output(UInt(64.W))
+    val rf_waddr = Output(UInt(5.W))
+    val rf_wen = Output(Bool())
+    val mm_ren = Output(Bool())
+    val csr_wen = Output(Bool())
+}
+
+class ES_MS extends Bundle
+{
+    val to_ms_valid = Output(Bool())
+    val pc = Output(UInt(64.W))
+    val alu_result = Output(UInt(64.W))
+    val rf_wen = Output(Bool())
+    val rf_waddr = Output(UInt(5.W))
+    val mm_ren = Output(Bool())
+    val mm_wen = Output(Bool())
+    val mm_mask = Output(UInt(8.W))
+    val mm_unsigned = Output(Bool())
+    val csr_wen = Output(Bool())
+    val csr_addr = Output(UInt(64.W))
+    val csr_wmask = Output(UInt(64.W))
+    val csr_wdata = Output(UInt(64.W))
+    val exc = Output(Bool())
+    val exc_cause = Output(UInt(64.W))
+    val mret = Output(Bool())
+
+    val inst = Output(UInt(32.W))
+    val ebreak = Output(Bool())
+}
+
 class ES extends Module
 {
     val es_fs = IO(new ES_FS)

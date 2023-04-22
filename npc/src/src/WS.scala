@@ -1,6 +1,19 @@
 import chisel3._
 import chisel3.util._
 
+class WS_DS extends Bundle
+{
+    val ws_valid = Output(Bool())
+    val rf_wen = Output(Bool())
+    val rf_waddr = Output(UInt(5.W))
+    val rf_wdata = Output(UInt(64.W))
+}
+
+class WS_MS extends Bundle
+{
+    val ws_allow_in = Output(Bool())
+}
+
 class WS extends Module
 {
     val ws_ds = IO(new WS_DS)

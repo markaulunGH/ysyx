@@ -1,13 +1,24 @@
 import chisel3._
 import chisel3.util._
 
+class PF_FS extends Bundle
+{
+    val to_fs_valid = Output(Bool())
+    val next_pc = Output(UInt(64.W))
+}
+
+class PF_DS extends Bundle
+{
+    val pf_ready = Output(Bool())
+}
+
 class PF extends Module
 {
     val pf_fs = IO(new PF_FS)
     val pf_ds = IO(new PF_DS)
     val fs_pf = IO(Flipped(new FS_PF))
     val ds_pf = IO(Flipped(new DS_PF))
-    
+
     val inst_master = IO(new AXI_Lite_Master)
 
     val arfire = RegInit(false.B)

@@ -1,6 +1,48 @@
 import chisel3._
 import chisel3.util._
 
+class DS_PF extends Bundle
+{
+    val ds_valid = Output(Bool())
+    val ds_allow_in = Output(Bool())
+    val br_taken = Output(Bool())
+    val br_target = Output(UInt(64.W))
+}
+
+class DS_FS extends Bundle
+{
+    val ds_allow_in = Output(Bool())
+    val to_es_valid = Output(Bool())
+    val br_taken = Output(Bool())
+}
+
+class DS_ES extends Bundle
+{
+    val to_es_valid = Output(Bool())
+    val pc = Output(UInt(64.W))
+    val alu_op = Output(Vec(18, Bool()))
+    val alu_src1 = Output(UInt(64.W))
+    val alu_src2 = Output(UInt(64.W))
+    val inst_word = Output(Bool())
+    val rf_wen = Output(Bool())
+    val rf_waddr = Output(UInt(5.W))
+    val mm_ren = Output(Bool())
+    val mm_wen = Output(Bool())
+    val mm_wdata = Output(UInt(64.W))
+    val mm_mask = Output(UInt(8.W))
+    val mm_unsigned = Output(Bool())
+    val csr_wen = Output(Bool())
+    val csr_addr = Output(UInt(12.W))
+    val csr_wmask = Output(UInt(64.W))
+    val csr_wdata = Output(UInt(64.W))
+    val exc = Output(Bool())
+    val exc_cause = Output(UInt(64.W))
+    val mret = Output(Bool())
+
+    val inst = Output(UInt(32.W))
+    val ebreak = Output(Bool())
+}
+
 class DS extends Module
 {
     val ds_pf = IO(new DS_PF)

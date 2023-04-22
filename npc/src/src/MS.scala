@@ -1,6 +1,41 @@
 import chisel3._
 import chisel3.util._
 
+class MS_DS extends Bundle
+{
+    val ms_valid = Output(Bool())
+    val to_ws_valid = Output(Bool())
+    val rf_wen = Output(Bool())
+    val rf_waddr = Output(UInt(5.W))
+    val rf_wdata = Output(UInt(64.W))
+    val mm_ren = Output(Bool())
+    val csr_wen = Output(Bool())
+}
+
+class MS_ES extends Bundle
+{
+    val ms_allow_in = Output(Bool())
+}
+
+class MS_WS extends Bundle
+{
+    val to_ws_valid = Output(Bool())
+    val pc = Output(UInt(64.W))
+    val rf_wen = Output(Bool())
+    val rf_waddr = Output(UInt(5.W))
+    val rf_wdata = Output(UInt(64.W))
+    val csr_wen = Output(Bool())
+    val csr_addr = Output(UInt(64.W))
+    val csr_wmask = Output(UInt(64.W))
+    val csr_wdata = Output(UInt(64.W))
+    val exc = Output(Bool())
+    val exc_cause = Output(UInt(64.W))
+    val mret = Output(Bool())
+
+    val inst = Output(UInt(32.W))
+    val ebreak = Output(Bool())
+}
+
 class MS extends Module
 {
     val ms_ds = IO(new MS_DS)
