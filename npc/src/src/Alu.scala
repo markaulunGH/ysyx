@@ -27,8 +27,8 @@ class Alu extends Module
     val adder_result = adder_cout_result(63, 0)
     val adder_cout = adder_cout_result(64)
 
-    val multiplier = new Multiplier
-    val divider = new Divider
+    val multiplier = Module(new Multiplier)
+    val divider = Module(new Divider)
 
     io.alu_result := MuxCase (
         0.U(64.W),
