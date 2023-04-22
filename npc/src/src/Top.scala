@@ -223,27 +223,27 @@ class Top extends Module
     val es = Module(new ES)
     val ms = Module(new MS)
     val ws = Module(new WS)
-    pf.io.pf_fs <> fs.io.pf_fs
-    pf.io.pf_ds <> ds.io.pf_ds
-    fs.io.fs_pf <> pf.io.fs_pf
-    fs.io.fs_ds <> ds.io.fs_ds
-    ds.io.ds_pf <> pf.io.ds_pf
-    ds.io.ds_fs <> fs.io.ds_fs
-    ds.io.ds_es <> es.io.ds_es
-    es.io.es_fs <> fs.io.es_fs
-    es.io.es_ds <> ds.io.es_ds
-    es.io.es_ms <> ms.io.es_ms
-    ms.io.ms_ds <> ds.io.ms_ds
-    ms.io.ms_es <> es.io.ms_es
-    ms.io.ms_ws <> ws.io.ms_ws
-    ws.io.ws_ds <> ds.io.ws_ds
-    ws.io.ws_ms <> ms.io.ws_ms
+    pf.pf_fs <> fs.pf_fs
+    pf.pf_ds <> ds.pf_ds
+    fs.fs_pf <> pf.fs_pf
+    fs.fs_ds <> ds.fs_ds
+    ds.ds_pf <> pf.ds_pf
+    ds.ds_fs <> fs.ds_fs
+    ds.ds_es <> es.ds_es
+    es.es_fs <> fs.es_fs
+    es.es_ds <> ds.es_ds
+    es.es_ms <> ms.es_ms
+    ms.ms_ds <> ds.ms_ds
+    ms.ms_es <> es.ms_es
+    ms.ms_ws <> ws.ms_ws
+    ws.ws_ds <> ds.ws_ds
+    ws.ws_ms <> ms.ws_ms
 
     val arbiter = Module(new AXI_Arbiter)
-    arbiter.io.inst_master <> pf.io.inst_master
-    arbiter.io.inst_slave  <> fs.io.inst_slave
-    arbiter.io.data_master <> es.io.data_master
-    arbiter.io.data_slave  <> ms.io.data_slave
+    arbiter.io.inst_master <> pf.inst_master
+    arbiter.io.inst_slave  <> fs.inst_slave
+    arbiter.io.data_master <> es.data_master
+    arbiter.io.data_slave  <> ms.data_slave
 
     val sram = Module(new SRAM)
     sram.io.master <> arbiter.io.master
