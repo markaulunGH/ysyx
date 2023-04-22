@@ -83,18 +83,18 @@ class MS extends Module
 
     io.ms_ws.rf_wen := ms_reg.rf_wen
     io.ms_ws.rf_waddr := ms_reg.rf_waddr
-    io.ms_ws.rf_wdata := Mux(mm_ren, mm_rdata, alu_result)
+    io.ms_ws.rf_wdata := Mux(mm_ren, mm_rdata, ms_reg.alu_result)
 
-    io.ms_ws.csr_wen := csr_wen
-    io.ms_ws.csr_addr := csr_addr
-    io.ms_ws.csr_wdata := csr_wdata
-    io.ms_ws.csr_wmask := csr_wmask
-    io.ms_ws.exc := exc
-    io.ms_ws.exc_cause := exc_cause
-    io.ms_ws.mret := mret
+    io.ms_ws.csr_wen := ms_reg.csr_wen
+    io.ms_ws.csr_addr := ms_reg.csr_addr
+    io.ms_ws.csr_wdata := ms_reg.csr_wdata
+    io.ms_ws.csr_wmask := ms_reg.csr_wmask
+    io.ms_ws.exc := ms_reg.exc
+    io.ms_ws.exc_cause := ms_reg.exc_cause
+    io.ms_ws.mret := ms_reg.mret
 
     io.ms_ws.inst := ms_reg.inst
     io.ms_ws.ebreak := ms_reg.ebreak
 
-    io.pc := pc
+    io.pc := ms_reg.pc
 }
