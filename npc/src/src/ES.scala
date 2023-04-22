@@ -20,7 +20,7 @@ class ES extends Module
     // val mm_wen = Wire(Bool())
 
     val es_valid = RegInit(false.B)
-    val es_ready = (es_reg.mm_ren && (io.data_master.ar.fire || arfire)) || (mm_wen && (io.data_master.w.fire || wfire)) || (!es_reg.mm_ren && !es_reg.mm_wen)
+    val es_ready = (es_reg.mm_ren && (io.data_master.ar.fire || arfire)) || (es_reg.mm_wen && (io.data_master.w.fire || wfire)) || (!es_reg.mm_ren && !es_reg.mm_wen)
     val es_allow_in = !es_valid || es_ready && io.ms_es.ms_allow_in
     val to_ms_valid = es_valid && es_ready
     when (es_allow_in)
@@ -64,7 +64,7 @@ class ES extends Module
     }
 
     io.data_master.w.valid := es_reg.mm_wen && !wfire && es_valid
-    io.data_master.w.bits.data := mm_wdata
+    io.data_master.w.bits.data := es_reg.mm_wdata
     io.data_master.w.bits.strb := es_reg.mm_mask
     when (es_allow_in)
     {
@@ -97,13 +97,13 @@ class ES extends Module
     io.es_ms.mm_mask := es_reg.mm_mask
     io.es_ms.mm_unsigned := es_reg.mm_unsigned
 
-    io.es_ms.csr_wen := csr_wen
-    io.es_ms.csr_addr := csr_addr
-    io.es_ms.csr_wmask := csr_wmask
-    io.es_ms.csr_wdata := csr_wdata
-    io.es_ms.exc := exc
-    io.es_ms.exc_cause := exc_cause
-    io.es_ms.mret := mret
+    io.es_ms.csr_wen := es_reg.csr_wen
+    io.es_ms.csr_addr := es_reg.csr_addr
+    io.es_ms.csr_wmask := es_reg.csr_wmask
+    io.es_ms.csr_wdata := es_reg.csr_wdata
+    io.es_ms.exc := es_reg.exc
+    io.es_ms.exc_cause := es_reg.exc_cause
+    io.es_ms.mret := es_reg.mret
 
     io.es_ms.inst := es_reg.inst
     io.es_ms.ebreak := es_reg.ebreak
