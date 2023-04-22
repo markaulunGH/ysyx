@@ -16,11 +16,11 @@ class ES extends Module
 
     val arfire = RegInit(false.B)
     val wfire = RegInit(false.B)
-    // val mm_ren = Wire(Bool())
-    // val mm_wen = Wire(Bool())
+    val mm_ren = Wire(Bool())
+    val mm_wen = Wire(Bool())
 
     val es_valid = RegInit(false.B)
-    val es_ready = (es_reg.mm_ren && (io.data_master.ar.fire || arfire)) || (es_reg.mm_wen && (io.data_master.w.fire || wfire)) || (!es_reg.mm_ren && !es_reg.mm_wen)
+    val es_ready = (mm_ren && (io.data_master.ar.fire || arfire)) || (mm_wen && (io.data_master.w.fire || wfire)) || (!mm_ren && !mm_wen)
     val es_allow_in = !es_valid || es_ready && io.ms_es.ms_allow_in
     val to_ms_valid = es_valid && es_ready
     when (es_allow_in)
@@ -29,8 +29,8 @@ class ES extends Module
     }
 
     val es_reg = RegEnable(io.ds_es, io.ds_es.to_es_valid && es_allow_in)
-    // mm_ren := es_reg.mm_ren
-    // mm_wen := es_reg.mm_wen
+    mm_ren := es_reg.mm_ren
+    mm_wen := es_reg.mm_wen
 
     val alu = Module(new Alu)
     alu.io.in.alu_op := es_reg.alu_op
