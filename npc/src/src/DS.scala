@@ -256,7 +256,7 @@ class DS extends Module
     io.ds_fs.br_taken := br_taken
 
     io.ds_es.to_es_valid := to_es_valid
-    io.ds_es.pc := pc
+    io.ds_es.pc := ds_reg.pc
 
     io.ds_es.alu_op := alu_op
     io.ds_es.alu_src1 := Mux(src1_is_pc, ds_reg.pc, 
