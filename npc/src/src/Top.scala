@@ -93,8 +93,8 @@ class Top extends Module
     arbiter.io.data_slave  <> ms.data_slave
 
     val sram = Module(new SRAM)
-    sram.master <> arbiter.io.master
-    sram.slave  <> arbiter.io.slave
+    sram.master <> arbiter.master
+    sram.slave  <> arbiter.slave
     io.mm_ren := sram.sim.mm_ren
     io.mm_raddr := sram.sim.mm_raddr
     sram.sim.mm_rdata := io.mm_rdata
