@@ -15,7 +15,7 @@ class DS extends Module
         val ws_ds = Flipped(new WS_DS)
 
         val reg_r = Flipped(new Reg_r)
-        val csr_pc = Flipped(new Csr_pc)
+        val csr_pc = Flipped(new CSR_pc)
     })
 
     val read_rf1 = Wire(Bool())

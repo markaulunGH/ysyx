@@ -10,7 +10,7 @@ class WS extends Module
         val ms_ws = Flipped(new MS_WS)
 
         val reg_w = Flipped(new Reg_w)
-        val csr_rw = Flipped(new Csr_rw)
+        val csr_rw = Flipped(new CSR_rw)
 
         val inst_end = Output(Bool())
         val pc = Output(UInt(64.W))
