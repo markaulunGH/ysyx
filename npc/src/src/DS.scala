@@ -38,9 +38,8 @@ class DS extends Module
     }
 
     val enable = io.fs_ds.to_ds_valid && ds_allow_in
-    val fs_ds = RegEnable(io.fs_ds, enable)
-    val inst = fs_ds.inst
-    val pc = fs_ds.pc
+    val pc = RegEnable(io.fs_ds.pc, enable)
+    val inst = RegEnable(io.fs_ds.inst, enable)
 
     val opcode = inst(6, 0)
     val funct3 = inst(14, 12)
