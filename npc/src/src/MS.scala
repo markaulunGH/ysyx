@@ -18,8 +18,8 @@ class MS extends Module
 
     val rfire = RegInit(false.B)
     val bfire = RegInit(false.B)
-    val mm_ren = Wire(Bool())
-    val mm_wen = Wire(Bool())
+    // val mm_ren = Wire(Bool())
+    // val mm_wen = Wire(Bool())
 
     val ms_valid = RegInit(false.B)
     val ms_ready = (mm_ren && (io.data_slave.r.fire || rfire)) || (mm_wen && (io.data_slave.b.fire || bfire)) || (!mm_ren && !mm_wen)
@@ -31,8 +31,8 @@ class MS extends Module
     }
 
     val ms_reg = RegEnable(io.es_ms, io.es_ms.to_ms_valid && ms_allow_in)
-    mm_ren := ms_reg.mm_ren
-    mm_wen := ms_reg.mm_wen
+    // mm_ren := ms_reg.mm_ren
+    // mm_wen := ms_reg.mm_wen
 
     io.data_slave.r.ready := true.B
     io.data_slave.b.ready := true.B
@@ -72,8 +72,8 @@ class MS extends Module
     io.ms_ds.to_ws_valid := to_ws_valid
     io.ms_ds.rf_wen := ms_reg.rf_wen
     io.ms_ds.rf_waddr := ms_reg.rf_waddr
-    io.ms_ds.rf_wdata := Mux(mm_ren, mm_rdata, ms_reg.alu_result)
-    io.ms_ds.mm_ren := mm_ren
+    io.ms_ds.rf_wdata := Mux(es_reg.mm_ren, mm_rdata, ms_reg.alu_result)
+    io.ms_ds.mm_ren := es_reg.mm_ren
     io.ms_ds.csr_wen := ms_reg.csr_wen
 
     io.ms_es.ms_allow_in := ms_allow_in
@@ -83,7 +83,7 @@ class MS extends Module
 
     io.ms_ws.rf_wen := ms_reg.rf_wen
     io.ms_ws.rf_waddr := ms_reg.rf_waddr
-    io.ms_ws.rf_wdata := Mux(mm_ren, mm_rdata, ms_reg.alu_result)
+    io.ms_ws.rf_wdata := Mux(es_reg.mm_ren, mm_rdata, ms_reg.alu_result)
 
     io.ms_ws.csr_wen := ms_reg.csr_wen
     io.ms_ws.csr_addr := ms_reg.csr_addr
