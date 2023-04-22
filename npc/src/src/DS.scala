@@ -259,7 +259,7 @@ class DS extends Module
     io.ds_es.pc := pc
 
     io.ds_es.alu_op := alu_op
-    io.ds_es.alu_src1 := Mux(src1_is_pc, pc, 
+    io.ds_es.alu_src1 := Mux(src1_is_pc, ds_reg.pc, 
         MuxCase(
             rs1_value,
             Seq(
