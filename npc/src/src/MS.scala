@@ -30,22 +30,9 @@ class MS extends Module
         ms_valid := io.es_ms.to_ms_valid
     }
 
-    val enable = io.es_ms.to_ms_valid && ms_allow_in
-    val pc = RegEnable(io.es_ms.pc, enable)
-    val alu_result = RegEnable(io.es_ms.alu_result, enable)
-    val rf_wen = RegEnable(io.es_ms.rf_wen, enable)
-    val rf_waddr = RegEnable(io.es_ms.rf_waddr, enable)
-    mm_ren := RegEnable(io.es_ms.mm_ren, enable)
-    mm_wen := RegEnable(io.es_ms.mm_wen, enable)
-    val mm_mask = RegEnable(io.es_ms.mm_mask, enable)
-    val mm_unsigned = RegEnable(io.es_ms.mm_unsigned, enable)
-    val csr_wen = RegEnable(io.es_ms.csr_wen, enable)
-    val csr_addr = RegEnable(io.es_ms.csr_addr, enable)
-    val csr_wdata = RegEnable(io.es_ms.csr_wdata, enable)
-    val csr_wmask = RegEnable(io.es_ms.csr_wmask, enable)
-    val exc = RegEnable(io.es_ms.exc, enable)
-    val exc_cause = RegEnable(io.es_ms.exc_cause, enable)
-    val mret = RegEnable(io.es_ms.mret, enable)
+    val ms_reg = RegEnable(io.es_ms, io.es_ms.to_ms_valid && ms_allow_in)
+    mm_ren := ms_reg.mm_ren
+    mm_wen := ms_reg.mm_wen
 
     io.data_slave.r.ready := true.B
     io.data_slave.b.ready := true.B
