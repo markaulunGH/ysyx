@@ -63,7 +63,7 @@ class ES extends Module
         awfire := true.B
     }
 
-    io.data_master.w.valid := mm_wen && !wfire && es_valid
+    io.data_master.w.valid := es_reg.mm_wen && !wfire && es_valid
     io.data_master.w.bits.data := mm_wdata
     io.data_master.w.bits.strb := es_reg.mm_mask
     when (es_allow_in)
@@ -83,19 +83,19 @@ class ES extends Module
     io.es_ds.alu_result := alu_result
     io.es_ds.rf_waddr := es_reg.rf_waddr
     io.es_ds.rf_wen := es_reg.rf_wen
-    io.es_ds.mm_ren := mm_ren
+    io.es_ds.mm_ren := es_reg.mm_ren
     io.es_ds.csr_wen := es_reg.csr_wen
 
     io.es_ms.to_ms_valid := to_ms_valid
     io.es_ms.pc := es_reg.pc
 
     io.es_ms.alu_result := alu_result
-    io.es_ms.rf_wen := rf_wen
-    io.es_ms.rf_waddr := rf_waddr
-    io.es_ms.mm_ren := mm_ren
-    io.es_ms.mm_wen := mm_wen
-    io.es_ms.mm_mask := mm_mask
-    io.es_ms.mm_unsigned := mm_unsigned
+    io.es_ms.rf_wen := es_reg.rf_wen
+    io.es_ms.rf_waddr := es_reg.rf_waddr
+    io.es_ms.mm_ren := es_reg.mm_ren
+    io.es_ms.mm_wen := es_reg.mm_wen
+    io.es_ms.mm_mask := es_reg.mm_mask
+    io.es_ms.mm_unsigned := es_reg.mm_unsigned
 
     io.es_ms.csr_wen := csr_wen
     io.es_ms.csr_addr := csr_addr
