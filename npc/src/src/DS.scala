@@ -3,20 +3,17 @@ import chisel3.util._
 
 class DS extends Module
 {
-    val io = IO(new Bundle
-    {
-        val ds_pf = new DS_PF
-        val ds_fs = new DS_FS
-        val ds_es = new DS_ES
-        val pf_ds = Flipped(new PF_DS)
-        val fs_ds = Flipped(new FS_DS)
-        val es_ds = Flipped(new ES_DS)
-        val ms_ds = Flipped(new MS_DS)
-        val ws_ds = Flipped(new WS_DS)
+    val ds_pf = IO(new DS_PF)
+    val ds_fs = IO(new DS_FS)
+    val ds_es = IO(new DS_ES)
+    val pf_ds = IO(Flipped(new PF_DS))
+    val fs_ds = IO(Flipped(new FS_DS))
+    val es_ds = IO(Flipped(new ES_DS))
+    val ms_ds = IO(Flipped(new MS_DS))
+    val ws_ds = IO(Flipped(new WS_DS))
 
-        val reg_r = Flipped(new Reg_r)
-        val csr_pc = Flipped(new CSR_pc)
-    })
+    val reg_r = IO(Flipped(new Reg_r))
+    val csr_pc = IO(Flipped(new CSR_pc))
 
     val read_rf1 = Wire(Bool())
     val read_rf2 = Wire(Bool())
@@ -25,19 +22,19 @@ class DS extends Module
     val br_taken = Wire(Bool())
 
     val ds_valid = RegInit(false.B)
-    val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard) && io.pf_ds.pf_ready
-    val ds_allow_in = !ds_valid || ds_ready && io.es_ds.es_allow_in
+    val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard) && pf_ds.pf_ready
+    val ds_allow_in = !ds_valid || ds_ready && es_ds.es_allow_in
     val to_es_valid = ds_valid && ds_ready
-    when (br_taken && to_es_valid && io.es_ds.es_allow_in)
+    when (br_taken && to_es_valid && es_ds.es_allow_in)
     {
         ds_valid := false.B
     }
     .elsewhen (ds_allow_in)
     {
-        ds_valid := io.fs_ds.to_ds_valid
+        ds_valid := fs_ds.to_ds_valid
     }
 
-    val ds_reg = RegEnable(io.fs_ds, io.fs_ds.to_ds_valid && ds_allow_in)
+    val ds_reg = RegEnable(fs_ds, fs_ds.to_ds_valid && ds_allow_in)
 
     val inst = ds_reg.inst
     val opcode = inst(6, 0)
@@ -183,29 +180,29 @@ class DS extends Module
         )
     )
 
-    io.reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
-    io.reg_r.raddr2 := rs2
+    reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
+    reg_r.raddr2 := rs2
 
     read_rf1 := inst_R || inst_I || inst_S || inst_B
     read_rf2 := inst_R || inst_S || inst_B
 
-    val rs1_value = MuxCase(io.reg_r.rdata1, Seq(
-        (io.reg_r.raddr1 =/= 0.U && io.es_ds.to_ms_valid && io.es_ds.rf_wen && io.reg_r.raddr1 === io.es_ds.rf_waddr) -> io.es_ds.alu_result,
-        (io.reg_r.raddr1 =/= 0.U && io.ms_ds.to_ws_valid && io.ms_ds.rf_wen && io.reg_r.raddr1 === io.ms_ds.rf_waddr) -> io.ms_ds.rf_wdata,
-        (io.reg_r.raddr1 =/= 0.U && io.ws_ds.ws_valid    && io.ws_ds.rf_wen && io.reg_r.raddr1 === io.ws_ds.rf_waddr) -> io.ws_ds.rf_wdata
+    val rs1_value = MuxCase(reg_r.rdata1, Seq(
+        (reg_r.raddr1 =/= 0.U && es_ds.to_ms_valid && es_ds.rf_wen && reg_r.raddr1 === es_ds.rf_waddr) -> es_ds.alu_result,
+        (reg_r.raddr1 =/= 0.U && ms_ds.to_ws_valid && ms_ds.rf_wen && reg_r.raddr1 === ms_ds.rf_waddr) -> ms_ds.rf_wdata,
+        (reg_r.raddr1 =/= 0.U && ws_ds.ws_valid    && ws_ds.rf_wen && reg_r.raddr1 === ws_ds.rf_waddr) -> ws_ds.rf_wdata
     ))
-    val rs2_value = MuxCase(io.reg_r.rdata2, Seq(
-        (io.reg_r.raddr2 =/= 0.U && io.es_ds.to_ms_valid && io.es_ds.rf_wen && io.reg_r.raddr2 === io.es_ds.rf_waddr) -> io.es_ds.alu_result,
-        (io.reg_r.raddr2 =/= 0.U && io.ms_ds.to_ws_valid && io.ms_ds.rf_wen && io.reg_r.raddr2 === io.ms_ds.rf_waddr) -> io.ms_ds.rf_wdata,
-        (io.reg_r.raddr2 =/= 0.U && io.ws_ds.ws_valid    && io.ws_ds.rf_wen && io.reg_r.raddr2 === io.ws_ds.rf_waddr) -> io.ws_ds.rf_wdata
+    val rs2_value = MuxCase(reg_r.rdata2, Seq(
+        (reg_r.raddr2 =/= 0.U && es_ds.to_ms_valid && es_ds.rf_wen && reg_r.raddr2 === es_ds.rf_waddr) -> es_ds.alu_result,
+        (reg_r.raddr2 =/= 0.U && ms_ds.to_ws_valid && ms_ds.rf_wen && reg_r.raddr2 === ms_ds.rf_waddr) -> ms_ds.rf_wdata,
+        (reg_r.raddr2 =/= 0.U && ws_ds.ws_valid    && ws_ds.rf_wen && reg_r.raddr2 === ws_ds.rf_waddr) -> ws_ds.rf_wdata
     ))
 
-    rf1_hazard := (io.es_ds.es_valid && (io.es_ds.mm_ren || io.es_ds.csr_wen) && io.reg_r.raddr1 === io.es_ds.rf_waddr ||
-                   io.ms_ds.ms_valid && ((io.ms_ds.mm_ren && !io.ms_ds.to_ws_valid) || io.ms_ds.csr_wen) && io.reg_r.raddr1 === io.ms_ds.rf_waddr) &&
-                   io.reg_r.raddr1 =/= 0.U
-    rf2_hazard := (io.es_ds.es_valid && (io.es_ds.mm_ren || io.es_ds.csr_wen) && io.reg_r.raddr2 === io.es_ds.rf_waddr ||
-                   io.ms_ds.ms_valid && ((io.ms_ds.mm_ren || !io.ms_ds.to_ws_valid) || io.ms_ds.csr_wen) && io.reg_r.raddr1 === io.ms_ds.rf_waddr) &&
-                   io.reg_r.raddr2 =/= 0.U
+    rf1_hazard := (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && reg_r.raddr1 === es_ds.rf_waddr ||
+                   ms_ds.ms_valid && ((ms_ds.mm_ren && !ms_ds.to_ws_valid) || ms_ds.csr_wen) && reg_r.raddr1 === ms_ds.rf_waddr) &&
+                   reg_r.raddr1 =/= 0.U
+    rf2_hazard := (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && reg_r.raddr2 === es_ds.rf_waddr ||
+                   ms_ds.ms_valid && ((ms_ds.mm_ren || !ms_ds.to_ws_valid) || ms_ds.csr_wen) && reg_r.raddr1 === ms_ds.rf_waddr) &&
+                   reg_r.raddr2 =/= 0.U
 
     val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
@@ -217,16 +214,16 @@ class DS extends Module
                 inst_bltu &&  rs1_ltu_rs2 ||
                 inst_bgeu && !rs1_ltu_rs2 ||
                 inst_ecall || inst_mret
-    io.ds_pf.br_target := MuxCase(
+    ds_pf.br_target := MuxCase(
         0.U(64.W),
         Seq(
             (inst_jal || inst_beq || inst_bne || inst_blt || inst_bge || inst_bltu || inst_bgeu) -> (ds_reg.pc + imm),
             inst_jalr -> (imm + Cat(rs1_value(63, 1), 0.U(1.W))),
-            inst_ecall -> io.csr_pc.mtvec,
-            inst_mret -> io.csr_pc.mepc
+            inst_ecall -> csr_pc.mtvec,
+            inst_mret -> csr_pc.mepc
         )
     )
-    io.ds_pf.ds_allow_in := ds_allow_in
+    ds_pf.ds_allow_in := ds_allow_in
 
     val alu_op = Wire(Vec(18, Bool()))
     alu_op(0)  := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi || inst_addiw || inst_add || inst_addw
@@ -248,18 +245,18 @@ class DS extends Module
     alu_op(16) := inst_rem || inst_remw
     alu_op(17) := inst_remu || inst_remuw
 
-    io.ds_pf.br_taken := br_taken
-    io.ds_pf.ds_valid := ds_valid
+    ds_pf.br_taken := br_taken
+    ds_pf.ds_valid := ds_valid
 
-    io.ds_fs.ds_allow_in := ds_allow_in
-    io.ds_fs.to_es_valid := to_es_valid
-    io.ds_fs.br_taken := br_taken
+    ds_fs.ds_allow_in := ds_allow_in
+    ds_fs.to_es_valid := to_es_valid
+    ds_fs.br_taken := br_taken
 
-    io.ds_es.to_es_valid := to_es_valid
-    io.ds_es.pc := ds_reg.pc
+    ds_es.to_es_valid := to_es_valid
+    ds_es.pc := ds_reg.pc
 
-    io.ds_es.alu_op := alu_op
-    io.ds_es.alu_src1 := Mux(src1_is_pc, ds_reg.pc, 
+    ds_es.alu_op := alu_op
+    ds_es.alu_src1 := Mux(src1_is_pc, ds_reg.pc, 
         MuxCase(
             rs1_value,
             Seq(
@@ -268,7 +265,7 @@ class DS extends Module
             )
         )
     )
-    io.ds_es.alu_src2 := Mux(src2_is_imm,
+    ds_es.alu_src2 := Mux(src2_is_imm,
         MuxCase(
             imm,
             Seq(
@@ -286,9 +283,9 @@ class DS extends Module
             )
         )
     )
-    io.ds_es.inst_word := inst_addiw || inst_slliw || inst_srliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_srlw || inst_sraw || inst_mulw || inst_divw || inst_divuw || inst_remw || inst_remuw
+    ds_es.inst_word := inst_addiw || inst_slliw || inst_srliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_srlw || inst_sraw || inst_mulw || inst_divw || inst_divuw || inst_remw || inst_remuw
 
-    io.ds_es.rf_wen := inst_lui || inst_auipc || inst_jal || inst_jalr ||
+    ds_es.rf_wen := inst_lui || inst_auipc || inst_jal || inst_jalr ||
                        inst_load ||
                        inst_addi || inst_slti | inst_sltiu || inst_xori || inst_ori || inst_andi || inst_slli || inst_srli || inst_srai || inst_addiw || inst_slliw || inst_srliw || inst_sraiw ||
                        inst_add || inst_sub || inst_sll || inst_slt || inst_sltu || inst_xor || inst_srl || inst_sra || inst_or || inst_and ||
@@ -296,11 +293,11 @@ class DS extends Module
                        inst_csr ||
                        inst_mul || inst_mulh || inst_mulhsu || inst_mulhu || inst_div || inst_divu || inst_rem || inst_remu ||
                        inst_mulw || inst_divw || inst_divuw || inst_remw || inst_remuw
-    io.ds_es.rf_waddr := rd
+    ds_es.rf_waddr := rd
 
-    io.ds_es.mm_ren := inst_load
-    io.ds_es.mm_wen := inst_store
-    io.ds_es.mm_wdata := MuxCase(
+    ds_es.mm_ren := inst_load
+    ds_es.mm_wen := inst_store
+    ds_es.mm_wdata := MuxCase(
         0.U(64.W),
         Seq(
             inst_sb -> rs2_value(7, 0),
@@ -309,12 +306,12 @@ class DS extends Module
             inst_sd -> rs2_value
         )
     )
-    io.ds_es.mm_mask := mm_mask
-    io.ds_es.mm_unsigned := inst_lbu || inst_lhu || inst_lwu
+    ds_es.mm_mask := mm_mask
+    ds_es.mm_unsigned := inst_lbu || inst_lhu || inst_lwu
 
-    io.ds_es.csr_wen := inst_csr
-    io.ds_es.csr_addr := csr_addr
-    io.ds_es.csr_wmask := MuxCase(
+    ds_es.csr_wen := inst_csr
+    ds_es.csr_addr := csr_addr
+    ds_es.csr_wmask := MuxCase(
         0.U(64.W),
         Seq(
             (inst_csrrw || inst_csrrwi) -> Fill(64, 1.U(1.W)),
@@ -322,7 +319,7 @@ class DS extends Module
             (inst_csrrsi || inst_csrrci) -> uimm
         )
     )
-    io.ds_es.csr_wdata := MuxCase(
+    ds_es.csr_wdata := MuxCase(
         0.U(64.W),
         Seq(
             inst_csrrw -> rs1_value,
@@ -331,10 +328,10 @@ class DS extends Module
             (inst_csrrc || inst_csrrci) -> 0.U(64.W)
         )
     )
-    io.ds_es.exc := inst_ecall
-    io.ds_es.exc_cause := 0xb.U
-    io.ds_es.mret := inst_mret
+    ds_es.exc := inst_ecall
+    ds_es.exc_cause := 0xb.U
+    ds_es.mret := inst_mret
 
-    io.ds_es.inst := inst
-    io.ds_es.ebreak := inst_ebreak
+    ds_es.inst := inst
+    ds_es.ebreak := inst_ebreak
 }
