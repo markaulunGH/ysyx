@@ -27,6 +27,7 @@ class WS extends Module
     }
 
     val enable = io.ms_ws.to_ws_valid && ws_allow_in
+    val ws_reg = RegEnable(io.ms_ws, enable)
     val pc = RegEnable(io.ms_ws.pc, enable)
     val rf_wen = RegEnable(io.ms_ws.rf_wen, enable)
     val rf_waddr = RegEnable(io.ms_ws.rf_waddr, enable)

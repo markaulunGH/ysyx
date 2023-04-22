@@ -14,7 +14,7 @@ class FS extends Module
         val inst_slave = new AXI_Lite_Slave
     })
 
-    val rfire = RegInit(false.B) // pretend that there is an instruction in the buffer before the first instruction is fetched; maybe problematic
+    val rfire = RegInit(false.B)
     
     val fs_valid = RegInit(false.B)
     val fs_ready = fs_valid && (io.inst_slave.r.fire || rfire)
