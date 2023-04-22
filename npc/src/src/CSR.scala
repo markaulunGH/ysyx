@@ -1,7 +1,7 @@
 import chisel3._
 import chisel3.util._
 
-class CSR_rw extends Bundle
+class CSR_RW extends Bundle
 {
     val addr = Input(UInt(12.W))
     val rdata = Output(UInt(64.W))
@@ -13,7 +13,7 @@ class CSR_rw extends Bundle
     val mret = Input(Bool())
 }
 
-class CSR_pc extends Bundle
+class CSR_PC extends Bundle
 {
     val mtvec = Output(UInt(64.W))
     val mepc = Output(UInt(64.W))
@@ -23,8 +23,8 @@ class CSR extends Module
 {
     val io = IO(new Bundle
     {
-        val csr_rw = new CSR_rw
-        val csr_pc = new CSR_pc
+        val csr_rw = new CSR_RW
+        val csr_pc = new CSR_PC
     })
 
     val mstatus_uie  = RegInit(0.U(1.W))

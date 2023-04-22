@@ -8,7 +8,7 @@ class WS extends Module
     val ms_ws = IO(Flipped(new MS_WS))
 
     val reg_w = IO(Flipped(new Reg_w))
-    val csr_rw = IO(Flipped(new CSR_rw))
+    val csr_rw = IO(Flipped(new CSR_RW))
 
     val sim = IO(new Bundle
     {

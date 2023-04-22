@@ -13,7 +13,7 @@ class DS extends Module
     val ws_ds = IO(Flipped(new WS_DS))
 
     val reg_r = IO(Flipped(new Reg_r))
-    val csr_pc = IO(Flipped(new CSR_pc))
+    val csr_pc = IO(Flipped(new CSR_PC))
 
     val read_rf1 = Wire(Bool())
     val read_rf2 = Wire(Bool())
