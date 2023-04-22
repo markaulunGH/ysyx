@@ -90,6 +90,4 @@ class MS extends Module
 
     ms_ws.inst := ms_reg.inst
     ms_ws.ebreak := ms_reg.ebreak
-
-    pc := ms_reg.pc
 }
