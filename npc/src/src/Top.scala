@@ -1,30 +1,30 @@
 import chisel3._
 import chisel3.util._
 
-class WaddrChannel extends Bundle
+class AWChannel extends Bundle
 {
     val addr = Output(UInt(64.W))
     val prot = Output(UInt(3.W))
 }
 
-class WdataChannel extends Bundle
+class WChannel extends Bundle
 {
     val data = Output(UInt(64.W))
     val strb = Output(UInt(8.W))
 }
 
-class WrespChannel extends Bundle
+class BChannel extends Bundle
 {
     val resp = Output(UInt(2.W))
 }
 
-class RaddrChannel extends Bundle
+class ARChannel extends Bundle
 {
     val addr = Output(UInt(64.W))
     val prot = Output(UInt(3.W))
 }
 
-class RdataChannel extends Bundle
+class RChannel extends Bundle
 {
     val data = Output(UInt(64.W))
     val resp = Output(UInt(2.W))
@@ -32,15 +32,15 @@ class RdataChannel extends Bundle
 
 class AXI_Lite_Master extends Bundle
 {
-    val aw = Decoupled(new WaddrChannel)
-    val w  = Decoupled(new WdataChannel)
-    val ar = Decoupled(new RaddrChannel)
+    val aw = Decoupled(new AWChannel)
+    val w  = Decoupled(new WChannel)
+    val ar = Decoupled(new ARChannel)
 }
 
 class AXI_Lite_Slave extends Bundle
 {
-    val b = Flipped(Decoupled(new WrespChannel))
-    val r = Flipped(Decoupled(new RdataChannel))
+    val b = Flipped(Decoupled(new BChannel))
+    val r = Flipped(Decoupled(new RChannel))
 }
 
 class PF_FS extends Bundle
