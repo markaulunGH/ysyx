@@ -11,6 +11,11 @@ class MS extends Module
 
     val data_slave = IO(new AXI_Lite_Slave)
 
+    val sim = IO(new Bundle
+    {
+        val pc = Output(UInt(64.W))
+    })
+
     val rfire = RegInit(false.B)
     val bfire = RegInit(false.B)
     val mm_ren = Wire(Bool())
@@ -90,4 +95,6 @@ class MS extends Module
 
     ms_ws.inst := ms_reg.inst
     ms_ws.ebreak := ms_reg.ebreak
+
+    sim.pc := ms_reg.pc
 }
