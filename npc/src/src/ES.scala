@@ -32,7 +32,7 @@ class ES extends Module
     mm_ren := es_reg.mm_ren
     mm_wen := es_reg.mm_wen
 
-    val alu = Module(new Alu)
+    val alu = Module(new ALU)
     alu.io.alu_op := es_reg.alu_op
     alu.io.alu_src1 := es_reg.alu_src1
     alu.io.alu_src2 := es_reg.alu_src2
