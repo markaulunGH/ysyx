@@ -1,7 +1,7 @@
 import chisel3._
 import chisel3.util._
 
-class Reg_R extends Bundle
+class Regfile_R extends Bundle
 {
     val raddr1 = Input(UInt(5.W))
     val rdata1 = Output(UInt(64.W))
@@ -10,7 +10,7 @@ class Reg_R extends Bundle
     val rdata2 = Output(UInt(64.W))
 }
 
-class Reg_W extends Bundle
+class Regfile_W extends Bundle
 {
     val wen = Input(Bool())
     val waddr = Input(UInt(5.W))
@@ -19,8 +19,8 @@ class Reg_W extends Bundle
 
 class Regfile extends Module
 {
-    val reg_r = IO(new Reg_R)
-    val reg_w = IO(new Reg_W)
+    val reg_r = IO(new Regfile_R)
+    val reg_w = IO(new Regfile_W)
 
     val sim = IO(new Bundle
     {
