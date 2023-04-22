@@ -36,9 +36,9 @@ class ES extends Module
     // alu.io.in.alu_op := es_reg.alu_in.alu_op
     // alu.io.in.alu_src1 := es_reg.alu_in.alu_src1
     // alu.io.in.alu_src2 := es_reg.alu_in.alu_src2
-    alu.io.in.alu_op := 0.U
-    alu.io.in.alu_src1 := 0.U
-    alu.io.in.alu_src2 := 0.U
+    alu.io.in.alu_op := 0.U(4.W)
+    alu.io.in.alu_src1 := 0.U(64.W)
+    alu.io.in.alu_src2 := 0.U(64.W)
     val alu_result = Mux(es_reg.inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)
 
     io.data_master.ar.valid := es_reg.mm_ren && !arfire && es_valid
