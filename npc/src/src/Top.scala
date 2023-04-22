@@ -87,10 +87,10 @@ class Top extends Module
     ws.ws_ms <> ms.ws_ms
 
     val arbiter = Module(new AXI_Arbiter)
-    arbiter.io.inst_master <> pf.inst_master
-    arbiter.io.inst_slave  <> fs.inst_slave
-    arbiter.io.data_master <> es.data_master
-    arbiter.io.data_slave  <> ms.data_slave
+    arbiter.inst_master <> pf.inst_master
+    arbiter.inst_slave  <> fs.inst_slave
+    arbiter.data_master <> es.data_master
+    arbiter.data_slave  <> ms.data_slave
 
     val sram = Module(new SRAM)
     sram.master <> arbiter.master
