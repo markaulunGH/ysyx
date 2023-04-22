@@ -104,8 +104,8 @@ class Top extends Module
     io.mm_mask := sram.io.mm_mask
     
     val rf = Module(new Regfile)
-    rf.io.reg_r <> ds.reg_r
-    rf.io.reg_w <> ws.reg_w
+    rf.reg_r <> ds.reg_r
+    rf.reg_w <> ws.reg_w
 
     val csr = Module(new CSR)
     csr.csr_pc <> ds.csr_pc
@@ -115,7 +115,7 @@ class Top extends Module
     io.pc := ws.sim.pc
     io.inst := ws.sim.inst
     io.ebreak := ws.sim.ebreak
-    io.rf := rf.io.rf
-    io.rf_wen := rf.io.rf_wen
+    io.rf := rf.sim.rf
+    io.rf_wen := rf.sim.rf_wen
     io.mm_pc := ms.sim.pc
 }
