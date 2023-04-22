@@ -20,7 +20,7 @@ class WS extends Module
     val ws_ms = IO(new WS_MS)
     val ms_ws = IO(Flipped(new MS_WS))
 
-    val reg_w = IO(Flipped(new Regfile_W))
+    val rf_w = IO(Flipped(new Regfile_W))
     val csr_rw = IO(Flipped(new CSR_RW))
 
     val sim = IO(new Bundle
@@ -41,9 +41,9 @@ class WS extends Module
 
     val ws_reg = RegEnable(ms_ws, ms_ws.to_ws_valid && ws_allow_in)
 
-    reg_w.wen := ws_reg.rf_wen
-    reg_w.waddr := ws_reg.rf_waddr
-    reg_w.wdata := Mux(ws_reg.csr_wen, csr_rw.rdata, ws_reg.rf_wdata)
+    rf_w.wen := ws_reg.rf_wen
+    rf_w.waddr := ws_reg.rf_waddr
+    rf_w.wdata := Mux(ws_reg.csr_wen, csr_rw.rdata, ws_reg.rf_wdata)
 
     csr_rw.addr := ws_reg.csr_addr
     csr_rw.wen := ws_reg.csr_wen

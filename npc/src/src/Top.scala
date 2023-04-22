@@ -104,8 +104,8 @@ class Top extends Module
     io.mm_mask := sram.sim.mm_mask
     
     val rf = Module(new Regfile)
-    rf.reg_r <> ds.reg_r
-    rf.reg_w <> ws.reg_w
+    rf.rf_r <> ds.rf_r
+    rf.rf_w <> ws.rf_w
 
     val csr = Module(new CSR)
     csr.csr_pc <> ds.csr_pc

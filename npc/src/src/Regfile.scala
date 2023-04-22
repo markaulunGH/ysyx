@@ -19,8 +19,8 @@ class Regfile_W extends Bundle
 
 class Regfile extends Module
 {
-    val reg_r = IO(new Regfile_R)
-    val reg_w = IO(new Regfile_W)
+    val rf_r = IO(new Regfile_R)
+    val rf_w = IO(new Regfile_W)
 
     val sim = IO(new Bundle
     {
@@ -30,14 +30,14 @@ class Regfile extends Module
 
     val rf = Reg(Vec(32, UInt(64.W)))
 
-    when (reg_w.wen)
+    when (rf_w.wen)
     {
-        rf(reg_w.waddr) := reg_w.wdata
+        rf(rf_w.waddr) := rf_w.wdata
     }
 
-    reg_r.rdata1 := Mux(reg_r.raddr1 === 0.U, 0.U, rf(reg_r.raddr1))
-    reg_r.rdata2 := Mux(reg_r.raddr2 === 0.U, 0.U, rf(reg_r.raddr2))
+    rf_r.rdata1 := Mux(rf_r.raddr1 === 0.U, 0.U, rf(rf_r.raddr1))
+    rf_r.rdata2 := Mux(rf_r.raddr2 === 0.U, 0.U, rf(rf_r.raddr2))
 
     sim.rf := rf
-    sim.rf_wen := reg_w.wen
+    sim.rf_wen := rf_w.wen
 }

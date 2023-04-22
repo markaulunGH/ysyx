@@ -54,7 +54,7 @@ class DS extends Module
     val ms_ds = IO(Flipped(new MS_DS))
     val ws_ds = IO(Flipped(new WS_DS))
 
-    val reg_r = IO(Flipped(new Regfile_R))
+    val rf_r = IO(Flipped(new Regfile_R))
     val csr_pc = IO(Flipped(new CSR_PC))
 
     val read_rf1 = Wire(Bool())
@@ -216,29 +216,29 @@ class DS extends Module
         (inst_ld || inst_sd) -> 0xff.U(8.W)
     ))
 
-    reg_r.raddr1 := Mux(inst_lui, 0.U, rs1)
-    reg_r.raddr2 := rs2
+    rf_r.raddr1 := Mux(inst_lui, 0.U, rs1)
+    rf_r.raddr2 := rs2
 
     read_rf1 := inst_R || inst_I || inst_S || inst_B
     read_rf2 := inst_R || inst_S || inst_B
 
-    val rs1_value = MuxCase(reg_r.rdata1, Seq(
-        (reg_r.raddr1 =/= 0.U && es_ds.to_ms_valid && es_ds.rf_wen && reg_r.raddr1 === es_ds.rf_waddr) -> es_ds.alu_result,
-        (reg_r.raddr1 =/= 0.U && ms_ds.to_ws_valid && ms_ds.rf_wen && reg_r.raddr1 === ms_ds.rf_waddr) -> ms_ds.rf_wdata,
-        (reg_r.raddr1 =/= 0.U && ws_ds.ws_valid    && ws_ds.rf_wen && reg_r.raddr1 === ws_ds.rf_waddr) -> ws_ds.rf_wdata
+    val rs1_value = MuxCase(rf_r.rdata1, Seq(
+        (rf_r.raddr1 =/= 0.U && es_ds.to_ms_valid && es_ds.rf_wen && rf_r.raddr1 === es_ds.rf_waddr) -> es_ds.alu_result,
+        (rf_r.raddr1 =/= 0.U && ms_ds.to_ws_valid && ms_ds.rf_wen && rf_r.raddr1 === ms_ds.rf_waddr) -> ms_ds.rf_wdata,
+        (rf_r.raddr1 =/= 0.U && ws_ds.ws_valid    && ws_ds.rf_wen && rf_r.raddr1 === ws_ds.rf_waddr) -> ws_ds.rf_wdata
     ))
-    val rs2_value = MuxCase(reg_r.rdata2, Seq(
-        (reg_r.raddr2 =/= 0.U && es_ds.to_ms_valid && es_ds.rf_wen && reg_r.raddr2 === es_ds.rf_waddr) -> es_ds.alu_result,
-        (reg_r.raddr2 =/= 0.U && ms_ds.to_ws_valid && ms_ds.rf_wen && reg_r.raddr2 === ms_ds.rf_waddr) -> ms_ds.rf_wdata,
-        (reg_r.raddr2 =/= 0.U && ws_ds.ws_valid    && ws_ds.rf_wen && reg_r.raddr2 === ws_ds.rf_waddr) -> ws_ds.rf_wdata
+    val rs2_value = MuxCase(rf_r.rdata2, Seq(
+        (rf_r.raddr2 =/= 0.U && es_ds.to_ms_valid && es_ds.rf_wen && rf_r.raddr2 === es_ds.rf_waddr) -> es_ds.alu_result,
+        (rf_r.raddr2 =/= 0.U && ms_ds.to_ws_valid && ms_ds.rf_wen && rf_r.raddr2 === ms_ds.rf_waddr) -> ms_ds.rf_wdata,
+        (rf_r.raddr2 =/= 0.U && ws_ds.ws_valid    && ws_ds.rf_wen && rf_r.raddr2 === ws_ds.rf_waddr) -> ws_ds.rf_wdata
     ))
 
-    rf1_hazard := (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && reg_r.raddr1 === es_ds.rf_waddr ||
-                   ms_ds.ms_valid && ((ms_ds.mm_ren && !ms_ds.to_ws_valid) || ms_ds.csr_wen) && reg_r.raddr1 === ms_ds.rf_waddr) &&
-                   reg_r.raddr1 =/= 0.U
-    rf2_hazard := (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && reg_r.raddr2 === es_ds.rf_waddr ||
-                   ms_ds.ms_valid && ((ms_ds.mm_ren || !ms_ds.to_ws_valid) || ms_ds.csr_wen) && reg_r.raddr1 === ms_ds.rf_waddr) &&
-                   reg_r.raddr2 =/= 0.U
+    rf1_hazard := (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && rf_r.raddr1 === es_ds.rf_waddr ||
+                   ms_ds.ms_valid && ((ms_ds.mm_ren && !ms_ds.to_ws_valid) || ms_ds.csr_wen) && rf_r.raddr1 === ms_ds.rf_waddr) &&
+                   rf_r.raddr1 =/= 0.U
+    rf2_hazard := (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && rf_r.raddr2 === es_ds.rf_waddr ||
+                   ms_ds.ms_valid && ((ms_ds.mm_ren || !ms_ds.to_ws_valid) || ms_ds.csr_wen) && rf_r.raddr1 === ms_ds.rf_waddr) &&
+                   rf_r.raddr2 =/= 0.U
 
     val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
