@@ -269,24 +269,24 @@ class DS extends Module
             )
         )
     )
-    io.ds_es.alu_in.alu_src2 := Mux(src2_is_imm,
-        MuxCase(
-            imm,
-            Seq(
-                (inst_jal || inst_jalr) -> 4.U,
-                (inst_slli || inst_srli || inst_srai) -> imm(5, 0),
-                (inst_slliw || inst_srliw || inst_sraiw) -> imm(4, 0)
-            )
-        ),
-        MuxCase(
-            rs2_value,
-            Seq(
-                (inst_addw || inst_subw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs2_value(31)), rs2_value(31, 0)),
-                (inst_divuw || inst_remuw) -> rs2_value(31, 0),
-                (inst_sllw || inst_sraw || inst_srlw) -> rs2_value(4, 0)
-            )
-        )
-    )
+    // io.ds_es.alu_in.alu_src2 := Mux(src2_is_imm,
+    //     MuxCase(
+    //         imm,
+    //         Seq(
+    //             (inst_jal || inst_jalr) -> 4.U,
+    //             (inst_slli || inst_srli || inst_srai) -> imm(5, 0),
+    //             (inst_slliw || inst_srliw || inst_sraiw) -> imm(4, 0)
+    //         )
+    //     ),
+    //     MuxCase(
+    //         rs2_value,
+    //         Seq(
+    //             (inst_addw || inst_subw || inst_mulw || inst_divw || inst_remw) -> Cat(Fill(32, rs2_value(31)), rs2_value(31, 0)),
+    //             (inst_divuw || inst_remuw) -> rs2_value(31, 0),
+    //             (inst_sllw || inst_sraw || inst_srlw) -> rs2_value(4, 0)
+    //         )
+    //     )
+    // )
     io.ds_es.inst_word := inst_addiw || inst_slliw || inst_srliw || inst_sraiw || inst_addw || inst_subw || inst_sllw || inst_srlw || inst_sraw || inst_mulw || inst_divw || inst_divuw || inst_remw || inst_remuw
 
     io.ds_es.rf_wen := inst_lui || inst_auipc || inst_jal || inst_jalr ||
