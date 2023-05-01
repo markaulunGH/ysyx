@@ -42,9 +42,9 @@ class Multiplier extends Base_Multipiler
     in.ready := state === s_idle
     out.valid := state === s_finish
 
-    val x = RegInit(0.U(64.W))
-    val y = RegInit(0.U(64.W))
-    val res = RegInit(0.U(128.W))
+    val x = RegInit(0.U(65.W))
+    val y = RegInit(0.U(65.W))
+    val res = RegInit(0.U(130.W))
 
     when (state === s_idle && in.fire && !io.flush)
     {
@@ -62,8 +62,8 @@ class Multiplier extends Base_Multipiler
             (y(2, 0) === 2.U(3.W)) -> (res + x),
             (y(2, 0) === 3.U(3.W)) -> (res + (x << 1)),
             (y(2, 0) === 4.U(3.W)) -> (res - (x << 1)),
-            (y(2, 0) === 5.U(3.W)) -> (res - (x << 2)),
-            (y(2, 0) === 6.U(3.W)) -> (res - (x << 2)),
+            (y(2, 0) === 5.U(3.W)) -> (res - x),
+            (y(2, 0) === 6.U(3.W)) -> (res - x),
             (y(2, 0) === 7.U(3.W)) -> (res)
         ))
     }
