@@ -79,7 +79,7 @@ int main(int argc, char** argv, char** env) {
     top->trace(tfp, 0);
     tfp->open("logs/dump.vcd");
 
-    for (int i = 0; i < 100; ++ i)
+    for (int i = 0; i < 1e5; ++ i)
     {
         top->reset = i < 99;
         tfp->dump(contextp->time());
@@ -94,16 +94,28 @@ int main(int argc, char** argv, char** env) {
 
     top->io_flush = 0;
 
-    for (int i = 1; i < 10; ++ i)
+    for (int i = 1; i < 1e5; ++ i)
     {
-        __uint128_t a = _random();
-        __uint128_t b = _random();
-        __uint128_t res = a * b;
-        int mulw = 0;
-        int sign = 3;
+        uint64_t a_64 = _random();
+        uint64_t b_64 = _random();
+        uint32_t a_32 = _random() & 0xffffffff;
+        uint32_t b_32 = _random() & 0xffffffff;
+        int mulw = _random() & 1;
+        int sign = _random() & 3;
+        while (sign == 1)
+        {
+            sign = _random() & 3;
+        }
+        __uint128_t res;
+        switch (sign)
+        {
+            case 0: res = static_cast<__uint128_t>(static_cast<__uint128_t>(mulw ? a_32 : a_64) * static_cast<__uint128_t>(mulw ? b_32 : b_64)); break;
+            case 2: res = static_cast<__uint128_t>(static_cast<__int128_t >(mulw ? a_32 : a_64) * static_cast<__uint128_t>(mulw ? b_32 : b_64)); break;
+            case 3: res = static_cast<__uint128_t>(static_cast<__int128_t >(mulw ? a_32 : a_64) * static_cast<__int128_t >(mulw ? b_32 : b_64)); break;
+        }
 
-        top->io_multiplicand = a;
-        top->io_multiplier = b;
+        top->io_multiplicand = mulw ? a_32 : a_64;
+        top->io_multiplier = mulw ? b_32 : b_64;
         top->io_mulw = mulw;
         top->io_signed = sign;
         top->io_in_valid = 1;
@@ -137,13 +149,14 @@ int main(int argc, char** argv, char** env) {
             top->clock = 1;
         } while (!top->io_out_valid);
         top->eval();
-        tfp->dump(contextp->time());
         
         if (top->io_result_hi != static_cast<uint64_t>(res >> 64) || top->io_result_lo != static_cast<uint64_t>(res & 0xffffffffffffffff))
         {
             printf("FAIL\n");
-            printf("a:        %016lx\n", static_cast<uint64_t>(a) & 0xffffffffffffffff);
-            printf("b:        %016lx\n", static_cast<uint64_t>(b) & 0xffffffffffffffff);
+            printf("mulw:     %d\n", mulw);
+            printf("sign:     %d\n", sign);
+            printf("a:        %016lx\n", static_cast<uint64_t>(mulw ? a_32 : a_64) & 0xffffffffffffffff);
+            printf("b:        %016lx\n", static_cast<uint64_t>(mulw ? b_32 : b_64) & 0xffffffffffffffff);
             printf("expected: %016lx %016lx\n", static_cast<uint64_t>(res >> 64), static_cast<uint64_t>(res & 0xffffffffffffffff));
             printf("got:      %016lx %016lx\n", top->io_result_hi, top->io_result_lo);
             top->final();
