@@ -43,14 +43,14 @@ class Multiplier extends Base_Multipiler
     out.valid := state === s_finish
 
     val x = RegInit(0.U(128.W))
-    val y = RegInit(0.U(65.W))
+    val y = RegInit(0.U(67.W))
     val res = RegInit(0.U(128.W))
     val cnt = RegInit(0.U(6.W))
 
     when (state === s_idle && in.fire && !io.flush)
     {
-        x := in.bits.multiplicand
-        y := Cat(in.bits.multiplier, 0.U(1.W))
+        x := Cat(Fill(64, in.bits.multiplicand(63) & in.bits.signed(1)), in.bits.multiplicand)
+        y := Cat(Fill(2, in.bits.multiplier(63) & in.bits.signed(0)), in.bits.multiplier, 0.U(1.W))
         res := 0.U(128.W)
         cnt := 0.U(6.W)
     }
@@ -70,7 +70,7 @@ class Multiplier extends Base_Multipiler
         ))
         cnt := cnt + 1.U
     }
-    finish := cnt === 31.U(6.W)
+    finish := cnt === 32.U(6.W)
 
     out.bits.result_hi := res(127, 64)
     out.bits.result_lo := res(63, 0)
