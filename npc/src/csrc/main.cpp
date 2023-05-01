@@ -60,6 +60,11 @@
 #include "verilated_vcd_c.h"
 #include <stdint.h>
 
+uint64_t _random()
+{
+    return static_cast<uint64_t>(rand()) << 32 | rand();
+}
+
 int main(int argc, char** argv, char** env) {
     if (false && argc && argv && env) {}
     Verilated::mkdir("logs");
@@ -84,12 +89,16 @@ int main(int argc, char** argv, char** env) {
         tfp->dump(contextp->time());
         contextp->timeInc(1);
         top->clock = 1;
+        top->eval();
     }
+
+    top->io_flush = 0;
 
     for (int i = 1; i < 10; ++ i)
     {
-        __uint128_t a = rand();
-        __uint128_t b = rand();
+        __uint128_t a = _random();
+        __uint128_t b = _random();
+        __uint128_t res = a * b;
         int mulw = 0;
         int sign = 3;
 
@@ -99,8 +108,10 @@ int main(int argc, char** argv, char** env) {
         top->io_signed = sign;
         top->io_in_valid = 1;
         top->io_out_ready = 0;
+
         do
         {
+            top->eval();
             tfp->dump(contextp->time());
             contextp->timeInc(1);
             top->clock = 0;
@@ -108,13 +119,15 @@ int main(int argc, char** argv, char** env) {
             tfp->dump(contextp->time());
             contextp->timeInc(1);
             top->clock = 1;
-            top->eval();
         } while (!top->io_in_ready);
+        top->eval();
 
         top->io_in_valid = 0;
         top->io_out_ready = 1;
+
         do
         {
+            top->eval();
             tfp->dump(contextp->time());
             contextp->timeInc(1);
             top->clock = 0;
@@ -122,15 +135,26 @@ int main(int argc, char** argv, char** env) {
             tfp->dump(contextp->time());
             contextp->timeInc(1);
             top->clock = 1;
-            top->eval();
         } while (!top->io_out_valid);
-
-        assert(top->io_result_hi == (a * b) >> 64);
-        assert(top->io_result_lo == (a * b) & 0xffffffffffffffff);
+        top->eval();
+        tfp->dump(contextp->time());
+        
+        if (top->io_result_hi != static_cast<uint64_t>(res >> 64) || top->io_result_lo != static_cast<uint64_t>(res & 0xffffffffffffffff))
+        {
+            printf("FAIL\n");
+            printf("a:        %016lx\n", static_cast<uint64_t>(a) & 0xffffffffffffffff);
+            printf("b:        %016lx\n", static_cast<uint64_t>(b) & 0xffffffffffffffff);
+            printf("expected: %016lx %016lx\n", static_cast<uint64_t>(res >> 64), static_cast<uint64_t>(res & 0xffffffffffffffff));
+            printf("got:      %016lx %016lx\n", top->io_result_hi, top->io_result_lo);
+            top->final();
+            tfp->close();
+            return 0;
+        }
     }
 
     top->final();
     tfp->close();
+    printf("PASS\n");
 
     return 0;
 }
