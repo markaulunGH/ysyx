@@ -91,7 +91,7 @@ class ES extends Module
     multiplier.out.ready := state === s_calc && ms_es.ms_allow_in
     multiplier.io.flush = flush
 
-    mul_ready := (!es_reg.alu_op(10) && !es_reg.alu_op(11) && !es_reg.alu_op(12) && !es_reg.alu_op(13)) || mul_ready.out.fire
+    mul_ready := (!es_reg.alu_op(10) && !es_reg.alu_op(11) && !es_reg.alu_op(12) && !es_reg.alu_op(13)) || multiplier.out.fire
 
     val result = MuxCase(alu.io.alu_result, Seq(
         (es_reg.alu_op(10)) -> multiplier.out.bits.result_lo,
