@@ -139,7 +139,7 @@ class ES extends Module
         wfire := true.B
     }
 
-    mm_ready := (data_master.ar.fire || arfire) || (data_master.w.fire || wfire) || (!mm_ren && !mm_wen)
+    mm_ready := (data_master.ar.fire || arfire) || (data_master.w.fire || wfire) || (!ds_es.mm_ren && !ds_es.mm_wen)
 
     es_fs.es_allow_in := es_allow_in
 
