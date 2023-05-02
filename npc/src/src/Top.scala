@@ -127,8 +127,8 @@ class Top extends Module
         val in_valid = Input(Bool())
         val in_ready = Output(Bool())
 
-        val result_hi = Output(UInt(64.W))
-        val result_lo = Output(UInt(64.W))
+        val quotient = Output(UInt(64.W))
+        val remainder = Output(UInt(64.W))
         val out_valid = Output(Bool());
         val out_ready = Input(Bool())
 
@@ -142,8 +142,8 @@ class Top extends Module
     divider.in.valid := io.in_valid
     io.in_ready := divider.in.ready
 
-    io.result_hi := divider.out.bits.result_hi
-    io.result_lo := divider.out.bits.result_lo
+    io.quotient := divider.out.bits.quotient
+    io.remainder := divider.out.bits.remainder
     io.out_valid := divider.out.valid
     divider.out.ready := io.out_ready
 
