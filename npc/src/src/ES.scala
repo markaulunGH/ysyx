@@ -71,7 +71,6 @@ class ES extends Module
     alu.io.alu_src2 := es_reg.alu_src2
 
     val multiplier = Module(new Multiplier)
-
     val mul_idle :: mul_calc :: Nil = Enum(2)
     val mul_state = RegInit(mul_idle)
     val flush = false.B
