@@ -56,7 +56,7 @@ class Divider extends Base_Divider
     {
         quotient := quotient << 1 | (y < x(127, 63))
         x := Mux(y < x(127, 63), (x - Cat(y, 0.U(63.W))) << 1, x << 1)
-        cnt := cnt + 1
+        cnt := cnt + 1.U(6.W)
     }
     finish := cnt === 63.U(6.W)
 
