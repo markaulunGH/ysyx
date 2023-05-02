@@ -70,17 +70,18 @@ class ES extends Module
     alu.io.alu_src1 := es_reg.alu_src1
     alu.io.alu_src2 := es_reg.alu_src2
 
-    val s_idle :: s_calc :: Nil = Enum(2)
-    val state = RegInit(s_idle)
+    val multiplier = Module(new Multiplier)
+
+    val mul_idle :: mul_calc :: Nil = Enum(2)
+    val mul_state = RegInit(mul_idle)
     val flush = false.B
 
-    state := MuxLookup(state, s_idle, Seq(
-        s_idle -> Mux(multiplier.in.fire && !flush, s_calc, s_idle),
-        s_calc -> Mux(multiplier.out.fire || flush, s_idle, s_calc)
+    mul_state := MuxLookup(mul_state, mul_idle, Seq(
+        mul_idle -> Mux(multiplier.in.fire && !flush, mul_calc, mul_idle),
+        mul_calc -> Mux(multiplier.out.fire || flush, mul_idle, mul_calc)
     ))
 
-    val mul = Module(new Multiplier)
-    multiplier.in.valid := state === s_idle && (es_reg.alu_op(10) || es_reg.alu_op(11) || es_reg.alu_op(12) || es_reg.alu_op(13))
+    multiplier.in.valid := mul_state === mul_idle && (es_reg.alu_op(10) || es_reg.alu_op(11) || es_reg.alu_op(12) || es_reg.alu_op(13))
     multiplier.in.bits.multiplicand := es_reg.alu_src1
     multiplier.in.bits.multiplier := es_reg.alu_src2
     multiplier.in.bits.signed := MuxCase(3.U(2.W), Seq(
@@ -88,7 +89,7 @@ class ES extends Module
         es_reg.alu_op(12) -> 2.U(2.W),
         es_reg.alu_op(13) -> 0.U(2.W)
     ))
-    multiplier.out.ready := state === s_calc && ms_es.ms_allow_in
+    multiplier.out.ready := mul_state === mul_calc && ms_es.ms_allow_in
     multiplier.io.flush := flush
 
     mul_ready := (!es_reg.alu_op(10) && !es_reg.alu_op(11) && !es_reg.alu_op(12) && !es_reg.alu_op(13)) || multiplier.out.fire
