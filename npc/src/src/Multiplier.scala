@@ -78,7 +78,7 @@ class Multiplier extends Base_Multipiler
         ))
         cnt := cnt + 1.U
     }
-    finish := cnt === Mux(mulw, 16.U(6.W), 33.U(6.W))
+    finish := cnt === Mux(mulw, 16.U(6.W), 32.U(6.W))
 
     out.bits.result_hi := res(127, 64)
     out.bits.result_lo := res(63, 0)
