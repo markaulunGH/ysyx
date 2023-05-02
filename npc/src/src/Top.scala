@@ -123,7 +123,6 @@ class Top extends Module
     {
         val multiplicand = Input(UInt(64.W))
         val multiplier = Input(UInt(64.W))
-        val mulw = Input(Bool())
         val signed = Input(UInt(2.W))
         val in_valid = Input(Bool())
         val in_ready = Output(Bool())
@@ -139,7 +138,6 @@ class Top extends Module
     val multiplier = Module(new Multiplier)
     multiplier.in.bits.multiplicand := io.multiplicand
     multiplier.in.bits.multiplier := io.multiplier
-    multiplier.in.bits.mulw := io.mulw
     multiplier.in.bits.signed := io.signed
     multiplier.in.valid := io.in_valid
     io.in_ready := multiplier.in.ready
