@@ -147,14 +147,14 @@ int main(int argc, char** argv, char** env) {
         } while (!top->io_out_valid);
         top->eval();
         
-        if (top->io_qoutient != quotient || top->io_remainder != remainder)
+        if (top->io_quotient != quotient || top->io_remainder != remainder)
         {
             printf("FAIL\n");
             printf("sign:     %d\n", sign);
             printf("a:        %016lx\n", a);
             printf("b:        %016lx\n", b);
             printf("expected: %016lx %016lx\n", quotient, remainder);
-            printf("got:      %016lx %016lx\n", top->io_qoutient, top->io_remainder);
+            printf("got:      %016lx %016lx\n", top->io_quotient, top->io_remainder);
             top->final();
             tfp->close();
             return 0;
