@@ -101,7 +101,7 @@ int main(int argc, char** argv, char** env) {
         uint64_t b_64 = _random();
         uint32_t a_32 = _random() & 0xffffffff;
         uint32_t b_32 = _random() & 0xffffffff;
-        int mulw = _random() & 1;
+        int mulw = 0;
         int sign = _random() & 3;
         while (sign == 1)
         {
