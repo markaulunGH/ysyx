@@ -96,12 +96,12 @@ int main(int argc, char** argv, char** env) {
 
     for (int i = 1; i < 1e5; ++ i)
     {
-        uint64_t a_64 = _random();
-        uint64_t b_64 = _random();
+        uint64_t a_64 = -5;
+        uint64_t b_64 = -7;
         uint32_t a_32 = _random() & 0xffffffff;
         uint32_t b_32 = _random() & 0xffffffff;
         int mulw = 0;
-        int sign = _random() & 3;
+        int sign = 3;
         while (sign == 1)
         {
             sign = _random() & 3;
