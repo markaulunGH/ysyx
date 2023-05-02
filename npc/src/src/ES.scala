@@ -55,7 +55,7 @@ class ES extends Module
     val mul_ready = Wire(Bool())
 
     val es_valid = RegInit(false.B)
-    val es_ready = mm_ready && mul_ready
+    val es_ready = mm_ready
     val es_allow_in = !es_valid || es_ready && ms_es.ms_allow_in
     val to_ms_valid = es_valid && es_ready
     when (es_allow_in)
