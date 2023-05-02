@@ -137,7 +137,7 @@ class Top extends Module
 
     val divider = Module(new Divider)
     divider.in.bits.dividend := io.dividend
-    divider.in.bits.dividor := io.divisor
+    divider.in.bits.divisor := io.divisor
     divider.in.bits.signed := io.signed
     divider.in.valid := io.in_valid
     io.in_ready := divider.in.ready

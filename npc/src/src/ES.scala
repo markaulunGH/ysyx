@@ -117,7 +117,7 @@ class ES extends Module
 
     val result = MuxCase(alu.io.alu_result, Seq(
         (es_reg.alu_op(10)) -> multiplier.out.bits.result_lo,
-        (es_reg.alu_op(11) || es_reg.alu_op(12) || es_reg.alu_op(13)) -> multiplier.out.bits.result_hi
+        (es_reg.alu_op(11) || es_reg.alu_op(12) || es_reg.alu_op(13)) -> multiplier.out.bits.result_hi,
         (es_reg.alu_op(14) || es_reg.alu_op(15)) -> divider.out.bits.quotient,
         (es_reg.alu_op(16) || es_reg.alu_op(17)) -> divider.out.bits.remainder
     ))
