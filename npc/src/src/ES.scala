@@ -83,12 +83,11 @@ class ES extends Module
     multiplier.in.valid := state === s_idle && (es_reg.alu_op(10) || es_reg.alu_op(11) || es_reg.alu_op(12) || es_reg.alu_op(13))
     multiplier.in.bits.multiplicand := es_reg.alu_src1
     multiplier.in.bits.multiplier := es_reg.alu_src2
-    // multiplier.in.bits.signed := MuxCase(3.U(2.W), Seq(
-    //     (es_reg.alu_op(10) || es_reg.alu_op(11)) -> 3.U(2.W),
-    //     es_reg.alu_op(12) -> 2.U(2.W),
-    //     es_reg.alu_op(13) -> 0.U(2.W)
-    // ))
-    // multiplier.in.bits.signed := 0.U(2.W)
+    multiplier.in.bits.signed := MuxCase(3.U(2.W), Seq(
+        (es_reg.alu_op(10) || es_reg.alu_op(11)) -> 3.U(2.W),
+        es_reg.alu_op(12) -> 2.U(2.W),
+        es_reg.alu_op(13) -> 0.U(2.W)
+    ))
     multiplier.out.ready := state === s_calc && ms_es.ms_allow_in
     multiplier.io.flush := flush
 
