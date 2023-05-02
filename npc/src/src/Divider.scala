@@ -55,6 +55,6 @@ class Divider extends Base_Divider
     }
     .elsewhen (state === s_calc)
     {
-        res(cnt) := 0.U(1.W)
+        res := res << 1 | (y < x(127, 64))
     }
 }
