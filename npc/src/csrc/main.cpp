@@ -63,7 +63,7 @@
 uint64_t _random()
 {
     uint64_t a = static_cast<uint64_t>(rand()) << 33;
-    printf("%lx\n", a);
+    printf("%lx\n", a | (rand() << 2));
     return (static_cast<uint64_t>(rand()) << 33) | (rand() << 2) | (rand() & 3);
 }
 
