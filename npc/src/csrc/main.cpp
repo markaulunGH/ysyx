@@ -116,7 +116,7 @@ int main(int argc, char** argv, char** env) {
 
         top->io_multiplicand = mulw ? a_32 : a_64;
         top->io_multiplier = mulw ? b_32 : b_64;
-        top->io_mulw = 0;
+        top->io_mulw = mulw;
         top->io_signed = sign;
         top->io_in_valid = 1;
         top->io_out_ready = 0;
