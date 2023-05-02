@@ -88,7 +88,7 @@ class ES extends Module
     //     es_reg.alu_op(12) -> 2.U(2.W),
     //     es_reg.alu_op(13) -> 0.U(2.W)
     // ))
-    multiplier.in.bits.signed := 0.U(2.W)
+    // multiplier.in.bits.signed := 0.U(2.W)
     multiplier.out.ready := state === s_calc && ms_es.ms_allow_in
     multiplier.io.flush := flush
 
