@@ -79,7 +79,7 @@ class ES extends Module
         s_calc -> Mux(multiplier.out.fire || flush, s_idle, s_calc)
     ))
 
-    val multiplier = Module(new Multiplier)
+    val mul = Module(new Multiplier)
     multiplier.in.valid := state === s_idle && (es_reg.alu_op(10) || es_reg.alu_op(11) || es_reg.alu_op(12) || es_reg.alu_op(13))
     multiplier.in.bits.multiplicand := es_reg.alu_src1
     multiplier.in.bits.multiplier := es_reg.alu_src2
