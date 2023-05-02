@@ -43,18 +43,23 @@ class Divider extends Base_Divider
 
     val x = RegInit(0.U(128.W))
     val y = RegInit(0.U(65.W))
-    val res = RegInit(0.U(64.W))
+    val quotient = RegInit(0.U(64.W))
     val cnt = RegInit(0.U(6.W))
 
     when (state === s_idle && in.fire && !io.flush)
     {
         x := Cat(0.U(64.W), in.bits.dividend)
-        y := Cat(0.U(1.W), in.bits.divisor)
-        res := 0.U(64.W)
-        cnt := 31.U(6.W)
+        y := Cat(0.U(64.W), in.bits.divisor)
+        cnt := 0.U(6.W)
     }
     .elsewhen (state === s_calc)
     {
-        res := res << 1 | (y < x(127, 64))
+        quotient := quotient << 1 | (y < x(127, 63))
+        x := Mux(y < x(127, 63), (x - Cat(y, 0.U(63.W))) << 1, x << 1)
+        cnt := cnt + 1
     }
+    finish := cnt === 63.U(6.W)
+
+    out.bits.quotient := quotient
+    out.bits.remainder := x(126, 63)
 }
