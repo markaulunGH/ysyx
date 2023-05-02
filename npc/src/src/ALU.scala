@@ -22,7 +22,9 @@ class ALU extends Module
     val adder_result = adder_cout_result(63, 0)
     val adder_cout = adder_cout_result(64)
 
-    io.alu_result := MuxCase (0.U(64.W), Seq(
+    val multiplier = Module(new Multiplier)
+
+    io.bits.alu_result := MuxCase (0.U(64.W), Seq(
         alu_op(0)  -> adder_result,
         alu_op(1)  -> adder_result,
         alu_op(2)  -> ((src1(63) & ~src2(63)) | (~(src1(63) ^ src2(31)) & adder_result(63))),
