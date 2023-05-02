@@ -62,11 +62,10 @@
 
 uint64_t _random()
 {
-    return static_cast<uint64_t>(rand()) << 33 | rand() << 2 | rand() & 3;
+    return (static_cast<uint64_t>(rand()) << 33) | (rand() << 2) | (rand() & 3);
 }
 
 int main(int argc, char** argv, char** env) {
-    srand(time(0));
     if (false && argc && argv && env) {}
     Verilated::mkdir("logs");
     const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
