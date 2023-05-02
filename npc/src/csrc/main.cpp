@@ -110,9 +110,15 @@ int main(int argc, char** argv, char** env) {
         __uint128_t res;
         switch (sign)
         {
-            case 0: res = static_cast<__uint128_t>(static_cast<__uint128_t>(a) * static_cast<__uint128_t>(b)); break;
-            case 2: res = static_cast<__uint128_t>(static_cast<__int128_t >(static_cast<int64_t>(a)) * static_cast<__uint128_t>(b)); break;
-            case 3: res = static_cast<__uint128_t>(static_cast<__int128_t >(static_cast<int64_t>(a)) * static_cast<__int128_t >(static_cast<int64_t>(b))); break;
+            case 0:
+                res = static_cast<__uint128_t>(static_cast<__uint128_t>(a) * static_cast<__uint128_t>(b));
+                break;
+            case 2:
+                res = static_cast<__uint128_t>(static_cast<__int128_t >(static_cast<int64_t>(a)) * static_cast<__uint128_t>(b));
+                break;
+            case 3:
+                res = static_cast<__uint128_t>(static_cast<__int128_t >(static_cast<int64_t>(a)) * static_cast<__int128_t >(static_cast<int64_t>(b)));
+                break;
         }
 
         top->io_multiplicand = a;
