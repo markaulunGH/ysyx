@@ -66,6 +66,7 @@ uint64_t _random()
 }
 
 int main(int argc, char** argv, char** env) {
+    printf("%ld\n", RAND_MAX);
     srand(time(0));
     if (false && argc && argv && env) {}
     Verilated::mkdir("logs");
