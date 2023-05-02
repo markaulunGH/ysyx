@@ -41,12 +41,20 @@ class Divider extends Base_Divider
     in.ready := state === s_idle
     out.valid := state === s_finish
 
+    val x = RegInit(0.U(128.W))
+    val y = RegInit(0.U(65.W))
+    val res = RegInit(0.U(64.W))
+    val cnt = RegInit(0.U(6.W))
+
     when (state === s_idle && in.fire && !io.flush)
     {
-
+        x := Cat(0.U(64.W), in.bits.dividend)
+        y := Cat(0.U(1.W), in.bits.divisor)
+        res := 0.U(64.W)
+        cnt := 31.U(6.W)
     }
     .elsewhen (state === s_calc)
     {
-
+        res(cnt) := 0.U(1.W)
     }
 }
