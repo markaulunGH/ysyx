@@ -5,7 +5,7 @@ class Multiplier_In extends Bundle
 {
     val multiplicand = Output(UInt(64.W))
     val multiplier = Output(UInt(64.W))
-    // val mulw = Output(Bool())
+    val mulw = Output(Bool())
     val signed = Output(UInt(2.W))
 }
 
@@ -49,16 +49,14 @@ class Multiplier extends Base_Multipiler
 
     when (state === s_idle && in.fire && !io.flush)
     {
-        // x := Mux(in.bits.mulw,
-        //     Cat(Fill(96, in.bits.multiplicand(31) & in.bits.signed(1)), in.bits.multiplicand(31, 0)),
-        //     Cat(Fill(64, in.bits.multiplicand(63) & in.bits.signed(1)), in.bits.multiplicand)
-        // )
-        x := Cat(Fill(64, in.bits.multiplicand(63) & in.bits.signed(1)), in.bits.multiplicand)
-        // y := Mux(in.bits.mulw,
-        //     Cat(Fill(34, in.bits.multiplier(31) & in.bits.signed(0)), in.bits.multiplier(31, 0), 0.U(1.W)),
-        //     Cat(Fill(2, in.bits.multiplier(63) & in.bits.signed(0)), in.bits.multiplier, 0.U(1.W))
-        // )
-        y := Cat(Fill(2, in.bits.multiplier(63) & in.bits.signed(0)), in.bits.multiplier, 0.U(1.W))
+        x := Mux(in.bits.mulw,
+            Cat(Fill(96, in.bits.multiplicand(31) & in.bits.signed(1)), in.bits.multiplicand(31, 0)),
+            Cat(Fill(64, in.bits.multiplicand(63) & in.bits.signed(1)), in.bits.multiplicand)
+        )
+        y := Mux(in.bits.mulw,
+            Cat(Fill(34, in.bits.multiplier(31) & in.bits.signed(0)), in.bits.multiplier(31, 0), 0.U(1.W)),
+            Cat(Fill(2, in.bits.multiplier(63) & in.bits.signed(0)), in.bits.multiplier, 0.U(1.W))
+        )
         res := 0.U(128.W)
         cnt := 0.U(6.W)
     }
@@ -78,8 +76,7 @@ class Multiplier extends Base_Multipiler
         ))
         cnt := cnt + 1.U
     }
-    // finish := cnt === Mux(in.bits.mulw, 16.U(6.W), 32.U(6.W))
-    finish := cnt === 32.U(6.W)
+    finish := cnt === Mux(in.bits.mulw, 16.U(6.W), 32.U(6.W))
 
     out.bits.result_hi := res(127, 64)
     out.bits.result_lo := res(63, 0)

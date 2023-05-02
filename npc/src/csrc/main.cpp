@@ -62,11 +62,10 @@
 
 uint64_t _random()
 {
-    return static_cast<uint64_t>(rand()) << 32 | rand();
+    return static_cast<uint64_t>(rand()) << 33 | rand() << 2 | rand() & 3;
 }
 
 int main(int argc, char** argv, char** env) {
-    printf("%ld\n", RAND_MAX);
     srand(time(0));
     if (false && argc && argv && env) {}
     Verilated::mkdir("logs");
