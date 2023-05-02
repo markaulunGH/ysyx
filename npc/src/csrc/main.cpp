@@ -66,6 +66,7 @@ uint64_t _random()
 }
 
 int main(int argc, char** argv, char** env) {
+    printf("%lx\n", (uint64_t) ((uint32_t) (-1)));
     if (false && argc && argv && env) {}
     Verilated::mkdir("logs");
     const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
