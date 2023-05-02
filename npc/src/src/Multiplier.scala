@@ -42,6 +42,7 @@ class Multiplier extends Base_Multipiler
     in.ready := state === s_idle
     out.valid := state === s_finish
 
+    val mulw = RegInit(false.B)
     val x = RegInit(0.U(128.W))
     val y = RegInit(0.U(67.W))
     val res = RegInit(0.U(128.W))
@@ -49,6 +50,7 @@ class Multiplier extends Base_Multipiler
 
     when (state === s_idle && in.fire && !io.flush)
     {
+        mulw := in.bits.mulw
         x := Mux(in.bits.mulw,
             Cat(Fill(96, in.bits.multiplicand(31) & in.bits.signed(1)), in.bits.multiplicand(31, 0)),
             Cat(Fill(64, in.bits.multiplicand(63) & in.bits.signed(1)), in.bits.multiplicand)
@@ -76,7 +78,7 @@ class Multiplier extends Base_Multipiler
         ))
         cnt := cnt + 1.U
     }
-    finish := cnt === Mux(in.bits.mulw, 16.U(6.W), 32.U(6.W))
+    finish := cnt === Mux(mulw, 16.U(6.W), 32.U(6.W))
 
     out.bits.result_hi := res(127, 64)
     out.bits.result_lo := res(63, 0)
