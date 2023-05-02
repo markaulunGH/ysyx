@@ -3,13 +3,13 @@ import chisel3.util._
 
 class ALU extends Module
 {
-    val io = IO(new Bundle
+    val io = IO(Decoupled(new Bundle
     {
         val alu_op = Input(Vec(18, Bool()))
         val alu_src1 = Input(UInt(64.W))
         val alu_src2 = Input(UInt(64.W))
         val alu_result = Output(UInt(64.W))
-    })
+    }))
 
     val alu_op = io.alu_op
     val src1 = io.alu_src1
