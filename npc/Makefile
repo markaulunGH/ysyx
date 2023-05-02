@@ -13,7 +13,8 @@ VERILATOR_COVERAGE = $(VERILATOR_ROOT)/bin/verilator_coverage
 endif
 
 CSRC_DIR = $(abspath src/csrc)
-CSRC += $(shell find $(CSRC_DIR) -name "*.cpp")
+# CSRC += $(shell find $(CSRC_DIR) -name "*.cpp")
+CSRC = $(CSRC_DIR)/main.cpp
 CFLAGS += $(addprefix -I, $(abspath src/csrc/include))
 CFLAGS += -g
 LDFLAGS += -lreadline
@@ -74,7 +75,7 @@ sim:
 
 	@rm -rf logs
 	@mkdir -p logs
-	obj_dir/VTop +trace --img=$(IMG) --elf=$(ELF) --log=$(abspath logs/log.txt) --diff=$(SO) $(ARGS)
+	obj_dir/VTop +trace
 
 gdb:
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
@@ -84,7 +85,7 @@ gdb:
 
 	@rm -rf logs
 	@mkdir -p logs
-	gdb --args obj_dir/VTop +trace --img=$(IMG) --elf=$(ELF) --log=$(abspath logs/log.txt) --diff=$(SO) ARGS
+	gdb --args obj_dir/VTop
 
 maintainer-copy::
 clean mostlyclean distclean maintainer-clean::
