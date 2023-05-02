@@ -104,7 +104,7 @@ int main(int argc, char** argv, char** env) {
         if (sign)
         {
             quotient = static_cast<int64_t>(a) / static_cast<int64_t>(b);
-            remainder = static_cast<int64_t>(a) % static_cast<int64_t(b);
+            remainder = static_cast<int64_t>(a) % static_cast<int64_t>(b);
         }
         else
         {
