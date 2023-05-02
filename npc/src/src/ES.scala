@@ -51,13 +51,11 @@ class ES extends Module
 
     val data_master = IO(new AXI_Lite_Master)
 
-    val arfire = RegInit(false.B)
-    val wfire = RegInit(false.B)
-    val mm_ren = Wire(Bool())
-    val mm_wen = Wire(Bool())
+    val mm_ready = Wire(Bool())
+    val mul_ready = Wire(Bool())
 
     val es_valid = RegInit(false.B)
-    val es_ready = (mm_ren && (data_master.ar.fire || arfire)) || (mm_wen && (data_master.w.fire || wfire)) || (!mm_ren && !mm_wen)
+    val es_ready = mm_ready && mul_ready
     val es_allow_in = !es_valid || es_ready && ms_es.ms_allow_in
     val to_ms_valid = es_valid && es_ready
     when (es_allow_in)
@@ -66,15 +64,43 @@ class ES extends Module
     }
 
     val es_reg = RegEnable(ds_es, ds_es.to_es_valid && es_allow_in)
-    mm_ren := es_reg.mm_ren
-    mm_wen := es_reg.mm_wen
 
     val alu = Module(new ALU)
     alu.io.alu_op := es_reg.alu_op
     alu.io.alu_src1 := es_reg.alu_src1
     alu.io.alu_src2 := es_reg.alu_src2
-    val alu_result = Mux(es_reg.inst_word, Cat(Fill(32, alu.io.alu_result(31)), alu.io.alu_result(31, 0)), alu.io.alu_result)
 
+    val s_idle :: s_calc :: Nil = Enum(2)
+    val state = RegInit(s_idle)
+    val flush = false.B
+
+    state := MuxLookup(state, s_idle, Seq(
+        s_idle -> Mux(multiplier.in.fire && !flush, s_calc, s_idle),
+        s_calc -> Mux(multiplier.out.fire || flush, s_idle, s_calc)
+    ))
+
+    val multiplier = Module(new Multiplier)
+    multiplier.in.valid := state === s_idle && (es_reg.alu_op(10) || es_reg.alu_op(11) || es_reg.alu_op(12) || es_reg.alu_op(13))
+    multiplier.in.multiplicand := es_reg.alu_src1
+    multiplier.in.multiplier := es_reg.alu_src2
+    multiplier.in.signed := MuxCase(3.U(2.W), Seq(
+        (es_reg.alu_op(10) || es_reg.alu_op(11)) -> 3.U(2.W),
+        es_reg.alu_op(12) -> 2.U(2.W),
+        es_reg.alu_op(13) -> 0.U(2.W)
+    ))
+    multiplier.out.ready := state === s_calc && ms_es.ms_allow_in
+    multiplier.io.flush = flush
+
+    mul_ready := (!es_reg.alu_op(10) && !es_reg.alu_op(11) && !es_reg.alu_op(12) && !es_reg.alu_op(13)) || mul_ready.out.fire
+
+    val result = MuxCase(alu.io.alu_result, Seq(
+        (es_reg.alu_op(10)) -> multiplier.out.bits.result_lo,
+        (es_reg.alu_op(11) || es_reg.alu_op(12) || es_reg.alu_op(13)) -> multiplier.out.bits.result_hi
+
+    ))
+    val alu_result = Mux(es_reg.inst_word, Cat(Fill(32, result(31)), result(31, 0)), result)
+
+    val arfire = RegInit(false.B)
     data_master.ar.valid := es_reg.mm_ren && !arfire && es_valid
     data_master.ar.bits.addr := alu_result
     data_master.ar.bits.prot := 0.U(3.W)
@@ -100,6 +126,7 @@ class ES extends Module
         awfire := true.B
     }
 
+    val wfire = RegInit(false.B)
     data_master.w.valid := es_reg.mm_wen && !wfire && es_valid
     data_master.w.bits.data := es_reg.mm_wdata
     data_master.w.bits.strb := es_reg.mm_mask
@@ -111,6 +138,8 @@ class ES extends Module
     {
         wfire := true.B
     }
+
+    mm_ready := (data_master.ar.fire || arfire) || (data_master.w.fire || wfire) || (!mm_ren && !mm_wen)
 
     es_fs.es_allow_in := es_allow_in
 
