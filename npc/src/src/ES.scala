@@ -11,6 +11,8 @@ class ES_DS extends Bundle
     val es_allow_in = Output(Bool())
     val es_valid = Output(Bool())
     val to_ms_valid = Output(Bool())
+    val mul_req = Output(Bool())
+    val div_req = Output(Bool())
     val alu_result = Output(UInt(64.W))
     val rf_waddr = Output(UInt(5.W))
     val rf_wen = Output(Bool())
@@ -71,6 +73,8 @@ class ES extends Module
     alu.io.alu_src1 := es_reg.alu_src1
     alu.io.alu_src2 := es_reg.alu_src2
 
+    val mul_req = es_reg.alu_op(10) || es_reg.alu_op(11) || es_reg.alu_op(12) || es_reg.alu_op(13)
+
     val multiplier = Module(new Multiplier)
 
     val mul_idle :: mul_calc :: Nil = Enum(2)
@@ -82,7 +86,7 @@ class ES extends Module
         mul_calc -> Mux(multiplier.out.fire || mul_flush, mul_idle, mul_calc)
     ))
 
-    multiplier.in.valid := mul_state === mul_idle && (es_reg.alu_op(10) || es_reg.alu_op(11) || es_reg.alu_op(12) || es_reg.alu_op(13))
+    multiplier.in.valid := mul_state === mul_idle && mul_req
     multiplier.in.bits.multiplicand := es_reg.alu_src1
     multiplier.in.bits.multiplier := es_reg.alu_src2
     multiplier.in.bits.signed := MuxCase(3.U(2.W), Seq(
@@ -93,8 +97,11 @@ class ES extends Module
     multiplier.out.ready := mul_state === mul_calc && ms_es.ms_allow_in
     multiplier.io.flush := mul_flush
 
-    mul_ready := (!es_reg.alu_op(10) && !es_reg.alu_op(11) && !es_reg.alu_op(12) && !es_reg.alu_op(13)) || multiplier.out.fire
+    es_ds.mul_req := mul_req
+    mul_ready := !mul_req || multiplier.out.fire
 
+    val div_req = es_reg.alu_op(14) || es_reg.alu_op(15) || es_reg.alu_op(16) || es_reg.alu_op(17)
+    
     val divider = Module(new Divider)
 
     val div_idle :: div_calc :: Nil = Enum(2)
@@ -106,14 +113,15 @@ class ES extends Module
         div_calc -> Mux(divider.out.fire || div_flush, div_idle, div_calc)
     ))
 
-    divider.in.valid := div_state === div_idle && (es_reg.alu_op(14) || es_reg.alu_op(15) || es_reg.alu_op(16) || es_reg.alu_op(17))
+    divider.in.valid := div_state === div_idle && div_req
     divider.in.bits.dividend := es_reg.alu_src1
     divider.in.bits.divisor := es_reg.alu_src2
     divider.in.bits.signed := es_reg.alu_op(14) || es_reg.alu_op(16)
     divider.out.ready := div_state === div_calc && ms_es.ms_allow_in
     divider.io.flush := div_flush
 
-    div_ready := (!es_reg.alu_op(14) && !es_reg.alu_op(15) && !es_reg.alu_op(16) && !es_reg.alu_op(17)) || divider.out.fire
+    es_ds.div_req := div_req
+    div_ready := !div_req || divider.out.fire
 
     val result = MuxCase(alu.io.alu_result, Seq(
         (es_reg.alu_op(10)) -> multiplier.out.bits.result_lo,

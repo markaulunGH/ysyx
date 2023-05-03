@@ -7,6 +7,7 @@ class DS_PF extends Bundle
     val ds_allow_in = Output(Bool())
     val br_taken = Output(Bool())
     val br_target = Output(UInt(64.W))
+    val hazard = Output(Bool())
 }
 
 class DS_FS extends Bundle
@@ -57,14 +58,11 @@ class DS extends Module
     val rf_r = IO(Flipped(new Regfile_R))
     val csr_pc = IO(Flipped(new CSR_PC))
 
-    val read_rf1 = Wire(Bool())
-    val read_rf2 = Wire(Bool())
-    val rf1_hazard = Wire(Bool())
-    val rf2_hazard = Wire(Bool())
+    val hazard = Wire(Bool())
     val br_taken = Wire(Bool())
 
     val ds_valid = RegInit(false.B)
-    val ds_ready = !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard) && pf_ds.pf_ready
+    val ds_ready = !hazard && pf_ds.pf_ready
     val ds_allow_in = !ds_valid || ds_ready && es_ds.es_allow_in
     val to_es_valid = ds_valid && ds_ready
     when (br_taken && to_es_valid && es_ds.es_allow_in)
@@ -219,8 +217,8 @@ class DS extends Module
     rf_r.raddr1 := Mux(inst_lui, 0.U, rs1)
     rf_r.raddr2 := rs2
 
-    read_rf1 := inst_R || inst_I || inst_S || inst_B
-    read_rf2 := inst_R || inst_S || inst_B
+    val read_rf1 = inst_R || inst_I || inst_S || inst_B
+    val read_rf2 = inst_R || inst_S || inst_B
 
     val rs1_value = MuxCase(rf_r.rdata1, Seq(
         (rf_r.raddr1 =/= 0.U && es_ds.to_ms_valid && es_ds.rf_wen && rf_r.raddr1 === es_ds.rf_waddr) -> es_ds.alu_result,
@@ -233,12 +231,14 @@ class DS extends Module
         (rf_r.raddr2 =/= 0.U && ws_ds.ws_valid    && ws_ds.rf_wen && rf_r.raddr2 === ws_ds.rf_waddr) -> ws_ds.rf_wdata
     ))
 
-    rf1_hazard := (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && rf_r.raddr1 === es_ds.rf_waddr ||
-                   ms_ds.ms_valid && ((ms_ds.mm_ren && !ms_ds.to_ws_valid) || ms_ds.csr_wen) && rf_r.raddr1 === ms_ds.rf_waddr) &&
-                   rf_r.raddr1 =/= 0.U
-    rf2_hazard := (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && rf_r.raddr2 === es_ds.rf_waddr ||
-                   ms_ds.ms_valid && ((ms_ds.mm_ren || !ms_ds.to_ws_valid) || ms_ds.csr_wen) && rf_r.raddr1 === ms_ds.rf_waddr) &&
-                   rf_r.raddr2 =/= 0.U
+    val rf1_hazard = (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen || ((es_ds.mul_req || es_ds.div_req) && !es_ds.to_ms_valid)) && rf_r.raddr1 === es_ds.rf_waddr ||
+                      ms_ds.ms_valid && ((ms_ds.mm_ren && !ms_ds.to_ws_valid) || ms_ds.csr_wen) && rf_r.raddr1 === ms_ds.rf_waddr) &&
+                      rf_r.raddr1 =/= 0.U
+    val rf2_hazard = (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen || ((es_ds.mul_req || es_ds.div_req) && !es_ds.to_ms_valid)) && rf_r.raddr2 === es_ds.rf_waddr ||
+                      ms_ds.ms_valid && ((ms_ds.mm_ren || !ms_ds.to_ws_valid) || ms_ds.csr_wen) && rf_r.raddr1 === ms_ds.rf_waddr) &&
+                      rf_r.raddr2 =/= 0.U
+    hazard := read_rf1 && rf1_hazard || read_rf2 && rf2_hazard
+    ds_pf.hazard := hazard
 
     val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
