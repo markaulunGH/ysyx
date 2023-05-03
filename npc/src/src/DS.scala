@@ -7,6 +7,7 @@ class DS_PF extends Bundle
     val ds_allow_in = Output(Bool())
     val br_taken = Output(Bool())
     val br_target = Output(UInt(64.W))
+    val hazard = Output(Bool())
 }
 
 class DS_FS extends Bundle
@@ -239,6 +240,7 @@ class DS extends Module
     rf2_hazard := (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && rf_r.raddr2 === es_ds.rf_waddr ||
                    ms_ds.ms_valid && ((ms_ds.mm_ren || !ms_ds.to_ws_valid) || ms_ds.csr_wen) && rf_r.raddr1 === ms_ds.rf_waddr) &&
                    rf_r.raddr2 =/= 0.U
+    ds_pf.hazard := !(read_rf1 && rf1_hazard || read_rf2 && rf2_hazard)
 
     val rs1_lt_rs2 = rs1_value.asSInt < rs2_value.asSInt
     val rs1_ltu_rs2 = rs1_value < rs2_value
