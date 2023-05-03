@@ -9,7 +9,7 @@
 extern const std::unique_ptr<VerilatedContext> contextp;
 extern const std::unique_ptr<VTop> top;
 extern VerilatedFstC* tfp;
-extern wave_enable;
+extern bool wave_enable;
 
 void init_simulation(int argc, char** argv);
 void end_simulation();
