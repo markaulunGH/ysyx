@@ -190,9 +190,13 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 
 static void exec_once(Decode *s)
 {
-    if (top->io_pc >= 0x83000500)
+    if (0x83000500 <= top->io_pc && top->io_pc <= 0x83000600)
     {
         wave_enable = true;
+    }
+    else
+    {
+        wave_enable = false;
     }
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
