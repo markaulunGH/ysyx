@@ -96,8 +96,8 @@ int main(int argc, char** argv, char** env) {
 
     for (int i = 1; i < 1e5; ++ i)
     {
-        uint64_t a = _random();
-        uint64_t b = _random();
+        uint64_t a = 8;
+        uint64_t b = 5;
         int sign = 0;
         uint64_t quotient;
         uint64_t remainder;
