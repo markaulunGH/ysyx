@@ -1,6 +1,7 @@
 #include <device.h>
 #include <utils.h>
 #include <SDL2/SDL.h>
+#include <sdb.h>
 
 SDL_Renderer *renderer = NULL;
 SDL_Texture *texture = NULL;
@@ -52,7 +53,11 @@ word_t mmio_read(paddr_t addr, int len)
     {
         return vgactl_port_base[0];
     }
-    assert(0);
+    else
+    {
+        printf("mmio_read: addr = %08x, len = %d\n", addr, len);
+        npc_state.state = NPC_ABORT;
+    }
 }
 
 void mmio_write(paddr_t addr, int len, word_t data)
@@ -78,7 +83,8 @@ void mmio_write(paddr_t addr, int len, word_t data)
     }
     else
     {
-        assert(0);
+        printf("mmio_write: addr = %08x, len = %d, data = %08x\n", addr, len, data);
+        npc_state.state = NPC_ABORT;
     }
 }
 
