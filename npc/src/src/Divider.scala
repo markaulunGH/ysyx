@@ -62,6 +62,6 @@ class Divider extends Base_Divider
     }
     finish := cnt === 63.U(6.W)
 
-    out.bits.quotient := Mux(sign.xorR, ~quotient + 1, quotient)
-    out.bits.remainder := Mux(sign(1), ~x(127, 64) + 1, x(127, 64))
+    out.bits.quotient := Mux(sign.xorR, ~quotient + 1.U, quotient)
+    out.bits.remainder := Mux(sign(1), ~x(127, 64) + 1.U, x(127, 64))
 }
