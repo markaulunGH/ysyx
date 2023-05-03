@@ -10,14 +10,18 @@ void cycle_end()
 {
 #ifdef CONFIG_WAVE
     if (wave_enable)
+    {
         tfp->dump(contextp->time());
+    }
 #endif
     contextp->timeInc(1);
     top->clock = 0;
     top->eval();
 #ifdef CONFIG_WAVE
     if (wave_enable)
+    {
         tfp->dump(contextp->time());
+    }
 #endif
     contextp->timeInc(1);
     top->clock = 1;
