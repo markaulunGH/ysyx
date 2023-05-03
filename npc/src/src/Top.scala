@@ -118,34 +118,4 @@ class Top extends Module
     io.rf := rf.sim.rf
     io.rf_wen := rf.sim.rf_wen
     io.mm_pc := ms.sim.pc
-
-    // val io = IO(new Bundle
-    // {
-    //     val multiplicand = Input(UInt(64.W))
-    //     val multiplier = Input(UInt(64.W))
-    //     val signed = Input(UInt(2.W))
-    //     val in_valid = Input(Bool())
-    //     val in_ready = Output(Bool())
-
-    //     val result_hi = Output(UInt(64.W))
-    //     val result_lo = Output(UInt(64.W))
-    //     val out_valid = Output(Bool());
-    //     val out_ready = Input(Bool())
-
-    //     val flush = Input(Bool())
-    // })
-
-    // val multiplier = Module(new Multiplier)
-    // multiplier.in.bits.multiplicand := io.multiplicand
-    // multiplier.in.bits.multiplier := io.multiplier
-    // multiplier.in.bits.signed := io.signed
-    // multiplier.in.valid := io.in_valid
-    // io.in_ready := multiplier.in.ready
-
-    // io.result_hi := multiplier.out.bits.result_hi
-    // io.result_lo := multiplier.out.bits.result_lo
-    // io.out_valid := multiplier.out.valid
-    // multiplier.out.ready := io.out_ready
-
-    // multiplier.io.flush := io.flush
 }
