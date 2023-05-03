@@ -2,13 +2,14 @@
 #define __SIM_H__
 
 #include "VTop.h"
-#include "verilated_vcd_c.h"
+#include "verilated_fst_c.h"
 #include <verilated.h>
 #include <nvboard.h>
 
 extern const std::unique_ptr<VerilatedContext> contextp;
 extern const std::unique_ptr<VTop> top;
-extern VerilatedVcdC* tfp;
+extern VerilatedFstC* tfp;
+extern bool wave_enable;
 
 void init_simulation(int argc, char** argv);
 void end_simulation();

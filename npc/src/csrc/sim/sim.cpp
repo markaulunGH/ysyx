@@ -3,18 +3,25 @@
 
 const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
-VerilatedVcdC* tfp = new VerilatedVcdC;
+VerilatedFstC* tfp = new VerilatedFstC;
+bool wave_enable;
 
 void cycle_end()
 {
 #ifdef CONFIG_WAVE
-    tfp->dump(contextp->time());
+    if (wave_enable)
+    {
+        tfp->dump(contextp->time());
+    }
 #endif
     contextp->timeInc(1);
     top->clock = 0;
     top->eval();
 #ifdef CONFIG_WAVE
-    tfp->dump(contextp->time());
+    if (wave_enable)
+    {
+        tfp->dump(contextp->time());
+    }
 #endif
     contextp->timeInc(1);
     top->clock = 1;
@@ -40,7 +47,7 @@ void init_simulation(int argc, char** argv)
     contextp->commandArgs(argc, argv);
 
     top->trace(tfp, 0);
-    tfp->open("logs/dump.vcd");
+    tfp->open("logs/dump.fst");
 
     reset();
 }
