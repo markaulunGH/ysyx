@@ -79,7 +79,7 @@ int main(int argc, char** argv, char** env) {
     top->trace(tfp, 0);
     tfp->open("logs/dump.vcd");
 
-    for (int i = 0; i < 1e5; ++ i)
+    for (int i = 0; i < 100; ++ i)
     {
         top->reset = i < 99;
         tfp->dump(contextp->time());
