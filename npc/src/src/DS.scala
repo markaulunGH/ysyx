@@ -231,10 +231,10 @@ class DS extends Module
         (rf_r.raddr2 =/= 0.U && ws_ds.ws_valid    && ws_ds.rf_wen && rf_r.raddr2 === ws_ds.rf_waddr) -> ws_ds.rf_wdata
     ))
 
-    val rf1_hazard := (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && rf_r.raddr1 === es_ds.rf_waddr ||
+    val rf1_hazard = (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && rf_r.raddr1 === es_ds.rf_waddr ||
                    ms_ds.ms_valid && ((ms_ds.mm_ren && !ms_ds.to_ws_valid) || ms_ds.csr_wen) && rf_r.raddr1 === ms_ds.rf_waddr) &&
                    rf_r.raddr1 =/= 0.U
-    val rf2_hazard := (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && rf_r.raddr2 === es_ds.rf_waddr ||
+    val rf2_hazard = (es_ds.es_valid && (es_ds.mm_ren || es_ds.csr_wen) && rf_r.raddr2 === es_ds.rf_waddr ||
                    ms_ds.ms_valid && ((ms_ds.mm_ren || !ms_ds.to_ws_valid) || ms_ds.csr_wen) && rf_r.raddr1 === ms_ds.rf_waddr) &&
                    rf_r.raddr2 =/= 0.U
     hazard := read_rf1 && rf1_hazard || read_rf2 && rf2_hazard
