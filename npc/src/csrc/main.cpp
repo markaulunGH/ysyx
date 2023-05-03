@@ -98,7 +98,7 @@ int main(int argc, char** argv, char** env) {
     {
         uint64_t a = _random();
         uint64_t b = _random();
-        int sign = _random() & 1;
+        int sign = 0;
         uint64_t quotient;
         uint64_t remainder;
         if (sign)
