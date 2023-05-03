@@ -94,6 +94,5 @@ void paddr_write(paddr_t addr, int len, word_t data)
     {
         printf("paddr_write: addr = %lx, len = %d, data = %lx\n", addr, len, data);
         npc_state.state = NPC_ABORT;
-        return 0;
     }
 }

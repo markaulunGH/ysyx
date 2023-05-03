@@ -57,6 +57,7 @@ word_t mmio_read(paddr_t addr, int len)
     {
         printf("mmio_read: addr = %lx, len = %d\n", addr, len);
         npc_state.state = NPC_ABORT;
+        return 0;
     }
 }
 
