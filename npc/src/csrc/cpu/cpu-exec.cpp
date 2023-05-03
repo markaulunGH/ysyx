@@ -192,7 +192,7 @@ static void exec_once(Decode *s)
 {
     if (0x83000500 <= top->io_pc && top->io_pc <= 0x83000600)
     {
-        wave_enable = true;
+        // wave_enable = true;
         printf("%d\n", contextp->time());
         // printf("%d\n", )
     }
