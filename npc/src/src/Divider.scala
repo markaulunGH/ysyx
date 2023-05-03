@@ -43,13 +43,15 @@ class Divider extends Base_Divider
 
     val x = RegInit(0.U(128.W))
     val y = RegInit(0.U(65.W))
+    val sign = RegInit(0.U(2.W))
     val quotient = RegInit(0.U(64.W))
     val cnt = RegInit(0.U(6.W))
 
     when (state === s_idle && in.fire && !io.flush)
     {
-        x := Cat(0.U(64.W), in.bits.dividend)
-        y := Cat(0.U(64.W), in.bits.divisor)
+        x := Cat(0.U(64.W), Mux(in.bits.dividend(63), ~in.bits.dividend + 1, in.bits.dividend))
+        y := Cat(0.U(64.W), Mux(in.bits.divisor(63), ~in.bits.divisor + 1, in.bits.divisor))
+        sign := Cat(in.bits.dividend(63), in.bits.divisor(63)) & in.bits.signed
         cnt := 0.U(6.W)
     }
     .elsewhen (state === s_calc)
@@ -60,6 +62,6 @@ class Divider extends Base_Divider
     }
     finish := cnt === 63.U(6.W)
 
-    out.bits.quotient := quotient
-    out.bits.remainder := x(127, 64)
+    out.bits.quotient := Mux(sign.xorR, ~quotient + 1, quotient)
+    out.bits.remainder := Mux(sign(1), ~x(127, 64) + 1, x(127, 64))
 }
