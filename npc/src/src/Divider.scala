@@ -61,5 +61,5 @@ class Divider extends Base_Divider
     finish := cnt === 63.U(6.W)
 
     out.bits.quotient := quotient
-    out.bits.remainder := x(126, 63)
+    out.bits.remainder := x(127, 64)
 }
