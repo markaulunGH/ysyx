@@ -190,15 +190,9 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 
 static void exec_once(Decode *s)
 {
-    if (0x83000500 <= top->io_pc && top->io_pc <= 0x83000600)
+    if (contextp->time() >= 1704470000)
     {
-        // wave_enable = true;
-        printf("%d\n", contextp->time());
-        // printf("%d\n", )
-    }
-    else
-    {
-        wave_enable = false;
+        wave_enable = true;
     }
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
@@ -350,6 +344,7 @@ void cpu_exec(uint64_t n)
                 (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
                 ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))),
                 npc_state.halt_pc);
+            Log("simulation time: %lu", contextp->time());
 #ifdef CONFIG_ITRACE_RING
             for (int i = 0; i < IRING_BUF_SIZE; ++i)
             {
