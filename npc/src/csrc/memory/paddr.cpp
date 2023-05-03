@@ -78,7 +78,7 @@ word_t paddr_read(paddr_t addr, int len)
     }
     else
     {
-        printf("paddr_read: addr = %x, len = %d\n", addr, len);
+        printf("paddr_read: addr = %lx, len = %d\n", addr, len);
         npc_state.state = NPC_ABORT;
     }
 }
@@ -91,7 +91,7 @@ void paddr_write(paddr_t addr, int len, word_t data)
     }
     else
     {
-        printf("paddr_write: addr = %x, len = %d, data = %x\n", addr, len, data);
+        printf("paddr_write: addr = %lx, len = %d, data = %lx\n", addr, len, data);
         npc_state.state = NPC_ABORT;
     }
 }

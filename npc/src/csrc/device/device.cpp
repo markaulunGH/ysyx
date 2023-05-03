@@ -55,7 +55,7 @@ word_t mmio_read(paddr_t addr, int len)
     }
     else
     {
-        printf("mmio_read: addr = %08x, len = %d\n", addr, len);
+        printf("mmio_read: addr = %lx, len = %d\n", addr, len);
         npc_state.state = NPC_ABORT;
     }
 }
@@ -83,7 +83,7 @@ void mmio_write(paddr_t addr, int len, word_t data)
     }
     else
     {
-        printf("mmio_write: addr = %08x, len = %d, data = %08x\n", addr, len, data);
+        printf("mmio_write: addr = %lx, len = %d, data = %lx\n", addr, len, data);
         npc_state.state = NPC_ABORT;
     }
 }
