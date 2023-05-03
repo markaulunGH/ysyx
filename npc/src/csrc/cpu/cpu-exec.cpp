@@ -190,7 +190,7 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 
 static void exec_once(Decode *s)
 {
-    if (contextp->time() > 8764266962)
+    if (contextp->time() > 8750000000)
     {
         wave_enable = true;
     }
