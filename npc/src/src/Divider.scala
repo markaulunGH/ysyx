@@ -49,8 +49,8 @@ class Divider extends Base_Divider
 
     when (state === s_idle && in.fire && !io.flush)
     {
-        x := Cat(0.U(64.W), Mux(in.bits.dividend(63), ~in.bits.dividend + 1, in.bits.dividend))
-        y := Cat(0.U(64.W), Mux(in.bits.divisor(63), ~in.bits.divisor + 1, in.bits.divisor))
+        x := Cat(0.U(64.W), Mux(in.bits.dividend(63), ~in.bits.dividend + 1.U(64.W), in.bits.dividend))
+        y := Cat(0.U(64.W), Mux(in.bits.divisor(63), ~in.bits.divisor + 1.U(64.W), in.bits.divisor))
         sign := Cat(in.bits.dividend(63), in.bits.divisor(63)) & in.bits.signed
         cnt := 0.U(6.W)
     }
@@ -62,6 +62,6 @@ class Divider extends Base_Divider
     }
     finish := cnt === 63.U(6.W)
 
-    out.bits.quotient := Mux(sign.xorR, ~quotient + 1.U, quotient)
-    out.bits.remainder := Mux(sign(1), ~x(127, 64) + 1.U, x(127, 64))
+    out.bits.quotient := Mux(sign.xorR, ~quotient + 1.U(64.W), quotient)
+    out.bits.remainder := Mux(sign(1), ~x(127, 64) + 1.U(64.W), x(127, 64))
 }
