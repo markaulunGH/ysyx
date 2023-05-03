@@ -62,6 +62,6 @@ class WS extends Module
 
     sim.inst_end := ms_ws.to_ws_valid && ws_allow_in
     sim.pc := ws_reg.pc
-    sim.inst := ms_ws.inst
+    sim.inst := ws_reg.inst
     sim.ebreak := ws_reg.ebreak
 }

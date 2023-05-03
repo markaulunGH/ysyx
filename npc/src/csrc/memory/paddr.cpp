@@ -2,6 +2,7 @@
 #include <paddr.h>
 #include <config.h>
 #include <log.h>
+#include <sdb.h>
 
 uint8_t pmem[MEM_SIZE] __attribute((aligned(4096))) = {};
 
@@ -77,7 +78,9 @@ word_t paddr_read(paddr_t addr, int len)
     }
     else
     {
-        assert(0);
+        printf("paddr_read: addr = %lx, len = %d\n", addr, len);
+        npc_state.state = NPC_ABORT;
+        return 0;
     }
 }
 
@@ -89,6 +92,7 @@ void paddr_write(paddr_t addr, int len, word_t data)
     }
     else
     {
-        assert(0);
+        printf("paddr_write: addr = %lx, len = %d, data = %lx\n", addr, len, data);
+        npc_state.state = NPC_ABORT;
     }
 }
