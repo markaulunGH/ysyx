@@ -51,7 +51,7 @@ class Divider extends Base_Divider
     {
         x := Cat(0.U(64.W), Mux(in.bits.signed && in.bits.dividend(63), ~in.bits.dividend + 1.U(64.W), in.bits.dividend))
         y := Cat(0.U(64.W), Mux(in.bits.signed && in.bits.divisor(63), ~in.bits.divisor + 1.U(64.W), in.bits.divisor))
-        sign := Cat(in.bits.dividend(63), in.bits.divisor(63)) & in.bits.signed
+        sign := Cat(in.bits.dividend(63), in.bits.divisor(63)) & Fill(2, in.bits.signed)
         cnt := 0.U(6.W)
     }
     .elsewhen (state === s_calc)
