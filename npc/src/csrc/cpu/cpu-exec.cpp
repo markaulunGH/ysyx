@@ -205,14 +205,14 @@ static void exec_once(Decode *s)
             if (in_pmem(top->io_mm_raddr))
             {
 #ifdef CONFIG_MTRACE
-                log_write("read  memory 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+                log_write("read  memory 0x%lx at 0x%lx\n", top->io_mm_raddr, top->io_mm_pc);
 #endif
                 top->io_mm_rdata = paddr_read(top->io_mm_raddr, 8);
             }
             else
             {
 #ifdef CONFIG_DTRACE
-                log_write("read  device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+                log_write("read  device 0x%lx at 0x%lx\n", top->io_mm_raddr, top->io_mm_pc);
 #endif
                 top->io_mm_rdata = mmio_read(top->io_mm_raddr, 8);
                 skip_pc = top->io_mm_pc;
@@ -224,7 +224,7 @@ static void exec_once(Decode *s)
             if (likely(in_pmem(top->io_mm_waddr)))
             {
 #ifdef CONFIG_MTRACE
-                log_write("write memory 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+                log_write("write memory 0x%lx at 0x%lx\n", top->io_mm_waddr, top->io_mm_pc);
 #endif
                 switch (top->io_mm_mask)
                 {
@@ -237,7 +237,7 @@ static void exec_once(Decode *s)
             else
             {
 #ifdef CONFIG_DTRACE
-                log_write("write device 0x%lx at 0x%lx\n", top->io_mm_raddr, cpu.pc);
+                log_write("write device 0x%lx at 0x%lx\n", top->io_mm_waddr, top->io_mm_pc);
 #endif
                 switch (top->io_mm_mask)
                 {
