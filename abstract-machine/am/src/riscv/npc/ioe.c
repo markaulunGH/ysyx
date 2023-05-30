@@ -36,5 +36,5 @@ bool ioe_init() {
   return true;
 }
 
-void ioe_write(int reg, void *buf) { putch(reg % 10 + '0'); ((handler_t)lut[reg])(buf); }
-void ioe_read (int reg, void *buf) { putch(reg % 10 + '0'); ((handler_t)lut[reg])(buf); }
+void ioe_write(int reg, void *buf) { putch(reg / 10 % 10 + '0'); ((handler_t)lut[reg])(buf); }
+void ioe_read (int reg, void *buf) { putch(reg / 10 % 10 + '0'); ((handler_t)lut[reg])(buf); }
