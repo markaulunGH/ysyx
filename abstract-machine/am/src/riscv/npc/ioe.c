@@ -25,6 +25,15 @@ static void *lut[128] = {
   [AM_GPU_CONFIG  ] = __am_gpu_config,
   [AM_GPU_FBDRAW  ] = __am_gpu_fbdraw,
   [AM_GPU_STATUS  ] = __am_gpu_status,
+  [AM_UART_CONFIG ] = __am_gpu_config,
+  [AM_AUDIO_CONFIG] = __am_gpu_config,
+  [AM_AUDIO_CTRL  ] = __am_gpu_config,
+  [AM_AUDIO_STATUS] = __am_gpu_config,
+  [AM_AUDIO_PLAY  ] = __am_gpu_config,
+  [AM_DISK_CONFIG ] = __am_gpu_config,
+  [AM_DISK_STATUS ] = __am_gpu_config,
+  [AM_DISK_BLKIO  ] = __am_gpu_config,
+  [AM_NET_CONFIG  ] = __am_gpu_config,
 };
 
 static void fail(void *buf) { panic("access nonexist register"); }
