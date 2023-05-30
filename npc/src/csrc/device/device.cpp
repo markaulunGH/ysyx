@@ -119,6 +119,23 @@ word_t mmio_read(paddr_t addr, int len)
     }
     else if (addr == KBD_ADDR)
     {
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            switch (event.type)
+            {
+                // If a key was pressed
+                case SDL_KEYDOWN:
+                case SDL_KEYUP:
+                {
+                    uint8_t k = event.key.keysym.scancode;
+                    bool is_keydown = (event.key.type == SDL_KEYDOWN);
+                    send_key(k, is_keydown);
+                    break;
+                }
+                default: break;
+            }
+        }
         i8042_data_port_base[0] = key_dequeue();
         return i8042_data_port_base[0];
     }
