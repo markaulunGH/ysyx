@@ -161,4 +161,5 @@ void mmio_write(paddr_t addr, int len, word_t data)
 void init_device()
 {
     init_vga();
+    init_i8042();
 }
