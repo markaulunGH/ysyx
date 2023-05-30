@@ -22,9 +22,9 @@ static void *lut[128] = {
   [AM_TIMER_UPTIME] = __am_timer_uptime,
   [AM_INPUT_CONFIG] = __am_input_config,
   [AM_INPUT_KEYBRD] = __am_input_keybrd,
-  // [AM_GPU_CONFIG  ] = __am_gpu_config,
-  // [AM_GPU_FBDRAW  ] = __am_gpu_fbdraw,
-  // [AM_GPU_STATUS  ] = __am_gpu_status,
+  [AM_GPU_CONFIG  ] = __am_gpu_config,
+  [AM_GPU_FBDRAW  ] = __am_gpu_fbdraw,
+  [AM_GPU_STATUS  ] = __am_gpu_status,
 };
 
 static void fail(void *buf) { panic("access nonexist register"); }
@@ -36,5 +36,5 @@ bool ioe_init() {
   return true;
 }
 
-void ioe_read (int reg, void *buf) { putch(reg / 10 % 10 + '0'); ((handler_t)lut[reg])(buf); }
-void ioe_write(int reg, void *buf) { putch(reg / 10 % 10 + '0'); ((handler_t)lut[reg])(buf); }
+void ioe_read (int reg, void *buf) { putch(reg % 10 + '0'); ((handler_t)lut[reg])(buf); }
+void ioe_write(int reg, void *buf) { putch(reg % 10 + '0'); ((handler_t)lut[reg])(buf); }
