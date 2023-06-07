@@ -12,7 +12,7 @@ class Cache_Sram(n : Int, width : Int) extends Module
         val wdata = Input(UInt(width.W))
     })
 
-    val rf = RegInit(Vec(10, UInt(width.W)))
+    val rf = RegInit(Vec(n, UInt(width.W)))
     rf[io.addr] := io.wdata
     io.rdata := rf[io.addr]
 }
