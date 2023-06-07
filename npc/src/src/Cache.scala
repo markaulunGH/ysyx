@@ -4,13 +4,13 @@ import chisel3.util.random._
 
 class Cache_Sram(n : Int, width : Int) extends Module
 {
-    val io = new Bundle
+    val io = IO(new Bundle
     {
         val addr = Input(UInt(n))
         val rdata = Output(UInt(width))
         val wen = Input(Bool())
         val wdata = Input(UInt(width))
-    }
+    })
 
     val rf[2 ^ n] = RegInit(VecInit(Seq.fill(256)(0.U(1.W))))
     rf[io.addr] := io.wdata
