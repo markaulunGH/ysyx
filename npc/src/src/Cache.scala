@@ -43,5 +43,5 @@ class Cache(way : Int) extends Module
         s_wbwrite -> Mux(state === s_lookup && cache_hit ?, s_wbwrite, s_idle)
     ))
 
-    val pseudoRandomNumber = LFSR()
+    val pseudoRandomNumber = LFSR(way - 1)
 }
