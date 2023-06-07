@@ -6,13 +6,13 @@ class Cache_Sram(n : Int, width : Int) extends Module
 {
     val io = IO(new Bundle
     {
-        val addr = Input(UInt(log2Ceil(n).W))
+        val addr  = Input(UInt(log2Ceil(n).W))
         val rdata = Output(UInt(width.W))
-        val wen = Input(Bool())
+        val wen   = Input(Bool())
         val wdata = Input(UInt(width.W))
     })
 
-    val rf = RegInit(Vec(n, UInt(width.W)))
+    val rf = RegInit(Vec(n, 0.U(width.W)))
     rf[io.addr] := io.wdata
     io.rdata := rf[io.addr]
 }
