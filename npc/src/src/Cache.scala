@@ -27,7 +27,9 @@ class Cache extends Module
     val pseudoRandomNumber = LFSR(1)
 
     val s_idle :: s_lookup :: s_miss :: s_replace :: s_refill :: Nil = Enum(5)
-    val state = MuxLookup(state, s_idle, Seq(
+    val state = RegInit(s_idle)
+
+    state := MuxLookup(state, s_idle, Seq(
         s_idle -> Mux(valid || !hazard, s_lookup, s_idle),
         s_lookup -> Mux(cache_hit, Mux(valid && !hazard, s_lookup, s_idle), s_miss),
         s_miss -> Mux(master.aw.ready, s_replace, s_miss),
@@ -35,10 +37,10 @@ class Cache extends Module
         s_refill -> Mux(master.w.ready, s_idle, s_refill)
     ))
 
-    val cache_reg = RegEnable()
-    
     val s_wbidle :: s_wbwrite :: Nil = Enum(2)
-    val wb_state = MuxLookup(wb_state, s_wbidle, Seq(
+    val wb_state = RegInit(s_wbidle)
+
+    wb_state := MuxLookup(wb_state, s_wbidle, Seq(
         s_wbidle -> Mux(state === s_lookup && cache_hit ?, s_wbwrite, s_wbidle),
         s_wbwrite -> Mux(state === s_lookup && cache_hit ?, s_wbwrite, s_idle)
     ))
