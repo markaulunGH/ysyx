@@ -6,7 +6,7 @@ class Cache_Sram(n : UInt, width : UInt) extends Module
 {
     val io = IO(new Bundle
     {
-        val addr = Input(UInt(n.W))
+        val addr = Input(UInt(n))
         val rdata = Output(UInt(width.W))
         val wen = Input(Bool())
         val wdata = Input(UInt(width.W))
