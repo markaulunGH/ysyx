@@ -6,10 +6,10 @@ class Cache_Sram(n : Int, width : Int) extends Module
 {
     val io = IO(new Bundle
     {
-        val addr = Input(UInt(n))
-        val rdata = Output(UInt(width))
+        val addr = Input(UInt(n.W))
+        val rdata = Output(UInt(width.W))
         val wen = Input(Bool())
-        val wdata = Input(UInt(width))
+        val wdata = Input(UInt(width.W))
     })
 
     val rf[2 ^ n] = RegInit(VecInit(Seq.fill(256)(0.U(1.W))))
