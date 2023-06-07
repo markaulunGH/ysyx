@@ -9,5 +9,5 @@ class Base_Cache extends Module
 
 class Cache extends Base_Cache
 {
-    val pseudoRandomNumber = LFSR64()
+ val randomPosition = LFSR64()(5, 0)
 }
