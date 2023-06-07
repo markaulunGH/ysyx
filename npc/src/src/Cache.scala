@@ -1,11 +1,6 @@
 import chisel3._
 import chisel3.util._
-// import chisel3.util.random
-
-// package utils
-
-import utils._
-// import utility._
+import chisel3.util.random.LFSR64
 
 class Base_Cache extends Module
 {
