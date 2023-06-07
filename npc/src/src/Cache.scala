@@ -17,8 +17,6 @@ class Cache_Sram(n : Int, width : Int) extends Module
     io.rdata := rf(io.addr)
 }
 
-class Cache_
-
 class Cache extends Module
 {
     val cpu_master = IO(Flipped(new AXI_Lite_Master))
