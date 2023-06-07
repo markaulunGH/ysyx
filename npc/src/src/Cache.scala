@@ -5,6 +5,7 @@ import chisel3.util._
 // package utils
 
 // import utils._
+import utility._
 
 class Base_Cache extends Module
 {
