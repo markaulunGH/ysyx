@@ -2,29 +2,27 @@ import chisel3._
 import chisel3.util._
 import chisel3.util.random._
 
-class Cache_Sram(n : Int, width : Int) extends Module
+class Cache_Sram(width : Int, depth : Int) extends Module
 {
     val io = IO(new Bundle
     {
-        val addr  = Input(UInt(log2Ceil(n).W))
-        val rdata = Output(UInt(width.W))
-        val wen   = Input(Bool())
-        val wdata = Input(UInt(width.W))
+        val wen  = Input(Bool())
+        val addr = Input(UInt(log2Ceil(depth).W))
+        val din  = Output(UInt(width.W))
+        val dout = Input(UInt(width.W))
     })
 
-    val rf = RegInit(Vec(n, 0.U(width.W)))
-    rf(io.addr) := io.wdata
-    io.rdata := rf(io.addr)
+    val rf = RegInit(Vec(depth, 0.U(width.W)))
+    rf(io.addr) := io.dout
+    io.din := rf(io.addr)
 }
 
-class Cache extends Module
+class Cache(way : Int) extends Module
 {
     val cpu_master = IO(Flipped(new AXI_Lite_Master))
     val cpu_slave  = IO(Flipped(new AXI_Lite_Slave))
     val master     = IO(new AXI_Lite_Master)
     val slave      = IO(new AXI_Lite_Slave)
-
-    val pseudoRandomNumber = LFSR(1)
 
     val s_idle :: s_lookup :: s_miss :: s_replace :: s_refill :: Nil = Enum(5)
     val state = RegInit(s_idle)
@@ -45,4 +43,5 @@ class Cache extends Module
         s_wbwrite -> Mux(state === s_lookup && cache_hit ?, s_wbwrite, s_idle)
     ))
 
+    val pseudoRandomNumber = LFSR()
 }
