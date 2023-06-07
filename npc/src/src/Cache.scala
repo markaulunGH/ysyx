@@ -2,11 +2,11 @@ import chisel3._
 import chisel3.util._
 import chisel3.util.random._
 
-class Cache_Sram(n : UInt, width : UInt) extends Module
+class Cache_Sram(n : Int, width : Int) extends Module
 {
     val io = IO(new Bundle
     {
-        val addr = Input(UInt(n))
+        val addr = Input(UInt(n.W))
         val rdata = Output(UInt(width.W))
         val wen = Input(Bool())
         val wdata = Input(UInt(width.W))
