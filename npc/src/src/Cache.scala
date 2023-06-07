@@ -2,7 +2,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.util.random._
 
-class Cache_Sram(n : Int, width : Int) extends Module
+class Cache_Sram(n : UInt, width : UInt) extends Module
 {
     val io = IO(new Bundle
     {
