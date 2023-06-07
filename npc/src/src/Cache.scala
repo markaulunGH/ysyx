@@ -4,7 +4,7 @@ import chisel3.util.random
 
 package utils
 
-import utils._
+// import utils._
 
 class Base_Cache extends Module
 {
