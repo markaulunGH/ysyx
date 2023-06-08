@@ -44,4 +44,9 @@ class Cache(way : Int) extends Module
     ))
 
     val pseudoRandomNumber = LFSR(way - 1)
+
+    for (i <- 0 to way)
+    {
+        
+    }
 }
