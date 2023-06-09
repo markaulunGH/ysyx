@@ -38,7 +38,7 @@ class Cache extends Module
     {
         val valid  = cpu_master.ar.valid || cpu_master.aw.valid
         val op     = cpu_master.aw.valid
-        val tag    = Mux(op, cpu_master.aw.bit.addr(63, 13), cpu_master.ar.bits.addr(63, 13))
+        val tag    = Mux(op, cpu_master.aw.bits.addr(63, 13), cpu_master.ar.bits.addr(63, 13))
         val index  = Mux(op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(12, 5))
         val offset = Mux(op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
     }
@@ -56,7 +56,7 @@ class Cache extends Module
 
     state := MuxLookup(state, s_idle, Seq(
         s_idle -> Mux(req.valid && !hazard, s_lookup, s_idle),
-        s_lookup -> Mux(hit, Mux(cache_req && !hazard, s_lookup, s_idle), s_aw),
+        s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_aw),
         s_aw -> Mux(master.aw.fire, s_w, s_aw),
         s_w -> Mux(slave.w.fire, Mux(cnt === 2.U, s_ar, s_aw), s_w),
         s_ar -> Mux(master.ar.fire, s_r, s_ar),
@@ -69,7 +69,7 @@ class Cache extends Module
 
     val way0 = new Way
     val way1 = new Way
-    val way = Mux(way_sel_reg === 1.U, way1, way0)
+    val way = Mux(way_sel_reg.asBool(), way1, way0)
 
     val hit_way0 = way0.tagV.io.dout(0) && way0.tagV.io.dout(51, 1) === req_reg.tag
     val hit_way1 = way1.tagV.io.dout(0) && way1.tagV.io.dout(51, 1) === req_reg.tag
