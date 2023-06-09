@@ -69,11 +69,11 @@ class Cache extends Module
 
     val way0 = new Way
     val way1 = new Way
-    val way = Mux(way_sel_reg, way1, way0)
+    val way = Mux(way_sel_reg === 1.U, way1, way0)
 
     val hit_way0 = way0.tagV.io.dout(0) && way0.tagV.io.dout(51, 1) === req_reg.tag
     val hit_way1 = way1.tagV.io.dout(0) && way1.tagV.io.dout(51, 1) === req_reg.tag
     hit := hit_way0 || hit_way1
 
-    master.aw.bits.addr = Cat()
+    // master.aw.bits.addr = Cat()
 }
