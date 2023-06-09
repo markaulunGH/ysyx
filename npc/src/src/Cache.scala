@@ -37,8 +37,8 @@ class Cache(way : Int, depth : Int) extends Module
         s_idle -> Mux(cache_req && !hazard, s_lookup, s_idle),
         s_lookup -> Mux(cache_hit, Mux(cache_req && !hazard, s_lookup, s_idle), s_miss),
         // what if cacheline is invalid?
-        s_miss -> Mux(master.aw.fire(), s_replace, s_miss),
-        s_replace -> Mux(master.ar.fire(), s_refill, s_replace),
+        s_miss -> Mux(master.aw.fire, s_replace, s_miss),
+        s_replace -> Mux(master.ar.fire, s_refill, s_replace),
         s_refill -> Mux(master.w.ready, s_idle, s_refill)
     ))
 
