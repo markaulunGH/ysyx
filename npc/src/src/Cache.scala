@@ -126,8 +126,10 @@ class Cache(way : Int) extends Module
         }
     }
 
+    val ret_data_reg = Wire(UInt(256.W))
+
     when (state === s_r)
     {
-        cpu_slave.io.r.bits.data := ret_data_reg[req_reg.offset]
+        cpu_slave.r.bits.data := ret_data_reg[req_reg.offset(4, 2)]
     }
 }
