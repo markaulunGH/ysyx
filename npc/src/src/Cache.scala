@@ -77,9 +77,9 @@ class Cache(way : Int) extends Module
     val req = Wire(new Cache_Req)
     req.valid  := cpu_master.ar.valid || cpu_master.aw.valid
     req.op     := cpu_master.aw.valid
-    req.tag    := Mux(op, cpu_master.aw.bits.addr(63, 13), cpu_master.ar.bits.addr(63, 13))
-    req.index  := Mux(op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(12, 5))
-    req.offset := Mux(op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
+    req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 13), cpu_master.ar.bits.addr(63, 13))
+    req.index  := Mux(req.op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(12, 5))
+    req.offset := Mux(req.op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
 
     val s_idle :: s_lookup :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(6)
     val state = RegInit(s_idle)
