@@ -140,14 +140,14 @@ class Cache(way : Int) extends Module
     val cache_ready = (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard
     
     cpu_master.aw.ready := cache_ready
-    
     cpu_master.w.ready  := cache_ready
-    
     cpu_master.ar.ready := cache_ready
 
     cpu_slave.b.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 2.U) && req_reg.op
+    cpu_slave.b.bits.resp := 0.U(2.W)
 
     cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 2.U) && !req_reg.op
+    cpu_slave.r.bits.resp := 0.U(2.W)
     when (state === s_r)
     {
         cpu_slave.r.bits.data := ret_data_reg(req_reg.offset(4, 2))
