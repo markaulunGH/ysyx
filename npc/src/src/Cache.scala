@@ -92,10 +92,11 @@ class Cache(way : Int) extends Module
     val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
 
     val hit_way = Seq.fill(way)(Wire(Bool()))
-    val cache_line = Seq.fill(way)(Wire(UInt(256.W)))
+    // val cache_line = Seq.fill(way)(Wire(UInt(256.W)))
+    val cache_line = Seq.fill(way)(Wire(Vec(4, UInt(64.W))))
 
-    for (i <- 0 until way)
-        cache_line(i) := DontCare
+    // for (i <- 0 until way)
+    //     cache_line(i) := DontCare
 
     cpu_slave.r.bits.data := 0.U(64.W)
 
@@ -126,7 +127,7 @@ class Cache(way : Int) extends Module
             ways(i).data.banks(j).bwen := DontCare
             ways(i).data.banks(j).A    := req.index
             ways(i).data.banks(j).D    := DontCare
-            cache_line(i)(j * 64 + 63, j * 64) := ways(i).data.banks(j).Q
+            cache_line(i)(j * 64, (j + 1) * 64 - 1) := ways(i).data.banks(j).Q
         }
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
