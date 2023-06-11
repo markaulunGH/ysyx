@@ -83,7 +83,7 @@ class Cache(way : Int) extends Module
         s_r      -> Mux(slave.r.fire, Mux(cnt === 2.U, s_idle, s_r), s_r)
     ))
 
-    val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
+    // val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
 
     val hit_way = Seq.fill(way)(Wire(Bool()))
     val cache_line = Seq.fill(way)(Wire(UInt(256.W)))
