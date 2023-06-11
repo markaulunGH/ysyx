@@ -62,14 +62,16 @@ class Cache(way : Int) extends Module
     val ways = Seq.fill(way)(new Cache_Way)
     val random_bit = LFSR(2)
 
-    val req = Wire(new Bundle
-    {
-        val valid  = cpu_master.ar.valid || cpu_master.aw.valid
-        val op     = cpu_master.aw.valid
-        val tag    = Mux(op, cpu_master.aw.bits.addr(63, 13), cpu_master.ar.bits.addr(63, 13))
-        val index  = Mux(op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(12, 5))
-        val offset = Mux(op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
-    })
+    // val req = Wire(new Bundle
+    // {
+    //     val valid  = cpu_master.ar.valid || cpu_master.aw.valid
+    //     val op     = cpu_master.aw.valid
+    //     val tag    = Mux(op, cpu_master.aw.bits.addr(63, 13), cpu_master.ar.bits.addr(63, 13))
+    //     val index  = Mux(op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(12, 5))
+    //     val offset = Mux(op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
+    // })
+
+    val req = Wire(new Cache_Req)
 
     val s_idle :: s_lookup :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(6)
     val state = RegInit(s_idle)
