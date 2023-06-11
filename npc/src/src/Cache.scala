@@ -50,7 +50,7 @@ class Cache_Line extends Module
     data3.io <> io.bank3
 }
 
-class Cache_Set extends Bundle
+class Cache_Way extends Bundle
 {
     val tag  = new Cache_Sram(51, 128)
     val V    = new Cache_Sram(1, 128)
@@ -64,6 +64,8 @@ class Cache extends Module
     val cpu_slave  = IO(Flipped(new AXI_Lite_Slave))
     val master     = IO(new AXI_Lite_Master)
     val slave      = IO(new AXI_Lite_Slave)
+
+    val ways = Seq.fill(2)(Module(new Cache_Way))
 
     val req = new Bundle
     {
@@ -93,7 +95,6 @@ class Cache extends Module
         s_ar -> Mux(master.ar.fire, s_r, s_ar),
         s_r -> Mux(slave.r.fire, Mux(cnt === 2.U, s_idle, s_r), s_r)
     ))
-
     
-    hit :=    
+    hit := 
 }
