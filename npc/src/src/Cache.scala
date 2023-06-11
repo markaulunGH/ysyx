@@ -31,8 +31,8 @@ class Bank_IO extends Bundle
 
 class Cache_Line extends Module
 {
-    val banks = Seq.fill(4)(new Bank_IO)
-    val datas = Seq.fill(4)(new Cache_Sram(64, 128))
+    val banks = Seq.fill(4)(Module(new Bank_IO))
+    val datas = Seq.fill(4)(Module(new Cache_Sram(64, 128)))
 
     for (i <- 0 until 4)
         datas(i).io <> banks(i)
