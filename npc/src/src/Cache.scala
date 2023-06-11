@@ -31,13 +31,10 @@ class Bank_IO extends Bundle
 
 class Cache_Line extends Module
 {
-    val io = IO(new Bundle
-    {
-        val bank0 = new Bank_IO
-        val bank1 = new Bank_IO
-        val bank2 = new Bank_IO
-        val bank3 = new Bank_IO
-    })
+    val bank0 = new Bank_IO
+    val bank1 = new Bank_IO
+    val bank2 = new Bank_IO
+    val bank3 = new Bank_IO
 
     val data0 = new Cache_Sram(64, 128)
     val data1 = new Cache_Sram(64, 128)
