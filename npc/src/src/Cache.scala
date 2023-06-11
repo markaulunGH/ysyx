@@ -127,5 +127,7 @@ class Cache(way : Int) extends Module
     }
 
     when (state === s_r)
+    {
         cpu_slave.io.r.bits.data := ret_data_reg[req_reg.offset]
+    }
 }
