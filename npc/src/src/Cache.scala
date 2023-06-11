@@ -46,6 +46,12 @@ class Cache_Way extends Bundle
     val data = Module(new Cache_Line)
 }
 
+class Cache_Req extends Bundle
+{
+    val valid = Wire(Bool())
+    val op    = Wire(Bool())
+}
+
 class Cache(way : Int) extends Module
 {
     val cpu_master = IO(Flipped(new AXI_Lite_Master))
