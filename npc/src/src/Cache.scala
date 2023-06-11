@@ -81,6 +81,7 @@ class Cache(way : Int) extends Module
 
     state := MuxLookup(state, s_idle, Seq(
         s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
+        // what if cpu is not ready and cache has to wait for bready?
         s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_aw),
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 2.U, s_ar, s_aw), s_w),
@@ -123,8 +124,9 @@ class Cache(way : Int) extends Module
             ways(i).data.banks(j).cen  := req.valid
             ways(i).data.banks(j).wen  := DontCare
             ways(i).data.banks(j).bwen := DontCare
-            ways(i).data.banks(j).A    := req.offset
+            ways(i).data.banks(j).A    := req.index
             ways(i).data.banks(j).D    := DontCare
+            cache_line(i)(j * 64 + 63, j * 64) := ways(i).data.banks(j).Q
         }
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
