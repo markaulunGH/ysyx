@@ -41,10 +41,10 @@ class Cache_Line extends Module
     val data2 = new Cache_Sram(64, 128)
     val data3 = new Cache_Sram(64, 128)
 
-    data0.io <> io.bank0
-    data1.io <> io.bank1
-    data2.io <> io.bank2
-    data3.io <> io.bank3
+    data0.io <> bank0
+    data1.io <> bank1
+    data2.io <> bank2
+    data3.io <> bank3
 }
 
 class Cache_Way extends Bundle
