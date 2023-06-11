@@ -75,8 +75,8 @@ class Cache(way : Int) extends Module
     val cnt = RegInit(0.U(2.W))
 
     state := MuxLookup(state, s_idle, Seq(
-        s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
-        s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_aw),
+        // s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
+        // s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_aw),
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 2.U, s_ar, s_aw), s_w),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
