@@ -48,8 +48,9 @@ class Cache_Way extends Bundle
 
 class Cache_Req extends Bundle
 {
-    val valid = Wire(Bool())
-    val op    = Wire(Bool())
+    val valid = Bool()
+    val op    = Bool()
+    val tag = UInt(52.W)
 }
 
 class Cache(way : Int) extends Module
@@ -72,6 +73,7 @@ class Cache(way : Int) extends Module
     // })
 
     val req = new Cache_Req
+
     val s_idle :: s_lookup :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(6)
     val state = RegInit(s_idle)
 
