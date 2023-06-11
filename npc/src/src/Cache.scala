@@ -100,8 +100,6 @@ class Cache(way : Int) extends Module
 
     cpu_slave.r.bits.data := 0.U(64.W)
 
-    hit := false.B
-
     for (i <- 0 until way)
     {
         ways(i).tag.io.cen  := req.valid
@@ -132,16 +130,15 @@ class Cache(way : Int) extends Module
         }
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
-        when (hit_way(i))
-        {
-            hit := true.B
-        }
+        // hit := hit_way(i) || hit
 
         when (state === s_lookup && hit_way(i))
         {
             cpu_slave.r.bits.data := cache_line(i)(req_reg.offset(4, 2))
         }
     }
+
+    hit = hit_way(i).reduce(_ || _)
 
     val ret_data_reg = Wire(UInt(256.W))
     ret_data_reg := DontCare
