@@ -11,33 +11,33 @@ class Cache_Sram(width : Int, depth : Int) extends Module
         val cen = Input(Bool())
         val wen = Input(Bool())
         val ben = Input(UInt(width.W))
-        val a   = Input(UInt(log2Ceil(depth).W))
+        val A   = Input(UInt(log2Ceil(depth).W))
         val D   = Input(UInt(width.W))
     })
 
     val ram = RegInit(Vec(depth, 0.U(width.W)))
-    ram[io.a] := RegEnable(io.cen && io.wen, (io.D & io.bwen) | (ram[io.a] & ~io.bwen))
+    ram[io.A] := RegEnable(io.cen && io.wen, (io.D & io.bwen) | (ram[io.A] & ~io.bwen))
     io.Q := RegEnable(io.cen && !io.wen, ram[io.A])
+}
+
+class Bank_IO extends Bundle
+{
+    val Q   = Output(UInt(64.W))
+    val cen = Input(Bool())
+    val wen = Input(Bool())
+    val ben = Input(UInt(64.W))
+    val A   = Input(UInt(7.W))
+    val D   = Input(UInt(64.W))
 }
 
 class Cache_Line extends Module
 {
-    val bank_io = new Bundle
-    {
-        val Q   = Output(UInt(64.W))
-        val cen = Input(Bool())
-        val wen = Input(Bool())
-        val ben = Input(UInt(64.W))
-        val A   = Input(UInt(7.W))
-        val D   = Input(UInt(64.W))
-    }
-
     val io = IO(new Bundle
     {
-        val bank0 = new bank_io
-        val bank1 = new bank_io
-        val bank2 = new bank_io
-        val bank3 = new bank_io
+        val bank0 = new Bank_IO
+        val bank1 = new Bank_IO
+        val bank2 = new Bank_IO
+        val bank3 = new Bank_IO
     })
 
     val data0_ram = new Cache_Sram(64, 128)
