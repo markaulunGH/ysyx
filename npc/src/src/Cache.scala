@@ -63,7 +63,7 @@ class Cache(way : Int) extends Module
     val slave      = IO(new AXI_Lite_Slave)
 
     val ways = Seq.fill(way)(new Cache_Way)
-    val random_bit = LFSR(2)
+    val random_bit = LFSR(16)
 
     val req = Wire(new Cache_Req)
     req.valid  := cpu_master.ar.valid || cpu_master.aw.valid
@@ -95,7 +95,9 @@ class Cache(way : Int) extends Module
     val hit_way = Seq.fill(way)(Wire(Bool()))
     val cache_line = Seq.fill(way)(Wire(UInt(256.W)))
 
-    for (i <- 0 until 2)
+    cpu_slave.r.bits.data := 0.U(64.W)
+
+    for (i <- 0 until way)
     {
         ways(i).tag.io.cen  := req.valid
         ways(i).tag.io.wen  := DontCare
@@ -135,8 +137,36 @@ class Cache(way : Int) extends Module
 
     val ret_data_reg = Wire(UInt(256.W))
 
+    val cache_ready = (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard
+    
+    cpu_master.aw.ready := cache_ready
+    
+    cpu_master.w.ready  := cache_ready
+    
+    cpu_master.ar.ready := cache_ready
+
+    cpu_slave.b.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 2.U) && req_reg.op
+
+    cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 2.U) && !req_reg.op
     when (state === s_r)
     {
         cpu_slave.r.bits.data := ret_data_reg(req_reg.offset(4, 2))
     }
+
+    master.aw.valid := state === s_aw
+    master.aw.addr := DontCare
+    master.aw.prot := 0.U(3.W)
+
+    master.w.valid := state === s_w
+    master.w.data := DontCare
+    master.w.strb := Fill(8, 1.U)
+
+    master.ar.valid := state === s_ar
+    master.ar.addr := DontCare
+    master.ar.prot := 0.U(3.W)
+
+    slave.b.ready := state === s_w
+    slave.r.ready := state === s_r
+
+    hazard := DontCare
 }
