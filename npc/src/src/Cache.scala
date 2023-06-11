@@ -35,9 +35,7 @@ class Cache_Line extends Module
     val datas = Seq.fill(4)(new Cache_Sram(64, 128))
 
     for (i <- 0 until 4)
-    {
         datas(i).io <> banks(i)
-    }
 }
 
 class Cache_Way extends Bundle
@@ -105,26 +103,15 @@ class Cache extends Module
         ways(i).D.io.A     := req.index
         ways(i).D.io.D     := DontCare
 
-        ways(i).data.bank0.cen := req.valid
-        ways(i).data.bank0.wen := DontCare
-        ways(i).data.bank0.ben := DontCare
-        ways(i).data.bank0.A   := req.offset
-
+        for (j <- 0 until 4)
+        {
+            ways(i).data.banks(j).cen := req.valid
+            ways(i).data.banks(j).wen := DontCare
+            ways(i).data.banks(j).ben := DontCare
+            ways(i).data.banks(j).A   := req.offset
+            ways(i).data.banks(j).D   := DontCare
+        }
     }
-
-    ways(0).tag.io.cen  := req.valid
-    ways(0).tag.io.A    := req.index
-
-    ways(0).V.io.cen    := req.valid
-
-
-
-
-    ways(0).D.io.cen    := req.valid
-
-    ways(1).tag.io.cen := req.valid
-    ways(1).V.io.cen   := req.valid
-    ways(1).D.io.cen   := req.valid
     
     // val hit0 = 
 }
