@@ -77,8 +77,6 @@ class Cache(way : Int) extends Module
 
     val hazard = Wire(Bool())
     val hit = Wire(Bool())
-    val write_finish = Wire(Bool())
-    val read_finish = Wire(Bool())
     val cnt = RegInit(0.U(2.W))
 
     state := MuxLookup(state, s_idle, Seq(
