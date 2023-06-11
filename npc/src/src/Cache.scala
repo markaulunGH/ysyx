@@ -130,7 +130,10 @@ class Cache(way : Int) extends Module
         }
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
-        hit := hit_way(i) || hit
+        when (hit_way(i))
+        {
+            hit := true.B
+        }
 
         when (state === s_lookup && hit_way(i))
         {
