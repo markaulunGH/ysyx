@@ -39,10 +39,15 @@ class Cache_Line extends Module
         val bank3 = new Bank_IO
     })
 
-    val data0_ram = new Cache_Sram(64, 128)
-    val data1_ram = new Cache_Sram(64, 128)
-    val data2_ram = new Cache_Sram(64, 128)
-    val data3_ram = new Cache_Sram(64, 128)
+    val data0 = new Cache_Sram(64, 128)
+    val data1 = new Cache_Sram(64, 128)
+    val data2 = new Cache_Sram(64, 128)
+    val data3 = new Cache_Sram(64, 128)
+
+    data0.io <> io.bank0
+    data1.io <> io.bank1
+    data2.io <> io.bank2
+    data3.io <> io.bank3
 }
 
 class Cache_Set extends Bundle
