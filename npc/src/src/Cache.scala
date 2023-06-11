@@ -48,8 +48,8 @@ class Cache_Way extends Bundle
 
 class Cache_Req extends Bundle
 {
-    val valid = Wire(Bool())
-    val op    = Wire(Bool())
+    val valid = Bool()
+    val op    = Bool()
 }
 
 class Cache(way : Int) extends Module
