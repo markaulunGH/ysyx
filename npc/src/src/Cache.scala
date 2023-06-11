@@ -1,7 +1,6 @@
 import chisel3._
 import chisel3.util._
 import chisel3.util.random._
-import scala.annotation.static
 
 class Cache_Sram(width : Int, depth : Int) extends Module
 {
