@@ -65,7 +65,7 @@ class Cache(way : Int) extends Module
         val offset = Mux(op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
     }
 
-    val s_idle :: s_lookup :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(5)
+    val s_idle :: s_lookup :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(6)
     val state = RegInit(s_idle)
 
     val hazard = Wire(Bool())
