@@ -65,9 +65,8 @@ class Cache extends Module
     val master     = IO(new AXI_Lite_Master)
     val slave      = IO(new AXI_Lite_Slave)
 
-    // val way0 = 
-
     val ways = Seq.fill(2)(new Cache_Way)
+    val x = ways(0)
 
     val req = new Bundle
     {
