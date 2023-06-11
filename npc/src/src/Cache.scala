@@ -110,11 +110,11 @@ class Cache(way : Int) extends Module
 
         for (j <- 0 until 4)
         {
-            ways(i).data.banks(j).cen := req.valid
-            ways(i).data.banks(j).wen := DontCare
-            ways(i).data.banks(j).ben := DontCare
-            ways(i).data.banks(j).A   := req.offset
-            ways(i).data.banks(j).D   := DontCare
+            ways(i).data.banks(j).cen  := req.valid
+            ways(i).data.banks(j).wen  := DontCare
+            ways(i).data.banks(j).bwen := DontCare
+            ways(i).data.banks(j).A    := req.offset
+            ways(i).data.banks(j).D    := DontCare
         }
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
