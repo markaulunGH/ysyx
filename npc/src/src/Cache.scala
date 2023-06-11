@@ -21,12 +21,12 @@ class Cache_Sram(width : Int, depth : Int) extends Module
 
 class Bank_IO extends Bundle
 {
-    val Q   = Output(UInt(64.W))
-    val cen = Input(Bool())
-    val wen = Input(Bool())
-    val ben = Input(UInt(64.W))
-    val A   = Input(UInt(7.W))
-    val D   = Input(UInt(64.W))
+    val Q    = Output(UInt(64.W))
+    val cen  = Input(Bool())
+    val wen  = Input(Bool())
+    val bwen = Input(UInt(64.W))
+    val A    = Input(UInt(7.W))
+    val D    = Input(UInt(64.W))
 }
 
 class Cache_Line extends Module
