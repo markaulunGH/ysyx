@@ -54,7 +54,7 @@ class Cache(way : Int) extends Module
     val slave      = IO(new AXI_Lite_Slave)
 
     val ways = Seq.fill(way)(new Cache_Way)
-    val random_bit = LFSR(log2Ceil(way))
+    val random_bit = LFSR(1)
 
     val req = new Bundle
     {
