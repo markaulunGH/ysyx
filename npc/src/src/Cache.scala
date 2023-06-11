@@ -35,7 +35,9 @@ class Cache_Line extends Module
     val datas = Seq.fill(4)(Module(new Cache_Sram(64, 128)))
 
     for (i <- 0 until 4)
+    {
         datas(i).io <> banks(i)
+    }
 }
 
 class Cache_Way extends Bundle
@@ -84,22 +86,20 @@ class Cache(way : Int) extends Module
         // what if cpu is not ready and cache has to wait for bready?
         s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_aw),
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
-        s_w      -> Mux(slave.b.fire, Mux(cnt === 2.U, s_ar, s_aw), s_w),
+        s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
-        s_r      -> Mux(slave.r.fire, Mux(cnt === 2.U, s_idle, s_r), s_r)
+        s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, s_idle, s_r), s_r)
     ))
 
     val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
+    val way_sel = RegEnable(random_bit(log2Ceil(way) - 1, 0), state === s_lookup)
 
     val hit_way = Seq.fill(way)(Wire(Bool()))
-    // val cache_line = Seq.fill(way)(Wire(UInt(256.W)))
     val cache_line = Seq.fill(way)(Wire(Vec(4, UInt(64.W))))
-
-    // for (i <- 0 until way)
-    //     cache_line(i) := DontCare
+    val cache_line_reg = RegEnable(cache_line, state === s_lookup)
 
     cpu_slave.r.bits.data := 0.U(64.W)
-
+    
     for (i <- 0 until way)
     {
         ways(i).tag.io.cen  := req.valid
@@ -134,14 +134,13 @@ class Cache(way : Int) extends Module
 
         when (state === s_lookup && hit_way(i))
         {
-            cpu_slave.r.bits.data := cache_line(i)(req_reg.offset(4, 2))
+            cpu_slave.r.bits.data := cache_line(i)(req_reg.offset)
         }
     }
 
     hit := hit_way.reduce(_ || _)
 
-    val ret_data_reg = Wire(UInt(256.W))
-    ret_data_reg := DontCare
+    val new_cache_line = Reg(UInt(256.W))
 
     val cache_ready = (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard
     
@@ -149,30 +148,44 @@ class Cache(way : Int) extends Module
     cpu_master.w.ready  := cache_ready
     cpu_master.ar.ready := cache_ready
 
-    cpu_slave.b.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 2.U) && req_reg.op
+    cpu_slave.b.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && req_reg.op
     cpu_slave.b.bits.resp := 0.U(2.W)
 
-    cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 2.U) && !req_reg.op
+    cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && !req_reg.op
     cpu_slave.r.bits.resp := 0.U(2.W)
     when (state === s_r)
     {
-        cpu_slave.r.bits.data := ret_data_reg(req_reg.offset(4, 2))
+        cpu_slave.r.bits.data := new_cache_line(req_reg.offset)
+    }
+
+    when (master.aw.fire || master.ar.fire)
+    {
+        cnt := 0.U
+    }
+    .elsewhen (slave.b.fire || slave.r.fire)
+    {
+        cnt := cnt + 1.U
     }
 
     master.aw.valid := state === s_aw
-    master.aw.bits.addr := DontCare
+    master.aw.bits.addr := Cat(req_reg.tag, req_reg.index, cnt, 0.U(3.W))
     master.aw.bits.prot := 0.U(3.W)
 
     master.w.valid := state === s_w
-    master.w.bits.data := DontCare
+    master.w.bits.data := cache_line_reg(cnt)
     master.w.bits.strb := Fill(8, 1.U)
 
     master.ar.valid := state === s_ar
-    master.ar.bits.addr := DontCare
+    master.ar.bits.addr := Cat(req_reg.tag, req_reg.index, cnt, 0.U(3.W))
     master.ar.bits.prot := 0.U(3.W)
 
     slave.b.ready := state === s_w
+
     slave.r.ready := state === s_r
+    when (slave.r.fire)
+    {
+        new_cache_line := new_cache_line << 64.U | slave.r.bits.data
+    }
 
     hazard := DontCare
 }
