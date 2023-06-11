@@ -1,30 +1,57 @@
 import chisel3._
 import chisel3.util._
 import chisel3.util.random._
+import scala.annotation.static
 
 class Cache_Sram(width : Int, depth : Int) extends Module
 {
     val io = IO(new Bundle
     {
-        val wen  = Input(Bool())
-        val addr = Input(UInt(log2Ceil(depth).W))
-        val din  = Output(UInt(width.W))
-        val dout = Input(UInt(width.W))
+        val Q   = Output(UInt(width.W))
+        val cen = Input(Bool())
+        val wen = Input(Bool())
+        val ben = Input(UInt(width.W))
+        val A   = Input(UInt(log2Ceil(depth).W))
+        val D   = Input(UInt(width.W))
     })
 
-    val rf = RegInit(Vec(depth, 0.U(width.W)))
-    rf(io.addr) := io.dout
-    io.din := rf(io.addr)
+    val ram = RegInit(Vec(depth, 0.U(width.W)))
+    ram[io.A] := RegEnable(io.cen && io.wen, (io.D & io.bwen) | (ram[io.A] & ~io.bwen))
+    io.Q := RegEnable(io.cen && !io.wen, ram[io.A])
 }
 
-class Way extends Bundle
+class Cache_Line extends Module
 {
-    val tagV = new Cache_Sram(52, 256)
-    val dirty = new Cache_Sram(1, 256)
-    val data0 = new Cache_Sram(64, 256)
-    val data1 = new Cache_Sram(64, 256)
-    val data2 = new Cache_Sram(64, 256)
-    val data3 = new Cache_Sram(64, 256)
+    val bank_io = new Bundle
+    {
+        val Q   = Output(UInt(64.W))
+        val cen = Input(Bool())
+        val wen = Input(Bool())
+        val ben = Input(UInt(64.W))
+        val A   = Input(UInt(7.W))
+        val D   = Input(UInt(64.W))
+    }
+
+    val io = IO(new Bundle
+    {
+        val bank0 = new bank_io
+        val bank1 = new bank_io
+        val bank2 = new bank_io
+        val bank3 = new bank_io
+    })
+
+    val data0_ram = new Cache_Sram(64, 128)
+    val data1_ram = new Cache_Sram(64, 128)
+    val data2_ram = new Cache_Sram(64, 128)
+    val data3_ram = new Cache_Sram(64, 128)
+}
+
+class Cache_Set extends Bundle
+{
+    val tag  = new Cache_Sram(51, 128)
+    val V    = new Cache_Sram(1, 128)
+    val D    = new Cache_Sram(1, 128)
+    val data = new Cache_Line
 }
 
 class Cache extends Module
@@ -63,17 +90,6 @@ class Cache extends Module
         s_r -> Mux(slave.r.fire, Mux(cnt === 2.U, s_idle, s_r), s_r)
     ))
 
-    val req_reg = RegEnable(req, state === s_idle)
-    val way_sel_reg = RegEnable(random_bit, state === s_lookup)
-    val state_reg = RegNext(state)
-
-    val way0 = new Way
-    val way1 = new Way
-    val way = Mux(way_sel_reg.asBool(), way1, way0)
-
-    val hit_way0 = way0.tagV.io.dout(0) && way0.tagV.io.dout(51, 1) === req_reg.tag
-    val hit_way1 = way1.tagV.io.dout(0) && way1.tagV.io.dout(51, 1) === req_reg.tag
-    hit := hit_way0 || hit_way1
-
-    // master.aw.bits.addr = Cat()
+    
+    hit :=    
 }
