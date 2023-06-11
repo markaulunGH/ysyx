@@ -127,7 +127,7 @@ class Cache(way : Int) extends Module
             ways(i).data.banks(j).bwen := DontCare
             ways(i).data.banks(j).A    := req.index
             ways(i).data.banks(j).D    := DontCare
-            cache_line(i)(j * 64, (j + 1) * 64 - 1) := ways(i).data.banks(j).Q
+            cache_line(i)(j) := ways(i).data.banks(j).Q
         }
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
