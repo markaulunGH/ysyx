@@ -122,7 +122,7 @@ class Cache(way : Int) extends Module
 
         when (state === s_lookup && hit_way(i))
         {
-            cpu_slave.io.r.bits.data := cache_line(i)(req_reg.offset(4, 2))
+            cpu_slave.r.bits.data := cache_line(i)(req_reg.offset(4, 2))
         }
     }
 
