@@ -14,7 +14,7 @@ class Cache_Sram(width : Int, depth : Int) extends Module
         val D    = Input(UInt(width.W))
     })
 
-    val ram = RegInit(Vec(Seq.fill(10)(0.U(1.W))))
+    val ram = RegInit(VecInit(Seq.fill(depth)(0.U(width.W))))
     ram(io.A) := RegEnable((io.D & io.bwen) | (ram(io.A) & ~io.bwen), io.cen && io.wen)
     io.Q := RegEnable(ram(io.A), io.cen && !io.wen)
 }
