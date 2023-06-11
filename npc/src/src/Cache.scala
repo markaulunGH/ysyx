@@ -73,6 +73,7 @@ class Cache(way : Int) extends Module
     // })
 
     val req = new Cache_Req
+    req.valid = cpu_master.ar.valid
 
     val s_idle :: s_lookup :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(6)
     val state = RegInit(s_idle)
