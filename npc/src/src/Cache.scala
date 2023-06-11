@@ -31,20 +31,13 @@ class Bank_IO extends Bundle
 
 class Cache_Line extends Module
 {
-    val bank0 = new Bank_IO
-    val bank1 = new Bank_IO
-    val bank2 = new Bank_IO
-    val bank3 = new Bank_IO
+    val banks = Seq.fill(4)(new Bank_IO)
+    val datas = Seq.fill(4)(new Cache_Sram(64, 128))
 
-    val data0 = new Cache_Sram(64, 128)
-    val data1 = new Cache_Sram(64, 128)
-    val data2 = new Cache_Sram(64, 128)
-    val data3 = new Cache_Sram(64, 128)
-
-    data0.io <> bank0
-    data1.io <> bank1
-    data2.io <> bank2
-    data3.io <> bank3
+    for (i <- 0 until 4)
+    {
+        datas(i).io <> banks(i)
+    }
 }
 
 class Cache_Way extends Bundle
@@ -113,6 +106,10 @@ class Cache extends Module
         ways(i).D.io.D     := DontCare
 
         ways(i).data.bank0.cen := req.valid
+        ways(i).data.bank0.wen := DontCare
+        ways(i).data.bank0.ben := DontCare
+        ways(i).data.bank0.A   := req.offset
+
     }
 
     ways(0).tag.io.cen  := req.valid
