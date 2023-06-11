@@ -154,16 +154,16 @@ class Cache(way : Int) extends Module
     }
 
     master.aw.valid := state === s_aw
-    master.aw.addr := DontCare
-    master.aw.prot := 0.U(3.W)
+    master.aw.bits.addr := DontCare
+    master.aw.bits.prot := 0.U(3.W)
 
     master.w.valid := state === s_w
-    master.w.data := DontCare
-    master.w.strb := Fill(8, 1.U)
+    master.w.bits.data := DontCare
+    master.w.bits.strb := Fill(8, 1.U)
 
     master.ar.valid := state === s_ar
-    master.ar.addr := DontCare
-    master.ar.prot := 0.U(3.W)
+    master.ar.bits.addr := DontCare
+    master.ar.bits.prot := 0.U(3.W)
 
     slave.b.ready := state === s_w
     slave.r.ready := state === s_r
