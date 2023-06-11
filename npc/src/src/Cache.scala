@@ -6,12 +6,12 @@ class Cache_Sram(width : Int, depth : Int) extends Module
 {
     val io = IO(new Bundle
     {
-        val Q   = Output(UInt(width.W))
-        val cen = Input(Bool())
-        val wen = Input(Bool())
-        val ben = Input(UInt(width.W))
-        val A   = Input(UInt(log2Ceil(depth).W))
-        val D   = Input(UInt(width.W))
+        val Q    = Output(UInt(width.W))
+        val cen  = Input(Bool())
+        val wen  = Input(Bool())
+        val bwen = Input(UInt(width.W))
+        val A    = Input(UInt(log2Ceil(depth).W))
+        val D    = Input(UInt(width.W))
     })
 
     val ram = RegInit(Vec(depth, 0.U(width.W)))
