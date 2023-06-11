@@ -43,7 +43,7 @@ class Cache_Way extends Bundle
     val tag  = Module(new Cache_Sram(52, 128))
     val V    = Module(new Cache_Sram(1, 128))
     val D    = Module(new Cache_Sram(1, 128))
-    val data = new Cache_Line
+    val data = Module(new Cache_Line)
 }
 
 class Cache(way : Int) extends Module
