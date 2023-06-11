@@ -66,7 +66,7 @@ class Cache extends Module
     val slave      = IO(new AXI_Lite_Slave)
 
     val ways = Seq.fill(2)(new Cache_Way)
-    val x = ways(0)
+    val random_bit = LFSR(1)
 
     val req = new Bundle
     {
@@ -76,8 +76,6 @@ class Cache extends Module
         val index  = Mux(op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(12, 5))
         val offset = Mux(op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
     }
-
-    val random_bit = LFSR(1)
 
     val s_idle :: s_lookup :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(5)
     val state = RegInit(s_idle)
@@ -89,13 +87,15 @@ class Cache extends Module
     val cnt = RegInit(0.U(2.W))
 
     state := MuxLookup(state, s_idle, Seq(
-        s_idle -> Mux(req.valid && !hazard, s_lookup, s_idle),
+        s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
         s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_aw),
-        s_aw -> Mux(master.aw.fire, s_w, s_aw),
-        s_w -> Mux(slave.b.fire, Mux(cnt === 2.U, s_ar, s_aw), s_w),
-        s_ar -> Mux(master.ar.fire, s_r, s_ar),
-        s_r -> Mux(slave.r.fire, Mux(cnt === 2.U, s_idle, s_r), s_r)
+        s_aw     -> Mux(master.aw.fire, s_w, s_aw),
+        s_w      -> Mux(slave.b.fire, Mux(cnt === 2.U, s_ar, s_aw), s_w),
+        s_ar     -> Mux(master.ar.fire, s_r, s_ar),
+        s_r      -> Mux(slave.r.fire, Mux(cnt === 2.U, s_idle, s_r), s_r)
     ))
+
+    ways(0).tag.io.cen := req.valid
     
-    hit := 
+    // val hit0 = 
 }
