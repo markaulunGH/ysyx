@@ -138,7 +138,7 @@ class Cache(way : Int) extends Module
         }
     }
 
-    hit := hit_way(i).reduce(_ || _)
+    hit := hit_way.reduce(_ || _)
 
     val ret_data_reg = Wire(UInt(256.W))
     ret_data_reg := DontCare
