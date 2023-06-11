@@ -16,8 +16,8 @@ class Cache_Sram(width : Int, depth : Int) extends Module
     })
 
     val ram = RegInit(Vec(depth, 0.U(width.W)))
-    ram(io.A) := RegEnable(io.cen && io.wen, (io.D & io.bwen) | (ram[io.A] & ~io.bwen))
-    io.Q := RegEnable(io.cen && !io.wen, ram[io.A])
+    ram(io.A) := RegEnable(io.cen && io.wen, (io.D & io.bwen) | (ram(io.A) & ~io.bwen))
+    io.Q := RegEnable(io.cen && !io.wen, ram(io.A))
 }
 
 class Bank_IO extends Bundle
