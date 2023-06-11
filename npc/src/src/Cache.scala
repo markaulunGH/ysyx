@@ -83,7 +83,10 @@ class Cache(way : Int) extends Module
         s_r      -> Mux(slave.r.fire, Mux(cnt === 2.U, s_idle, s_r), s_r)
     ))
 
+    val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
+
     val hit_way = Seq.fill(way)(Wire(Bool()))
+    val cache_line = Seq.fill(way)(Wire(UInt(256.W)))
 
     for (i <- 0 until 2)
     {
@@ -114,8 +117,15 @@ class Cache(way : Int) extends Module
             ways(i).data.banks(j).D   := DontCare
         }
 
-        hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req.tag
-
+        hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
         hit := hit_way(i) || hit
+
+        when (state === s_lookup && hit_way(i))
+        {
+            cpu_slave.io.r.bits.data := cache_line(i)(req_reg.offset(4, 2))
+        }
     }
+
+    when (state === s_r)
+        cpu_slave.io.r.bits.data := ret_data_reg[req_reg.offset]
 }
