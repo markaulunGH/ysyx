@@ -46,14 +46,14 @@ class Cache_Way extends Bundle
     val data = Module(new Cache_Line)
 }
 
-// class Cache_Req extends Bundle
-// {
-//     val valid  = Bool()
-//     val op     = Bool()
-//     val tag    = UInt(52.W)
-//     val index  = UInt(7.W)
-//     val offset = UInt(5.W)
-// }
+class Cache_Req extends Bundle
+{
+    val valid  = Bool()
+    val op     = Bool()
+    val tag    = UInt(52.W)
+    val index  = UInt(7.W)
+    val offset = UInt(5.W)
+}
 
 class Cache(way : Int) extends Module
 {
@@ -64,15 +64,6 @@ class Cache(way : Int) extends Module
 
     val ways = Seq.fill(way)(new Cache_Way)
     val random_bit = LFSR(2)
-
-    class Cache_Req extends Bundle
-{
-    val valid  = Bool()
-    val op     = Bool()
-    val tag    = UInt(52.W)
-    val index  = UInt(7.W)
-    val offset = UInt(5.W)
-}
 
     val req = Wire(new Cache_Req)
     req.valid  := cpu_master.ar.valid || cpu_master.aw.valid
@@ -91,61 +82,61 @@ class Cache(way : Int) extends Module
     val cnt = RegInit(0.U(2.W))
 
     state := MuxLookup(state, s_idle, Seq(
-        // s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
-        // s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_aw),
+        s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
+        s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_aw),
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 2.U, s_ar, s_aw), s_w),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
         s_r      -> Mux(slave.r.fire, Mux(cnt === 2.U, s_idle, s_r), s_r)
     ))
 
-    // val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
+    val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
 
-    // val hit_way = Seq.fill(way)(Wire(Bool()))
-    // val cache_line = Seq.fill(way)(Wire(UInt(256.W)))
+    val hit_way = Seq.fill(way)(Wire(Bool()))
+    val cache_line = Seq.fill(way)(Wire(UInt(256.W)))
 
-    // for (i <- 0 until 2)
-    // {
-    //     ways(i).tag.io.cen  := req.valid
-    //     ways(i).tag.io.wen  := DontCare
-    //     ways(i).tag.io.bwen := DontCare
-    //     ways(i).tag.io.A    := req.index
-    //     ways(i).tag.io.D    := DontCare
+    for (i <- 0 until 2)
+    {
+        ways(i).tag.io.cen  := req.valid
+        ways(i).tag.io.wen  := DontCare
+        ways(i).tag.io.bwen := DontCare
+        ways(i).tag.io.A    := req.index
+        ways(i).tag.io.D    := DontCare
 
-    //     ways(i).V.io.cen   := req.valid
-    //     ways(i).V.io.wen   := DontCare
-    //     ways(i).V.io.bwen  := DontCare
-    //     ways(i).V.io.A     := req.index
-    //     ways(i).V.io.D     := DontCare
+        ways(i).V.io.cen   := req.valid
+        ways(i).V.io.wen   := DontCare
+        ways(i).V.io.bwen  := DontCare
+        ways(i).V.io.A     := req.index
+        ways(i).V.io.D     := DontCare
 
-    //     ways(i).D.io.cen   := req.valid
-    //     ways(i).D.io.wen   := DontCare
-    //     ways(i).D.io.bwen  := DontCare
-    //     ways(i).D.io.A     := req.index
-    //     ways(i).D.io.D     := DontCare
+        ways(i).D.io.cen   := req.valid
+        ways(i).D.io.wen   := DontCare
+        ways(i).D.io.bwen  := DontCare
+        ways(i).D.io.A     := req.index
+        ways(i).D.io.D     := DontCare
 
-    //     for (j <- 0 until 4)
-    //     {
-    //         ways(i).data.banks(j).cen  := req.valid
-    //         ways(i).data.banks(j).wen  := DontCare
-    //         ways(i).data.banks(j).bwen := DontCare
-    //         ways(i).data.banks(j).A    := req.offset
-    //         ways(i).data.banks(j).D    := DontCare
-    //     }
+        for (j <- 0 until 4)
+        {
+            ways(i).data.banks(j).cen  := req.valid
+            ways(i).data.banks(j).wen  := DontCare
+            ways(i).data.banks(j).bwen := DontCare
+            ways(i).data.banks(j).A    := req.offset
+            ways(i).data.banks(j).D    := DontCare
+        }
 
-    //     hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
-    //     hit := hit_way(i) || hit
+        hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
+        hit := hit_way(i) || hit
 
-    //     when (state === s_lookup && hit_way(i))
-    //     {
-    //         cpu_slave.r.bits.data := cache_line(i)(req_reg.offset(4, 2))
-    //     }
-    // }
+        when (state === s_lookup && hit_way(i))
+        {
+            cpu_slave.r.bits.data := cache_line(i)(req_reg.offset(4, 2))
+        }
+    }
 
-    // val ret_data_reg = Wire(UInt(256.W))
+    val ret_data_reg = Wire(UInt(256.W))
 
-    // when (state === s_r)
-    // {
-    //     cpu_slave.r.bits.data := ret_data_reg(req_reg.offset(4, 2))
-    // }
+    when (state === s_r)
+    {
+        cpu_slave.r.bits.data := ret_data_reg(req_reg.offset(4, 2))
+    }
 }
