@@ -46,15 +46,15 @@ class Cache_Way extends Bundle
     val data = new Cache_Line
 }
 
-class Cache extends Module
+class Cache(way : Int) extends Module
 {
     val cpu_master = IO(Flipped(new AXI_Lite_Master))
     val cpu_slave  = IO(Flipped(new AXI_Lite_Slave))
     val master     = IO(new AXI_Lite_Master)
     val slave      = IO(new AXI_Lite_Slave)
 
-    val ways = Seq.fill(2)(new Cache_Way)
-    val random_bit = LFSR(1)
+    val ways = Seq.fill(way)(new Cache_Way)
+    val random_bit = LFSR(log2Ceil(way))
 
     val req = new Bundle
     {
@@ -82,6 +82,8 @@ class Cache extends Module
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
         s_r      -> Mux(slave.r.fire, Mux(cnt === 2.U, s_idle, s_r), s_r)
     ))
+
+    val hit_way = Seq.fill(way)(Wire(Bool()))
 
     for (i <- 0 until 2)
     {
@@ -111,7 +113,9 @@ class Cache extends Module
             ways(i).data.banks(j).A   := req.offset
             ways(i).data.banks(j).D   := DontCare
         }
+
+        hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req.tag
+
+        hit |= hit_way(i)
     }
-    
-    // val hit0 = 
 }
