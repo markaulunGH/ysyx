@@ -52,7 +52,7 @@ class Cache_Line extends Module
 
 class Cache_Way extends Bundle
 {
-    val tag  = new Cache_Sram(51, 128)
+    val tag  = new Cache_Sram(52, 128)
     val V    = new Cache_Sram(1, 128)
     val D    = new Cache_Sram(1, 128)
     val data = new Cache_Line
@@ -95,7 +95,26 @@ class Cache extends Module
         s_r      -> Mux(slave.r.fire, Mux(cnt === 2.U, s_idle, s_r), s_r)
     ))
 
-    ways(0).tag.io.cen := req.valid
+    for (i <- 0 until 2)
+    {
+        ways(i).tag.io.cen := req.valid
+        ways(i).tag.io.A   := req.index
+    }
+
+    ways(0).tag.io.cen  := req.valid
+    ways(0).tag.io.A    := req.index
+
+    ways(0).V.io.cen    := req.valid
+
+
+
+
+    ways(0).D.io.cen    := req.valid
+    ways(0).data.io.cen := req.valid
+
+    ways(1).tag.io.cen := req.valid
+    ways(1).V.io.cen   := req.valid
+    ways(1).D.io.cen   := req.valid
     
     // val hit0 = 
 }
