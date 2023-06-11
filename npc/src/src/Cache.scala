@@ -94,9 +94,7 @@ class Cache(way : Int) extends Module
     val cache_line = Seq.fill(way)(Wire(UInt(256.W)))
 
     for (i <- 0 until way)
-    {
         cache_line(i) := DontCare
-    }
 
     cpu_slave.r.bits.data := 0.U(64.W)
 
@@ -130,7 +128,6 @@ class Cache(way : Int) extends Module
         }
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
-        // hit := hit_way(i) || hit
 
         when (state === s_lookup && hit_way(i))
         {
