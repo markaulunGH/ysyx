@@ -100,6 +100,8 @@ class Cache(way : Int) extends Module
 
     cpu_slave.r.bits.data := 0.U(64.W)
 
+    hit := false.B
+
     for (i <- 0 until way)
     {
         ways(i).tag.io.cen  := req.valid
