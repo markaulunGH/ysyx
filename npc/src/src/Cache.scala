@@ -40,9 +40,9 @@ class Cache_Line extends Module
 
 class Cache_Way extends Bundle
 {
-    val tag  = new Cache_Sram(52, 128)
-    val V    = new Cache_Sram(1, 128)
-    val D    = new Cache_Sram(1, 128)
+    val tag  = Module(new Cache_Sram(52, 128))
+    val V    = Module(new Cache_Sram(1, 128))
+    val D    = Module(new Cache_Sram(1, 128))
     val data = new Cache_Line
 }
 
