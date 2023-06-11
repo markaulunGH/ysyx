@@ -48,8 +48,8 @@ class Cache_Way extends Bundle
 
 class Cache_Req extends Bundle
 {
-    val valid = Bool()
-    val op    = Bool()
+    val valid = Wire(Bool())
+    val op    = Wire(Bool())
 }
 
 class Cache(way : Int) extends Module
@@ -71,8 +71,7 @@ class Cache(way : Int) extends Module
     //     val offset = Mux(op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
     // })
 
-    val req = Wire(new Cache_Req)
-
+    val req = new Cache_Req
     val s_idle :: s_lookup :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(6)
     val state = RegInit(s_idle)
 
