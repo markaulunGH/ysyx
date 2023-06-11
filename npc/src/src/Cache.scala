@@ -97,8 +97,25 @@ class Cache extends Module
 
     for (i <- 0 until 2)
     {
-        ways(i).tag.io.cen := req.valid
-        ways(i).tag.io.A   := req.index
+        ways(i).tag.io.cen  := req.valid
+        ways(i).tag.io.wen  := DontCare
+        ways(i).tag.io.bwen := DontCare
+        ways(i).tag.io.A    := req.index
+        ways(i).tag.io.D    := DontCare
+
+        ways(i).V.io.cen   := req.valid
+        ways(i).V.io.wen   := DontCare
+        ways(i).V.io.bwen  := DontCare
+        ways(i).V.io.A     := req.index
+        ways(i).V.io.D     := DontCare
+
+        ways(i).D.io.cen   := req.valid
+        ways(i).D.io.wen   := DontCare
+        ways(i).D.io.bwen  := DontCare
+        ways(i).D.io.A     := req.index
+        ways(i).D.io.D     := DontCare
+
+        ways(i).data.bank0.cen := req.valid
     }
 
     ways(0).tag.io.cen  := req.valid
@@ -110,7 +127,6 @@ class Cache extends Module
 
 
     ways(0).D.io.cen    := req.valid
-    ways(0).data.io.cen := req.valid
 
     ways(1).tag.io.cen := req.valid
     ways(1).V.io.cen   := req.valid
