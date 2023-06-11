@@ -116,6 +116,6 @@ class Cache(way : Int) extends Module
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req.tag
 
-        hit |= hit_way(i)
+        hit ||= hit_way(i)
     }
 }
