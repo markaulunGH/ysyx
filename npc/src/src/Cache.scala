@@ -139,6 +139,7 @@ class Cache(way : Int) extends Module
     }
 
     val ret_data_reg = Wire(UInt(256.W))
+    ret_data_reg := DontCare
 
     val cache_ready = (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard
     
