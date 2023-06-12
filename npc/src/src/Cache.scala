@@ -210,9 +210,6 @@ class Cache(way : Int) extends Module
     val debug = IO(new Bundle
     {
         val hit = Output(Bool())
-        val miss = Output(Bool())
-        val dirty = Output(Bool())
-        val hazard = Output(Bool())
     })
-    
+    debug.hit := hit
 }
