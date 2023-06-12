@@ -44,7 +44,11 @@ void init_simulation(int argc, char** argv)
     contextp->commandArgs(argc, argv);
 
     top->trace(tfp, 0);
+#ifdef CONFIG_WAVE_FST
     tfp->open("logs/dump.fst");
+#else
+    tfp->open("logs/dump.vcd");
+#endif
 
     reset();
 }
