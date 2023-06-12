@@ -5,7 +5,7 @@
 #include "VTop.h"
 #ifdef CONFIG_WAVE_FST
 #include "verilated_fst_c.h"
-#elif
+#else
 #include "verilated_vcd_c.h"
 #endif
 #include <verilated.h>
@@ -15,7 +15,7 @@ extern const std::unique_ptr<VerilatedContext> contextp;
 extern const std::unique_ptr<VTop> top;
 #ifdef CONFIG_WAVE_FST
 extern VerilatedFstC* tfp;
-#elif
+#else
 extern VerilatedVcdC* tfp;
 #endif
 

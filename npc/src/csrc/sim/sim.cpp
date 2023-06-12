@@ -5,7 +5,7 @@ const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
 #ifdef CONFIG_WAVE_FST
 VerilatedFstC* tfp = new VerilatedFstC;
-#elif
+#else
 VerilatedVcdC* tfp = new VerilatedVcdC;
 #endif
 
