@@ -66,6 +66,7 @@ class Cache(way : Int) extends Module
     val master     = IO(new AXI_Lite_Master)
     val slave      = IO(new AXI_Lite_Slave)
 
+    val wayss = Vec(way, new Cache_Way)
     val ways = Seq.fill(way)(new Cache_Way)
     val random_bit = LFSR(16)
 
@@ -81,6 +82,7 @@ class Cache(way : Int) extends Module
     val s_idle :: s_lookup :: s_miss :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(7)
     val state = RegInit(s_idle)
 
+    val dirty = Wire(Bool())
     val hazard = Wire(Bool())
     val hit = Wire(Bool())
     val cnt = RegInit(0.U(2.W))
@@ -89,7 +91,7 @@ class Cache(way : Int) extends Module
         s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
         // what if cpu is not ready and cache has to wait for bready?
         s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_miss),
-        s_miss   -> Mux(ways(way_sel).D.io.Q === 1.U, s_aw, s_ar),
+        s_miss   -> Mux(dirty, s_aw, s_ar),
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
