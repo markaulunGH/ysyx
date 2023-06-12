@@ -69,7 +69,7 @@ class Cache(way : Int) extends Module
     val ways = Seq.fill(way)(new Cache_Way)
     val random_bit = LFSR(16)
 
-    val req = Wire(new Cache_Req)
+    val req = dontTouch(Wire(new Cache_Req))
     req.valid  := cpu_master.ar.valid || cpu_master.aw.valid
     req.op     := cpu_master.aw.valid
     req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 13), cpu_master.ar.bits.addr(63, 13))
@@ -81,7 +81,7 @@ class Cache(way : Int) extends Module
     val s_idle :: s_lookup :: s_miss :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(7)
     val state = RegInit(s_idle)
 
-    val dirty = Wire(Bool())
+    val dirty = dontTouch(Wire(Bool()))
     val hazard = dontTouch(Wire(Bool()))
     val hit = dontTouch(Wire(Bool()))
     val cnt = RegInit(0.U(2.W))
@@ -101,7 +101,7 @@ class Cache(way : Int) extends Module
     val way_sel = RegEnable(random_bit(log2Ceil(way) - 1, 0), state === s_lookup)
 
     val hit_way = Seq.fill(way)(dontTouch(Wire(Bool())))
-    val cache_line = Seq.fill(way)(Wire(Vec(4, UInt(64.W))))
+    val cache_line = Seq.fill(way)(dontTouch(Wire(Vec(4, UInt(64.W)))))
     val cache_line_reg = Reg(Vec(4, UInt(64.W)))
 
     cpu_slave.r.bits.data := 0.U(64.W)
