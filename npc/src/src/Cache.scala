@@ -59,9 +59,6 @@ class Cache_Req extends Bundle
     val strb   = UInt(8.W)
 }
 
-import chisel3.experimental.chiselName
-
-@chiselName
 class Cache(way : Int) extends Module
 {
     val cpu_master = IO(Flipped(new AXI_Lite_Master))
@@ -85,7 +82,7 @@ class Cache(way : Int) extends Module
     val state = RegInit(s_idle)
 
     val dirty = Wire(Bool())
-    val hazard = Wire(Bool())
+    val hazard = dontTouch(Wire(Bool()))
     val hit = dontTouch(Wire(Bool()))
     val cnt = RegInit(0.U(2.W))
 
@@ -103,7 +100,7 @@ class Cache(way : Int) extends Module
     val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
     val way_sel = RegEnable(random_bit(log2Ceil(way) - 1, 0), state === s_lookup)
 
-    val hit_way = Seq.fill(way)(Wire(Bool()))
+    val hit_way = dontTouch(Seq.fill(way)(Wire(Bool())))
     val cache_line = Seq.fill(way)(Wire(Vec(4, UInt(64.W))))
     val cache_line_reg = Reg(Vec(4, UInt(64.W)))
 
