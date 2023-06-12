@@ -74,7 +74,7 @@ class Cache(way : Int) extends Module
     req.index  := Mux(req.op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(12, 5))
     req.offset := Mux(req.op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
 
-    val s_idle :: s_lookup :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(6)
+    val s_idle :: s_lookup :: s_miss :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(7)
     val state = RegInit(s_idle)
 
     val hazard = Wire(Bool())
@@ -84,7 +84,8 @@ class Cache(way : Int) extends Module
     state := MuxLookup(state, s_idle, Seq(
         s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
         // what if cpu is not ready and cache has to wait for bready?
-        s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_aw),
+        s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_miss),
+        s_miss   -> s_aw,
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
@@ -96,25 +97,26 @@ class Cache(way : Int) extends Module
 
     val hit_way = Seq.fill(way)(Wire(Bool()))
     val cache_line = Seq.fill(way)(Wire(Vec(4, UInt(64.W))))
+    // val cache_line_reg = Reg(Vec(4, UInt(64.W)))\
     val cache_line_reg = RegEnable(cache_line, state === s_lookup)
 
     cpu_slave.r.bits.data := 0.U(64.W)
     
     for (i <- 0 until way)
     {
-        ways(i).tag.io.cen  := req.valid
-        ways(i).tag.io.wen  := DontCare
-        ways(i).tag.io.bwen := DontCare
+        ways(i).tag.io.cen  := req.valid || state === s_miss
+        ways(i).tag.io.wen  := state === s_ar && way_sel === i.U
+        ways(i).tag.io.bwen := Fill(51, 1.U(1.W))
         ways(i).tag.io.A    := req.index
-        ways(i).tag.io.D    := DontCare
+        ways(i).tag.io.D    := req_reg.tag
 
-        ways(i).V.io.cen   := req.valid
-        ways(i).V.io.wen   := DontCare
-        ways(i).V.io.bwen  := DontCare
+        ways(i).V.io.cen   := req.valid || state === s_miss
+        ways(i).V.io.wen   := state === s_ar && way_sel === i.U
+        ways(i).V.io.bwen  := 1.U(1.W)
         ways(i).V.io.A     := req.index
-        ways(i).V.io.D     := DontCare
+        ways(i).V.io.D     := 1.U(1.W)
 
-        ways(i).D.io.cen   := req.valid
+        ways(i).D.io.cen   := req.valid || state === s_miss
         ways(i).D.io.wen   := DontCare
         ways(i).D.io.bwen  := DontCare
         ways(i).D.io.A     := req.index
@@ -122,7 +124,7 @@ class Cache(way : Int) extends Module
 
         for (j <- 0 until 4)
         {
-            ways(i).data.banks(j).cen  := req.valid
+            ways(i).data.banks(j).cen  := req.valid || state === s_miss
             ways(i).data.banks(j).wen  := DontCare
             ways(i).data.banks(j).bwen := DontCare
             ways(i).data.banks(j).A    := req.index
