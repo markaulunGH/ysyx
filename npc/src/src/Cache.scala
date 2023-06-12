@@ -66,8 +66,8 @@ class Cache(way : Int) extends Module
     val master     = IO(new AXI_Lite_Master)
     val slave      = IO(new AXI_Lite_Slave)
 
-    val wayss = Vec(way, new Cache_Way)
-    val ways = Seq.fill(way)(new Cache_Way)
+    val ways = Vec(way, new Cache_Way)
+    // val ways = Seq.fill(way)(new Cache_Way)
     val random_bit = LFSR(16)
 
     val req = Wire(new Cache_Req)
