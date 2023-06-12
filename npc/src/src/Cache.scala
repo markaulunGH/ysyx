@@ -116,10 +116,10 @@ class Cache(way : Int) extends Module
         ways(i).V.io.D     := 1.U(1.W)
 
         ways(i).D.io.cen   := req.valid || state === s_miss
-        ways(i).D.io.wen   := DontCare
-        ways(i).D.io.bwen  := DontCare
+        ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (state === s_ar && way_sel === i.U)
+        ways(i).D.io.bwen  := 1.U(1.W)
         ways(i).D.io.A     := req.index
-        ways(i).D.io.D     := DontCare
+        ways(i).D.io.D     := Mux(state === s_lookup && hit_way(i) && req_reg.op, 1.U(1.W), 0.U(1.W))
 
         for (j <- 0 until 4)
         {
