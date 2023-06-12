@@ -59,6 +59,8 @@ class Cache_Req extends Bundle
     val strb   = UInt(8.W)
 }
 
+import chisel3.experimental.chiselName
+
 @chiselName
 class Cache(way : Int) extends Module
 {
