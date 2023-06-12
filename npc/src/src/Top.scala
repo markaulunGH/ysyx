@@ -62,8 +62,6 @@ class Top extends Module
         val rf = Output(Vec(32, UInt(64.W)))
         val rf_wen = Output(Bool())
         val mm_pc = Output(UInt(64.W))
-
-        val hit = Output(Bool())
     })
     
     val pf = Module(new PF)
@@ -95,7 +93,11 @@ class Top extends Module
     dcache.cpu_master <> es.data_master
     dcache.cpu_slave  <> ms.data_slave
 
-    io.hit := icache.debug.hit
+    val debug = IO(new Bundle
+    {
+        val hit = Output(Bool())
+    })
+    debug <> icache.debug
     
     val arbiter = Module(new AXI_Arbiter)
     arbiter.inst_master <> icache.master
