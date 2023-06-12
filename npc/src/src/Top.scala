@@ -92,12 +92,6 @@ class Top extends Module
     icache.cpu_slave  <> fs.inst_slave
     dcache.cpu_master <> es.data_master
     dcache.cpu_slave  <> ms.data_slave
-
-    val debug = IO(new Bundle
-    {
-        val hit = Output(Bool())
-    })
-    debug <> icache.debug
     
     val arbiter = Module(new AXI_Arbiter)
     arbiter.inst_master <> icache.master

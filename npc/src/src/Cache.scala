@@ -206,11 +206,4 @@ class Cache(way : Int) extends Module
     when (slave.r.fire) {
         new_cache_line := new_cache_line << 64.U | slave.r.bits.data
     }
-
-    val debug = IO(new Bundle
-    {
-        val hit = Output(Bool())
-        // val hit_way = Output()
-    })
-    debug.hit := hit
 }
