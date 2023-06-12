@@ -66,7 +66,6 @@ class Cache(way : Int) extends Module
     val master     = IO(new AXI_Lite_Master)
     val slave      = IO(new AXI_Lite_Slave)
 
-    // val ways = Vec(way, new Cache_Way)
     val ways = Seq.fill(way)(new Cache_Way)
     val random_bit = LFSR(16)
 
@@ -107,6 +106,7 @@ class Cache(way : Int) extends Module
 
     cpu_slave.r.bits.data := 0.U(64.W)
     dirty := false.B
+    hazard := false.B
     
     for (i <- 0 until way)
     {
@@ -137,22 +137,26 @@ class Cache(way : Int) extends Module
                 bwen(k) := Fill(8, req_reg.strb)
             }
 
-            ways(i).data.banks(j).cen  := ((state === s_idle || state === s_lookup) && req.valid) || (state === s_r && way_sel === i.U)
-            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op) || (state === s_r && way_sel === i.U)
+            ways(i).data.banks(j).cen  := ((state === s_idle || state === s_lookup) && req.valid && req.offset === j.U) || (state === s_r && way_sel === i.U && req_reg.offset === j.U)
+            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset === j.U) || (state === s_r && way_sel === i.U && req_reg.offset === j.U)
             ways(i).data.banks(j).bwen := Mux(state === s_lookup, bwen.asUInt(), Fill(63, 1.U(1.W)))
-            ways(i).data.banks(j).A    := req.index
-            ways(i).data.banks(j).D    := DontCare
+            ways(i).data.banks(j).A    := Mux(state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset === j.U, req_reg.index, req.index)
+            ways(i).data.banks(j).D    := req_reg.data
             cache_line(i)(j) := ways(i).data.banks(j).Q
             when (state === s_lookup && hit_way(i)) {
                 cache_line_reg(j) := ways(i).data.banks(j).Q
             }
 
-            when (ways(i).data.banks(j).Q) {
-                dirty := true.B
+            when (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset === j.U && req_reg.offset === req.offset) {
+                hazard := true.B
             }
         }
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
+
+        when (ways(i).D.io.Q === 1.U && way_sel === i.U) {
+            dirty := true.B
+        }
 
         when (state === s_lookup && hit_way(i)) {
             cpu_slave.r.bits.data := cache_line(i)(req_reg.offset)
@@ -202,6 +206,4 @@ class Cache(way : Int) extends Module
     when (slave.r.fire) {
         new_cache_line := new_cache_line << 64.U | slave.r.bits.data
     }
-
-    hazard := DontCare
 }
