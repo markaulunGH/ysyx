@@ -210,7 +210,7 @@ class Cache(way : Int) extends Module
     val debug = IO(new Bundle
     {
         val hit = Output(Bool())
-        val hit_way = Output()
+        // val hit_way = Output()
     })
     debug.hit := hit
 }
