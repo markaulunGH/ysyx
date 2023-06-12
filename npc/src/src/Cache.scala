@@ -55,6 +55,8 @@ class Cache_Req extends Bundle
     val tag    = UInt(52.W)
     val index  = UInt(7.W)
     val offset = UInt(5.W)
+    val data   = UInt(64.W)
+    val strb   = UInt(8.W)
 }
 
 class Cache(way : Int) extends Module
@@ -73,6 +75,8 @@ class Cache(way : Int) extends Module
     req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 13), cpu_master.ar.bits.addr(63, 13))
     req.index  := Mux(req.op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(12, 5))
     req.offset := Mux(req.op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
+    req.data   := cpu_master.w.data
+    req.strb   := cpu_master.w.strb
 
     val s_idle :: s_lookup :: s_miss :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(7)
     val state = RegInit(s_idle)
@@ -85,7 +89,7 @@ class Cache(way : Int) extends Module
         s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
         // what if cpu is not ready and cache has to wait for bready?
         s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_miss),
-        s_miss   -> s_aw,
+        s_miss   -> Mux(ways(way_sel).D.io.Q === 1.U, s_aw, s_ar),
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
@@ -103,29 +107,36 @@ class Cache(way : Int) extends Module
     
     for (i <- 0 until way)
     {
-        ways(i).tag.io.cen  := req.valid || state === s_miss
-        ways(i).tag.io.wen  := state === s_ar && way_sel === i.U
+        // state === s_r will write multiple times, should not matter
+        // may be state === s_miss will solve this problem?
+        ways(i).tag.io.cen  := ((state === s_idle || state === s_lookup) && req.valid && !hazard) || (state === s_r && way_sel === i.U)
+        ways(i).tag.io.wen  := state === s_r && way_sel === i.U
         ways(i).tag.io.bwen := Fill(51, 1.U(1.W))
         ways(i).tag.io.A    := req.index
         ways(i).tag.io.D    := req_reg.tag
 
-        ways(i).V.io.cen   := req.valid || state === s_miss
-        ways(i).V.io.wen   := state === s_ar && way_sel === i.U
+        ways(i).V.io.cen   := ((state === s_idle || state === s_lookup) && req.valid && !hazard) || (state === s_r && way_sel === i.U)
+        ways(i).V.io.wen   := state === s_r && way_sel === i.U
         ways(i).V.io.bwen  := 1.U(1.W)
         ways(i).V.io.A     := req.index
         ways(i).V.io.D     := 1.U(1.W)
 
-        ways(i).D.io.cen   := req.valid || state === s_miss
-        ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (state === s_ar && way_sel === i.U)
+        ways(i).D.io.cen   := (state === s_lookup) || (state === s_r && way_sel === i.U)
+        ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (state === s_r && way_sel === i.U)
         ways(i).D.io.bwen  := 1.U(1.W)
         ways(i).D.io.A     := req.index
         ways(i).D.io.D     := Mux(state === s_lookup && hit_way(i) && req_reg.op, 1.U(1.W), 0.U(1.W))
 
         for (j <- 0 until 4)
         {
-            ways(i).data.banks(j).cen  := req.valid || state === s_miss
-            ways(i).data.banks(j).wen  := DontCare
-            ways(i).data.banks(j).bwen := DontCare
+            val bwen = Wire(Vec(8, UInt(8.W)))
+            for (k <- 0 until 8) {
+                bwen(k) := Fill(8, req_reg.strb)
+            }
+
+            ways(i).data.banks(j).cen  := ((state === s_idle || state === s_lookup) && req.valid) || (state === s_r && way_sel === i.U)
+            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op) || (state === s_r && way_sel === i.U)
+            ways(i).data.banks(j).bwen := Mux(state === s_lookup, bwen.asUInt(), Fill(63, 1.U(1.W)))
             ways(i).data.banks(j).A    := req.index
             ways(i).data.banks(j).D    := DontCare
             cache_line(i)(j) := ways(i).data.banks(j).Q
