@@ -86,7 +86,6 @@ class Cache(way : Int) extends Module
     val hazard = Wire(Bool())
     val hit = Wire(Bool())
     val cnt = RegInit(0.U(2.W))
-    dirty := DontCare
 
     state := MuxLookup(state, s_idle, Seq(
         s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
@@ -107,6 +106,7 @@ class Cache(way : Int) extends Module
     val cache_line_reg = Reg(Vec(4, UInt(64.W)))
 
     cpu_slave.r.bits.data := 0.U(64.W)
+    dirty := false.B
     
     for (i <- 0 until way)
     {
@@ -145,6 +145,10 @@ class Cache(way : Int) extends Module
             cache_line(i)(j) := ways(i).data.banks(j).Q
             when (state === s_lookup && hit_way(i)) {
                 cache_line_reg(j) := ways(i).data.banks(j).Q
+            }
+
+            when (ways(i).data.banks(j).Q) {
+                dirty := true.B
             }
         }
 
