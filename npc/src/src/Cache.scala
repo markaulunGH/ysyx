@@ -129,16 +129,14 @@ class Cache(way : Int) extends Module
             ways(i).data.banks(j).A    := req.index
             ways(i).data.banks(j).D    := DontCare
             cache_line(i)(j) := ways(i).data.banks(j).Q
-            when (hit_way(i))
-            {
+            when (state === s_lookup && hit_way(i)) {
                 cache_line_reg(j) := ways(i).data.banks(j).Q
             }
         }
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
 
-        when (state === s_lookup && hit_way(i))
-        {
+        when (state === s_lookup && hit_way(i)) {
             cpu_slave.r.bits.data := cache_line(i)(req_reg.offset)
         }
     }
@@ -158,17 +156,14 @@ class Cache(way : Int) extends Module
 
     cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && !req_reg.op
     cpu_slave.r.bits.resp := 0.U(2.W)
-    when (state === s_r)
-    {
+    when (state === s_r) {
         cpu_slave.r.bits.data := new_cache_line(req_reg.offset)
     }
 
-    when (master.aw.fire || master.ar.fire)
-    {
+    when (master.aw.fire || master.ar.fire) 
         cnt := 0.U
-    }
-    .elsewhen (slave.b.fire || slave.r.fire)
-    {
+    
+    .elsewhen (slave.b.fire || slave.r.fire) {
         cnt := cnt + 1.U
     }
 
@@ -187,8 +182,7 @@ class Cache(way : Int) extends Module
     slave.b.ready := state === s_w
 
     slave.r.ready := state === s_r
-    when (slave.r.fire)
-    {
+    when (slave.r.fire) {
         new_cache_line := new_cache_line << 64.U | slave.r.bits.data
     }
 
