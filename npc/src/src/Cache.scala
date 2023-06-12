@@ -75,8 +75,8 @@ class Cache(way : Int) extends Module
     req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 13), cpu_master.ar.bits.addr(63, 13))
     req.index  := Mux(req.op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(12, 5))
     req.offset := Mux(req.op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
-    req.data   := cpu_master.w.data
-    req.strb   := cpu_master.w.strb
+    req.data   := cpu_master.w.bits.data
+    req.strb   := cpu_master.w.bits.strb
 
     val s_idle :: s_lookup :: s_miss :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(7)
     val state = RegInit(s_idle)
