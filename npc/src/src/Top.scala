@@ -95,7 +95,7 @@ class Top extends Module
     dcache.cpu_master <> es.data_master
     dcache.cpu_slave  <> ms.data_slave
 
-    io.hit := icache.hit
+    io.hit := icache.debug.hit
     
     val arbiter = Module(new AXI_Arbiter)
     arbiter.inst_master <> icache.master
