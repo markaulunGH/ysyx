@@ -83,7 +83,7 @@ class Cache(way : Int) extends Module
 
     val dirty = Wire(Bool())
     val hazard = Wire(Bool())
-    val hit = Wire(Bool())
+    val hit = dontTouch(Wire(Bool()))
     val cnt = RegInit(0.U(2.W))
 
     state := MuxLookup(state, s_idle, Seq(
@@ -210,6 +210,7 @@ class Cache(way : Int) extends Module
     val debug = IO(new Bundle
     {
         val hit = Output(Bool())
+        val hit_way = Output()
     })
     debug.hit := hit
 }
