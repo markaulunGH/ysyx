@@ -59,6 +59,7 @@ class Cache_Req extends Bundle
     val strb   = UInt(8.W)
 }
 
+@chiselName
 class Cache(way : Int) extends Module
 {
     val cpu_master = IO(Flipped(new AXI_Lite_Master))
