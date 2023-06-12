@@ -4,24 +4,17 @@
 const std::unique_ptr<VerilatedContext> contextp{new VerilatedContext};
 const std::unique_ptr<VTop> top{new VTop{contextp.get(), "TOP"}};
 VerilatedFstC* tfp = new VerilatedFstC;
-bool wave_enable;
 
 void cycle_end()
 {
 #ifdef CONFIG_WAVE
-    if (wave_enable)
-    {
         tfp->dump(contextp->time());
-    }
 #endif
     contextp->timeInc(1);
     top->clock = 0;
     top->eval();
 #ifdef CONFIG_WAVE
-    if (wave_enable)
-    {
         tfp->dump(contextp->time());
-    }
 #endif
     contextp->timeInc(1);
     top->clock = 1;
