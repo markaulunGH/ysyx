@@ -72,8 +72,8 @@ class Cache(way : Int) extends Module
     val req = dontTouch(Wire(new Cache_Req))
     req.valid  := cpu_master.ar.valid || cpu_master.aw.valid
     req.op     := cpu_master.aw.valid
-    req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 13), cpu_master.ar.bits.addr(63, 13))
-    req.index  := Mux(req.op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(12, 5))
+    req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 13), cpu_master.ar.bits.addr(63, 12))
+    req.index  := Mux(req.op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(11, 5))
     req.offset := Mux(req.op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
     req.data   := cpu_master.w.bits.data
     req.strb   := cpu_master.w.bits.strb
