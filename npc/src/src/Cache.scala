@@ -159,7 +159,7 @@ class Cache(way : Int) extends Module
         }
 
         when (state === s_lookup && hit_way(i)) {
-            cpu_slave.r.bits.data := cache_line(i) >> Cat(req_reg.offset, 0.U(3.W))
+            cpu_slave.r.bits.data := cache_line(i).asUInt() >> Cat(req_reg.offset, 0.U(3.W))
         }
     }
 
