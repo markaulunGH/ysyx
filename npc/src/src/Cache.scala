@@ -204,6 +204,6 @@ class Cache(way : Int) extends Module
 
     slave.r.ready := state === s_r
     when (slave.r.fire) {
-        new_cache_line := new_cache_line << 64.U | slave.r.bits.data
+        new_cache_line := new_cache_line >> 64.U | Cat(slave.r.bits.data, 0.U(192.W))
     }
 }
