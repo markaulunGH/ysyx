@@ -94,7 +94,7 @@ class Cache(way : Int) extends Module
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
-        s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, s_idle, s_r), s_r)
+        s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, s_idle, s_ar), s_r)
     ))
 
     val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
@@ -165,7 +165,7 @@ class Cache(way : Int) extends Module
 
     hit := hit_way.reduce(_ || _)
 
-    val new_cache_line = Reg(UInt(256.W))
+    val cache_line_buf = Reg(UInt(192.W))
 
     val cache_ready = dontTouch((state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
     
@@ -179,10 +179,10 @@ class Cache(way : Int) extends Module
     cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && !req_reg.op
     cpu_slave.r.bits.resp := 0.U(2.W)
     when (state === s_r) {
-        cpu_slave.r.bits.data := new_cache_line(req_reg.offset)
+        cpu_slave.r.bits.data := Cat(slave.r.bits.data, cache_line_buf) >> Cat(req_reg.offset, 0.U(3.W))
     }
 
-    when (master.aw.fire || master.ar.fire) {
+    when (cpu_master.aw.fire || cpu_master.ar.fire) {
         cnt := 0.U
     } .elsewhen (slave.b.fire || slave.r.fire) {
         cnt := cnt + 1.U
@@ -204,6 +204,6 @@ class Cache(way : Int) extends Module
 
     slave.r.ready := state === s_r
     when (slave.r.fire) {
-        new_cache_line := new_cache_line << 64.U | slave.r.bits.data
+        cache_line_buf := cache_line_buf >> 64.U | Cat(slave.r.bits.data, 0.U(128.W))
     }
 }
