@@ -182,7 +182,7 @@ class Cache(way : Int) extends Module
         cpu_slave.r.bits.data := new_cache_line(req_reg.offset)
     }
 
-    when (master.aw.fire || master.ar.fire) {
+    when (cpu_master.aw.fire || cpu_master.ar.fire) {
         cnt := 0.U
     } .elsewhen (slave.b.fire || slave.r.fire) {
         cnt := cnt + 1.U
