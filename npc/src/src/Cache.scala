@@ -137,8 +137,8 @@ class Cache(way : Int) extends Module
                 bwen(k) := Fill(8, req_reg.strb)
             }
 
-            ways(i).data.banks(j).cen  := ((state === s_idle || state === s_lookup) && req.valid && req.offset === j.U) || (state === s_r && way_sel === i.U && req_reg.offset === j.U)
-            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset === j.U) || (state === s_r && way_sel === i.U && req_reg.offset === j.U)
+            ways(i).data.banks(j).cen  := ((state === s_idle || state === s_lookup) && req.valid && req.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U && req_reg.offset(4, 3) === j.U)
+            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U && req_reg.offset(4, 3) === j.U)
             ways(i).data.banks(j).bwen := Mux(state === s_lookup, bwen.asUInt(), Fill(63, 1.U(1.W)))
             ways(i).data.banks(j).A    := Mux(state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset === j.U, req_reg.index, req.index)
             ways(i).data.banks(j).D    := req_reg.data
