@@ -165,7 +165,7 @@ class Cache(way : Int) extends Module
 
     hit := hit_way.reduce(_ || _)
 
-    val new_cache_line = Reg(UInt(256.W))
+    val cache_line_buf = Reg(UInt(192.W))
 
     val cache_ready = dontTouch((state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
     
@@ -179,7 +179,7 @@ class Cache(way : Int) extends Module
     cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && !req_reg.op
     cpu_slave.r.bits.resp := 0.U(2.W)
     when (state === s_r) {
-        cpu_slave.r.bits.data := Cat(slave.r.bits.data, new_cache_line(191, 0))(req_reg.offset)
+        cpu_slave.r.bits.data := Cat(slave.r.bits.data, cache_line_buf)(req_reg.offset)
     }
 
     when (cpu_master.aw.fire || cpu_master.ar.fire) {
@@ -204,6 +204,6 @@ class Cache(way : Int) extends Module
 
     slave.r.ready := state === s_r
     when (slave.r.fire) {
-        new_cache_line := new_cache_line >> 64.U | Cat(slave.r.bits.data, 0.U(192.W))
+        cache_line_buf := cache_line_buf >> 64.U | Cat(slave.r.bits.data, 0.U(128.W))
     }
 }
