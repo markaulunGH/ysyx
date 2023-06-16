@@ -32,7 +32,7 @@ class Bank_IO extends Bundle
 class Cache_Line extends Module
 {
     val banks = Seq.fill(4)(IO(new Bank_IO))
-    val datas = Seq.fill(4)(Module(new Cache_Sram(64, 128)))
+    val datas = Seq.fill(4)(Module(new Cache_Sram(64, 64)))
 
     for (i <- 0 until 4)
     {
@@ -42,7 +42,7 @@ class Cache_Line extends Module
 
 class Cache_Way extends Bundle
 {
-    val tag  = Module(new Cache_Sram(52, 128))
+    val tag  = Module(new Cache_Sram(53, 128))
     val V    = Module(new Cache_Sram(1, 128))
     val D    = Module(new Cache_Sram(1, 128))
     val data = Module(new Cache_Line)
@@ -52,8 +52,8 @@ class Cache_Req extends Bundle
 {
     val valid  = Bool()
     val op     = Bool()
-    val tag    = UInt(52.W)
-    val index  = UInt(7.W)
+    val tag    = UInt(53.W)
+    val index  = UInt(6.W)
     val offset = UInt(5.W)
     val data   = UInt(64.W)
     val strb   = UInt(8.W)
@@ -72,8 +72,8 @@ class Cache(way : Int) extends Module
     val req = dontTouch(Wire(new Cache_Req))
     req.valid  := cpu_master.ar.valid || cpu_master.aw.valid
     req.op     := cpu_master.aw.valid
-    req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 13), cpu_master.ar.bits.addr(63, 13))
-    req.index  := Mux(req.op, cpu_master.aw.bits.addr(12, 5), cpu_master.ar.bits.addr(12, 5))
+    req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 11), cpu_master.ar.bits.addr(63, 11))
+    req.index  := Mux(req.op, cpu_master.aw.bits.addr(10, 5), cpu_master.ar.bits.addr(10, 5))
     req.offset := Mux(req.op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
     req.data   := cpu_master.w.bits.data
     req.strb   := cpu_master.w.bits.strb
