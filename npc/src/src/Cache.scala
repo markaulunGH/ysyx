@@ -102,7 +102,7 @@ class Cache(way : Int) extends Module
 
     val hit_way = Seq.fill(way)(dontTouch(Wire(Bool())))
     val cache_line = Seq.fill(way)(dontTouch(Wire(Vec(4, UInt(64.W)))))
-    val cache_line_reg = Reg(Vec(4, UInt(64.W)))
+    val cache_line_reg = dontTouch(Reg(Vec(4, UInt(64.W))))
 
     cpu_slave.r.bits.data := 0.U(64.W)
     dirty := false.B
