@@ -179,7 +179,7 @@ class Cache(way : Int) extends Module
     cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && !req_reg.op
     cpu_slave.r.bits.resp := 0.U(2.W)
     when (state === s_r) {
-        cpu_slave.r.bits.data := Cat(slave.r.bits.data, cache_line_buf)(req_reg.offset + 63, req_reg.offset)
+        cpu_slave.r.bits.data := Cat(slave.r.bits.data, cache_line_buf)(req_reg.offset + 63.U, req_reg.offset)
     }
 
     when (cpu_master.aw.fire || cpu_master.ar.fire) {
