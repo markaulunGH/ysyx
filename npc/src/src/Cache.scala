@@ -94,10 +94,8 @@ class Cache(way : Int) extends Module
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
-        s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, s_idle, s_r), s_r)
+        s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, s_idle, s_ar), s_r)
     ))
-
-    val rfire = dontTouch(slave.r.fire)
 
     val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
     val way_sel = RegEnable(random_bit(log2Ceil(way) - 1, 0), state === s_lookup)
