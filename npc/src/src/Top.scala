@@ -87,19 +87,17 @@ class Top extends Module
     ws.ws_ms <> ms.ws_ms
 
     val icache = Module(new Cache(2))
-    // val dcache = Module(new Cache(2))
+    val dcache = Module(new Cache(2))
     icache.cpu_master <> pf.inst_master
     icache.cpu_slave  <> fs.inst_slave
-    // dcache.cpu_master <> es.data_master
-    // dcache.cpu_slave  <> ms.data_slave
+    dcache.cpu_master <> es.data_master
+    dcache.cpu_slave  <> ms.data_slave
     
     val arbiter = Module(new AXI_Arbiter)
     arbiter.inst_master <> icache.master
     arbiter.inst_slave  <> icache.slave
-    // arbiter.inst_master <> pf.inst_master
-    // arbiter.inst_slave  <> fs.inst_slave
-    arbiter.data_master <> es.data_master
-    arbiter.data_slave  <> ms.data_slave
+    arbiter.data_master <> dcache.master
+    arbiter.data_slave  <> dcache.slave
 
     val sram = Module(new SRAM)
     sram.master <> arbiter.master

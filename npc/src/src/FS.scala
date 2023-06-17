@@ -28,7 +28,7 @@ class FS extends Module
     
     val fs_valid = RegInit(false.B)
     val fs_ready = fs_valid && (inst_slave.r.fire || rfire)
-    val fs_allow_in = dontTouch(!fs_valid || fs_ready && ds_fs.ds_allow_in)
+    val fs_allow_in = !fs_valid || fs_ready && ds_fs.ds_allow_in
     val to_ds_valid = fs_valid && fs_ready
     when (fs_allow_in)
     {
