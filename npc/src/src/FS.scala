@@ -46,7 +46,7 @@ class FS extends Module
 
     val rdata = RegInit(0.U(32.W))
 
-    inst_slave.r.ready := !rfire && !reset.asBool()
+    inst_slave.r.ready := dontTouch(!rfire && !reset.asBool())
     when (fs_allow_in)
     {
         rfire := false.B
