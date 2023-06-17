@@ -32,14 +32,6 @@ class AXI_Arbiter extends Module
     } .elsewhen (data_slave.r.fire) {
         data_req := false.B
     }
-    // when (data_slave.r.fire)
-    // {
-    //     data_req := false.B
-    // }
-    // .elsewhen (data_master.ar.valid && (ridle || slave.r.fire))
-    // {
-    //     data_req := true.B
-    // }
 
     master.aw.valid      := data_master.aw.valid
     data_master.aw.ready := master.aw.ready
