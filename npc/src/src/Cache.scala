@@ -105,7 +105,7 @@ class Cache(way : Int) extends Module
     val cache_line_reg = dontTouch(Reg(Vec(4, UInt(64.W))))
 
     val cache_line_buf = Reg(UInt(192.W))
-    val new_cache_line = Cat(slave.r.bits.data, cache_line_buf)
+    val new_cache_line = dontTouch(Cat(slave.r.bits.data, cache_line_buf))
 
     cpu_slave.r.bits.data := 0.U(64.W)
     dirty := false.B
