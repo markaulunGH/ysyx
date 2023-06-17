@@ -12,35 +12,34 @@ class AXI_Arbiter extends Module
 
     val widle = RegInit(true.B)
     val awaddr = RegInit(0.U(64.W))
-    when (master.aw.valid)
-    {
+    when (master.aw.valid) {
         widle := false.B
         awaddr := master.aw.bits.addr
-    }
-    .elsewhen (slave.b.fire)
-    {
+    } .elsewhen (slave.b.fire) {
         widle := true.B
     }
     
     val ridle = RegInit(true.B)
-    when (master.ar.valid)
-    {
+    when (master.ar.valid) {
         ridle := false.B
-    }
-    .elsewhen (slave.r.fire)
-    {
+    } .elsewhen (slave.r.fire) {
         ridle := true.B
     }
 
     val data_req = RegInit(false.B)
-    when (data_slave.r.fire)
-    {
+    when (data_master.ar.fire) {
+        data_req := true.B
+    } .elsewhen (data_slave.r.fire) {
         data_req := false.B
     }
-    .elsewhen (data_master.ar.valid && (ridle || slave.r.fire))
-    {
-        data_req := true.B
-    }
+    // when (data_slave.r.fire)
+    // {
+    //     data_req := false.B
+    // }
+    // .elsewhen (data_master.ar.valid && (ridle || slave.r.fire))
+    // {
+    //     data_req := true.B
+    // }
 
     master.aw.valid      := data_master.aw.valid
     data_master.aw.ready := master.aw.ready
@@ -62,8 +61,6 @@ class AXI_Arbiter extends Module
 
     master.ar.valid      := Mux(data_master.ar.valid, data_master.ar.valid, inst_master.ar.valid) && (widle || master.ar.bits.addr =/= awaddr) && (ridle || slave.r.fire)
     data_master.ar.ready := Mux(data_master.ar.valid, master.ar.ready, false.B) && (widle || data_master.ar.bits.addr =/= awaddr) && (ridle || slave.r.fire)
-    // combinational cycle?
-    // data_master.ar.ready := Mux(data_master.ar.valid, master.ar.ready, false.B) && (widle || master.ar.bits.addr =/= awaddr) && (ridle || slave.r.fire)
     inst_master.ar.ready := Mux(data_master.ar.valid, false.B, master.ar.ready) && (widle || inst_master.ar.bits.addr =/= awaddr) && (ridle || slave.r.fire)
     master.ar.bits.addr  := Mux(data_master.ar.valid, data_master.ar.bits.addr, inst_master.ar.bits.addr)
     master.ar.bits.prot  := Mux(data_master.ar.valid, data_master.ar.bits.prot, inst_master.ar.bits.prot)
