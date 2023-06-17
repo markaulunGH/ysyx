@@ -118,6 +118,8 @@ class Cache(way : Int) extends Module
     cache_rdata := 0.U(64.W)
     dirty := false.B
     hazard := false.B
+
+    val write_back_en = dontTouch(state === s_r && cnt === 3.U)
     
     for (i <- 0 until way)
     {
