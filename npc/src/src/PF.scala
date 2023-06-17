@@ -37,7 +37,7 @@ class PF extends Module
     inst_master.w.bits.data := 0.U(64.W)
     inst_master.w.bits.strb := 0.U(8.W)
 
-    when (ds_pf.ds_allow_in)
+    when (fs_pf.pf_allow_in)
     {
         arfire := false.B
     }

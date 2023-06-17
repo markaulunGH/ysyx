@@ -4,6 +4,7 @@ import chisel3.util._
 class FS_PF extends Bundle
 {
     val pc = Output(UInt(64.W))
+    val pf_allow_in = Output(Bool())
 }
 
 class FS_DS extends Bundle
