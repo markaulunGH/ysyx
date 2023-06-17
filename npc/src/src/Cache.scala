@@ -119,20 +119,20 @@ class Cache(way : Int) extends Module
         // may be state === s_miss will solve this problem?
         ways(i).tag.io.cen  := ((state === s_idle || state === s_lookup) && req.valid && !hazard) || (state === s_r && way_sel === i.U)
         ways(i).tag.io.wen  := state === s_r && way_sel === i.U
-        ways(i).tag.io.bwen := Fill(51, 1.U(1.W))
-        ways(i).tag.io.A    := req.index
+        ways(i).tag.io.bwen := Fill(53, 1.U(1.W))
+        ways(i).tag.io.A    := Mux(state === s_r, req_reg.index, req.index)
         ways(i).tag.io.D    := req_reg.tag
 
         ways(i).V.io.cen   := ((state === s_idle || state === s_lookup) && req.valid && !hazard) || (state === s_r && way_sel === i.U)
         ways(i).V.io.wen   := state === s_r && way_sel === i.U
         ways(i).V.io.bwen  := 1.U(1.W)
-        ways(i).V.io.A     := req.index
+        ways(i).V.io.A     := Mux(state === s_r, req_reg.index, req.index)
         ways(i).V.io.D     := 1.U(1.W)
 
         ways(i).D.io.cen   := (state === s_lookup) || (state === s_r && way_sel === i.U)
         ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (state === s_r && way_sel === i.U)
         ways(i).D.io.bwen  := 1.U(1.W)
-        ways(i).D.io.A     := req.index
+        ways(i).D.io.A     := Mux(state === s_r, req_reg.index, req.index)
         ways(i).D.io.D     := Mux(state === s_lookup && hit_way(i) && req_reg.op, 1.U(1.W), 0.U(1.W))
 
         for (j <- 0 until 4)
@@ -144,7 +144,7 @@ class Cache(way : Int) extends Module
 
             ways(i).data.banks(j).cen  := ((state === s_idle || state === s_lookup) && req.valid && req.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U)
             ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U)
-            ways(i).data.banks(j).bwen := Mux(state === s_r, Fill(63, 1.U(1.W)), bwen.asUInt())
+            ways(i).data.banks(j).bwen := Mux(state === s_r, Fill(64, 1.U(1.W)), bwen.asUInt())
             ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U, req_reg.index, req.index)
             ways(i).data.banks(j).D    := Mux(state === s_r, new_cache_line >> Cat(j.U, 0.U(6.W)), req_reg.data)
             cache_line(i)(j) := ways(i).data.banks(j).Q
