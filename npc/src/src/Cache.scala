@@ -137,11 +137,11 @@ class Cache(way : Int) extends Module
                 bwen(k) := Fill(8, req_reg.strb)
             }
 
-            ways(i).data.banks(j).cen  := ((state === s_idle || state === s_lookup) && req.valid && req.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U && req_reg.offset(4, 3) === j.U)
-            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U && req_reg.offset(4, 3) === j.U)
-            ways(i).data.banks(j).bwen := Mux(state === s_lookup, bwen.asUInt(), Fill(63, 1.U(1.W)))
-            ways(i).data.banks(j).A    := Mux(state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset === j.U, req_reg.index, req.index)
-            ways(i).data.banks(j).D    := req_reg.data
+            ways(i).data.banks(j).cen  := ((state === s_idle || state === s_lookup) && req.valid && req.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U)
+            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U)
+            ways(i).data.banks(j).bwen := Mux(state === s_r, Fill(63, 1.U(1.W)), bwen.asUInt())
+            ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U, req_reg.index, req.index)
+            ways(i).data.banks(j).D    := Mux(state === s_r, new_cache_line >> Cat(j.U, 0.U(3.W)), req_reg.data)
             cache_line(i)(j) := ways(i).data.banks(j).Q
             when (state === s_lookup && hit_way(i)) {
                 cache_line_reg(j) := ways(i).data.banks(j).Q
@@ -166,6 +166,7 @@ class Cache(way : Int) extends Module
     hit := hit_way.reduce(_ || _)
 
     val cache_line_buf = Reg(UInt(192.W))
+    val new_cache_line = Cat(slave.r.bits.data, cache_line_buf)
 
     val cache_ready = dontTouch((state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
     
@@ -179,7 +180,7 @@ class Cache(way : Int) extends Module
     cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && !req_reg.op
     cpu_slave.r.bits.resp := 0.U(2.W)
     when (state === s_r) {
-        cpu_slave.r.bits.data := Cat(slave.r.bits.data, cache_line_buf) >> Cat(req_reg.offset, 0.U(3.W))
+        cpu_slave.r.bits.data := new_cache_line >> Cat(req_reg.offset, 0.U(3.W))
     }
 
     when (cpu_master.aw.fire || cpu_master.ar.fire) {
