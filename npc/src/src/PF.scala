@@ -37,19 +37,14 @@ class PF extends Module
     inst_master.w.bits.data := 0.U(64.W)
     inst_master.w.bits.strb := 0.U(8.W)
 
-    when (inst_master.ar.fire) {
-        arfire := true.B
-    } .elsewhen (ds_pf.ds_allow_in) {
+    when (ds_pf.ds_allow_in)
+    {
         arfire := false.B
     }
-    // when (ds_pf.ds_allow_in)
-    // {
-    //     arfire := false.B
-    // }
-    // .elsewhen (inst_master.ar.fire)
-    // {
-    //     arfire := true.B
-    // }
+    .elsewhen (inst_master.ar.fire)
+    {
+        arfire := true.B
+    }
 
     pf_fs.to_fs_valid := to_fs_valid
     pf_fs.next_pc := next_pc
