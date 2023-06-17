@@ -111,7 +111,7 @@ class Cache(way : Int) extends Module
     val new_cache_line = dontTouch(Cat(slave.r.bits.data, cache_line_buf))
 
     val cache_rdata = Wire(UInt(64.W))
-    val cache_rdata_reg = RegEnable(cache_rdata, state === s_wait)
+    val cache_rdata_reg = RegEnable(cache_rdata, state === s_lookup)
     cache_rdata := 0.U(64.W)
     // cpu_slave.r.bits.data := 0.U(64.W)
     dirty := false.B
