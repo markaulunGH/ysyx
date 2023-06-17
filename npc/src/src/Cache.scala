@@ -163,8 +163,14 @@ class Cache(way : Int) extends Module
             dirty := true.B
         }
 
+        // Does cache support unaligned access?
         when (state === s_lookup && hit_way(i)) {
-            cpu_slave.r.bits.data := cache_line(i).asUInt() >> Cat(req_reg.offset, 0.U(3.W))
+            for (j <- 0 until 4) {
+                when (req_reg.offset(4, 3) === j.U) {
+                    cpu_slave.r.bits.data := cache_line(i)(j) >> Cat(req_reg.offset(2, 0), 0.U(3.W))
+                }
+            }
+            // cpu_slave.r.bits.data := cache_line(i).asUInt() >> Cat(req_reg.offset, 0.U(3.W))
         }
     }
 
