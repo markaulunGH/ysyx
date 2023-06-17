@@ -4,7 +4,7 @@ import chisel3.util._
 class FS_PF extends Bundle
 {
     val pc = Output(UInt(64.W))
-    val pf_allow_in = Output(Bool())
+    val fs_allow_in = Output(Bool())
 }
 
 class FS_DS extends Bundle
@@ -61,6 +61,7 @@ class FS extends Module
     inst_slave.b.ready := false.B
 
     fs_pf.pc := pc
+    fs_pf.fs_allow_in := fs_allow_in
 
     fs_ds.to_ds_valid := to_ds_valid
     fs_ds.inst := Mux(rfire, rdata, inst_slave.r.bits.data)
