@@ -18,9 +18,7 @@ class Cache_Sram(width : Int, depth : Int) extends Module
     when (io.cen && io.wen) {
         ram(io.A) := (io.D & io.bwen) | (ram(io.A) & ~io.bwen)
     }
-    when (io.cen && !io.wen) {
-        io.Q := ram(io.A)
-    }
+    io.Q := RegEnable(ram(io.A), io.cen && !io.wen)
 }
 
 class Bank_IO extends Bundle
