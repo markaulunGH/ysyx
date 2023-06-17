@@ -52,7 +52,6 @@ class Cache_Way extends Bundle
 
 class Cache_Req extends Bundle
 {
-    val valid  = Bool()
     val op     = Bool()
     val tag    = UInt(53.W)
     val index  = UInt(6.W)
@@ -71,8 +70,10 @@ class Cache(way : Int) extends Module
     val ways = Seq.fill(way)(new Cache_Way)
     val random_bit = LFSR(16)
 
+    val cpu_request = dontTouch(cpu_master.ar.valid || cpu_master.aw.valid)
+    val cpu_ready = dontTouch(cpu_slave.r.ready || cpu_slave.b.ready)
+
     val req = dontTouch(Wire(new Cache_Req))
-    req.valid  := cpu_master.ar.valid || cpu_master.aw.valid
     req.op     := cpu_master.aw.valid
     req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 11), cpu_master.ar.bits.addr(63, 11))
     req.index  := Mux(req.op, cpu_master.aw.bits.addr(10, 5), cpu_master.ar.bits.addr(10, 5))
@@ -80,27 +81,27 @@ class Cache(way : Int) extends Module
     req.data   := cpu_master.w.bits.data
     req.strb   := cpu_master.w.bits.strb
 
-    val s_idle :: s_lookup :: s_miss :: s_aw :: s_w :: s_ar :: s_r :: s_wait :: Nil = Enum(8)
-    val state = RegInit(s_idle)
-
     val dirty = dontTouch(Wire(Bool()))
     val hazard = dontTouch(Wire(Bool()))
     val hit = dontTouch(Wire(Bool()))
     val cnt = RegInit(0.U(2.W))
 
+    val s_idle :: s_lookup :: s_miss :: s_aw :: s_w :: s_ar :: s_r :: s_wait :: Nil = Enum(8)
+    val state = RegInit(s_idle)
+
     state := MuxLookup(state, s_idle, Seq(
-        s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
-        s_lookup -> Mux(hit, Mux(cpu_slave.r.ready || cpu_slave.b.ready, Mux(req.valid && !hazard, s_lookup, s_idle), s_wait), s_miss),
+        s_idle   -> Mux(cpu_request && !hazard, s_lookup, s_idle),
+        s_lookup -> Mux(hit, Mux(cpu_ready, Mux(cpu_request && !hazard, s_lookup, s_idle), s_wait), s_miss),
         // Now cache state will change from idle -> lookup -> wait -> idle, maybe wait -> lookup directly in the future
-        s_wait   -> Mux(cpu_slave.r.ready || cpu_slave.b.ready, s_idle, s_wait),
+        s_wait   -> Mux(cpu_ready, s_idle, s_wait),
         s_miss   -> Mux(dirty, s_aw, s_ar),
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
-        s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, Mux(cpu_slave.r.ready || cpu_slave.b.ready, s_idle, s_wait), s_ar), s_r)
+        s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, Mux(cpu_ready, s_idle, s_wait), s_ar), s_r)
     ))
 
-    val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
+    val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && cpu_request && !hazard)
     val way_sel = RegEnable(random_bit(log2Ceil(way) - 1, 0), state === s_lookup)
 
     val hit_way = Seq.fill(way)(dontTouch(Wire(Bool())))
@@ -120,13 +121,13 @@ class Cache(way : Int) extends Module
     {
         // state === s_r will write multiple times, should not matter
         // may be state === s_miss will solve this problem?
-        ways(i).tag.io.cen  := ((state === s_idle || state === s_lookup) && req.valid && !hazard) || (state === s_r && way_sel === i.U)
+        ways(i).tag.io.cen  := ((state === s_idle || state === s_lookup) && cpu_request && !hazard) || (state === s_r && way_sel === i.U)
         ways(i).tag.io.wen  := state === s_r && way_sel === i.U
         ways(i).tag.io.bwen := Fill(53, 1.U(1.W))
         ways(i).tag.io.A    := Mux(state === s_r, req_reg.index, req.index)
         ways(i).tag.io.D    := req_reg.tag
 
-        ways(i).V.io.cen   := ((state === s_idle || state === s_lookup) && req.valid && !hazard) || (state === s_r && way_sel === i.U)
+        ways(i).V.io.cen   := ((state === s_idle || state === s_lookup) && cpu_request && !hazard) || (state === s_r && way_sel === i.U)
         ways(i).V.io.wen   := state === s_r && way_sel === i.U
         ways(i).V.io.bwen  := 1.U(1.W)
         ways(i).V.io.A     := Mux(state === s_r, req_reg.index, req.index)
@@ -145,7 +146,7 @@ class Cache(way : Int) extends Module
                 bwen(k) := Fill(8, req_reg.strb)
             }
 
-            ways(i).data.banks(j).cen  := ((state === s_idle || state === s_lookup) && req.valid && req.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U)
+            ways(i).data.banks(j).cen  := ((state === s_idle || state === s_lookup) && cpu_request && req.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U)
             ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U)
             ways(i).data.banks(j).bwen := Mux(state === s_r, Fill(64, 1.U(1.W)), bwen.asUInt())
             ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U, req_reg.index, req.index)
