@@ -97,7 +97,7 @@ class Cache(way : Int) extends Module
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
-        s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, s_idle, s_ar), s_r)
+        s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, Mux(cpu_slave.r.ready || cpu_slave.b.ready, s_idle, s_wait), s_ar), s_r)
     ))
 
     val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
@@ -111,7 +111,7 @@ class Cache(way : Int) extends Module
     val new_cache_line = dontTouch(Cat(slave.r.bits.data, cache_line_buf))
 
     val cache_rdata = Wire(UInt(64.W))
-    val cache_rdata_reg = RegEnable(cache_rdata, state === s_lookup)
+    val cache_rdata_reg = RegEnable(cache_rdata, state === s_lookup || state === s_r)
     cache_rdata := 0.U(64.W)
     dirty := false.B
     hazard := false.B
