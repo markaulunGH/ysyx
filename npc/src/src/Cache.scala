@@ -80,7 +80,7 @@ class Cache(way : Int) extends Module
     req.data   := cpu_master.w.bits.data
     req.strb   := cpu_master.w.bits.strb
 
-    val s_idle :: s_lookup :: s_miss :: s_aw :: s_w :: s_ar :: s_r :: Nil = Enum(7)
+    val s_idle :: s_lookup :: s_miss :: s_aw :: s_w :: s_ar :: s_r :: s_wait :: Nil = Enum(8)
     val state = RegInit(s_idle)
 
     val dirty = dontTouch(Wire(Bool()))
@@ -90,8 +90,9 @@ class Cache(way : Int) extends Module
 
     state := MuxLookup(state, s_idle, Seq(
         s_idle   -> Mux(req.valid && !hazard, s_lookup, s_idle),
-        // what if cpu is not ready and cache has to wait for bready?
-        s_lookup -> Mux(hit, Mux(req.valid && !hazard, s_lookup, s_idle), s_miss),
+        s_lookup -> Mux(hit, Mux(cpu_slave.r.ready || cpu_slave.b.ready, Mux(req.valid && !hazard, s_lookup, s_idle), s_wait), s_miss),
+        // Now cache state will change from idle -> lookup -> wait -> idle, maybe wait -> lookup directly in the future
+        s_wait   -> Mux(cpu_slave.r.ready || cpu_slave.b.ready, s_idle, s_wait),
         s_miss   -> Mux(dirty, s_aw, s_ar),
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
@@ -109,7 +110,9 @@ class Cache(way : Int) extends Module
     val cache_line_buf = Reg(UInt(192.W))
     val new_cache_line = dontTouch(Cat(slave.r.bits.data, cache_line_buf))
 
-    cpu_slave.r.bits.data := 0.U(64.W)
+    val cache_rdata = 0.U(64.W)
+    val cache_rdata_reg = RegEnable(cache_rdata, state === s_wait)
+    // cpu_slave.r.bits.data := 0.U(64.W)
     dirty := false.B
     hazard := false.B
     
@@ -167,10 +170,10 @@ class Cache(way : Int) extends Module
         when (state === s_lookup && hit_way(i)) {
             for (j <- 0 until 4) {
                 when (req_reg.offset(4, 3) === j.U) {
-                    cpu_slave.r.bits.data := cache_line(i)(j) >> Cat(req_reg.offset(2, 0), 0.U(3.W))
+                    cache_rdata := cache_line(i)(j) >> Cat(req_reg.offset(2, 0), 0.U(3.W))
                 }
             }
-            // cpu_slave.r.bits.data := cache_line(i).asUInt() >> Cat(req_reg.offset, 0.U(3.W))
+            // cache_rdata := cache_line(i).asUInt() >> Cat(req_reg.offset, 0.U(3.W))
         }
     }
 
@@ -182,14 +185,15 @@ class Cache(way : Int) extends Module
     cpu_master.w.ready  := cache_ready
     cpu_master.ar.ready := cache_ready
 
-    cpu_slave.b.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && req_reg.op
+    cpu_slave.b.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && req_reg.op || state === s_wait
     cpu_slave.b.bits.resp := 0.U(2.W)
 
-    cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && !req_reg.op
+    cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && !req_reg.op || state === s_wait
     cpu_slave.r.bits.resp := 0.U(2.W)
     when (state === s_r) {
-        cpu_slave.r.bits.data := new_cache_line >> Cat(req_reg.offset, 0.U(3.W))
+        cache_rdata := new_cache_line >> Cat(req_reg.offset, 0.U(3.W))
     }
+    cpu_slave.r.bits.data := Mux(state === s_wait, cache_rdata_reg, cache_rdata)
 
     when (cpu_master.aw.fire || cpu_master.ar.fire) {
         cnt := 0.U
