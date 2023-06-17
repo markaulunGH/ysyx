@@ -101,9 +101,9 @@ class Cache(way : Int) extends Module
         s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, Mux(cpu_ready, s_idle, s_wait), s_ar), s_r)
     ))
 
-    val cache_ready = dontTouch(state === s_idle || (state === s_lookup && hit))
+    val cache_ready = dontTouch((state === s_idle || (state === s_lookup && hit)) && !hazard)
 
-    val req_reg = RegEnable(req, (state === s_idle || (state === s_lookup && hit)) && cpu_request && !hazard)
+    val req_reg = RegEnable(req, cache_ready && cpu_request)
     val way_sel = RegEnable(random_bit(log2Ceil(way) - 1, 0), state === s_lookup)
 
     val hit_way = Seq.fill(way)(dontTouch(Wire(Bool())))
@@ -123,19 +123,19 @@ class Cache(way : Int) extends Module
     {
         // state === s_r will write multiple times, should not matter
         // may be state === s_miss will solve this problem?
-        ways(i).tag.io.cen  := ((state === s_idle || state === s_lookup) && cpu_request && !hazard) || (state === s_r && way_sel === i.U)
+        ways(i).tag.io.cen  := cache_ready && cpu_request || state === s_r && way_sel === i.U
         ways(i).tag.io.wen  := state === s_r && way_sel === i.U
         ways(i).tag.io.bwen := Fill(53, 1.U(1.W))
         ways(i).tag.io.A    := Mux(state === s_r, req_reg.index, req.index)
         ways(i).tag.io.D    := req_reg.tag
 
-        ways(i).V.io.cen   := ((state === s_idle || state === s_lookup) && cpu_request && !hazard) || (state === s_r && way_sel === i.U)
+        ways(i).V.io.cen   := cache_ready && cpu_request || state === s_r && way_sel === i.U
         ways(i).V.io.wen   := state === s_r && way_sel === i.U
         ways(i).V.io.bwen  := 1.U(1.W)
         ways(i).V.io.A     := Mux(state === s_r, req_reg.index, req.index)
         ways(i).V.io.D     := 1.U(1.W)
 
-        ways(i).D.io.cen   := (state === s_lookup) || (state === s_r && way_sel === i.U)
+        ways(i).D.io.cen   := state === s_lookup || (state === s_r && way_sel === i.U)
         ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (state === s_r && way_sel === i.U)
         ways(i).D.io.bwen  := 1.U(1.W)
         ways(i).D.io.A     := Mux(state === s_r, req_reg.index, req.index)
@@ -180,8 +180,6 @@ class Cache(way : Int) extends Module
 
     hit := hit_way.reduce(_ || _)
 
-    val cache_ready = dontTouch((state === s_idle || (state === s_lookup && hit)) && !hazard)
-    
     cpu_master.aw.ready := cache_ready
     cpu_master.w.ready  := cache_ready
     cpu_master.ar.ready := cache_ready
