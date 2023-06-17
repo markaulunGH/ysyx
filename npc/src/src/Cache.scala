@@ -135,7 +135,7 @@ class Cache(way : Int) extends Module
         ways(i).V.io.A     := Mux(state === s_r, req_reg.index, req.index)
         ways(i).V.io.D     := 1.U(1.W)
 
-        ways(i).D.io.cen   := (cache_ready && cpu_request) || (state === s_r && way_sel === i.U)
+        ways(i).D.io.cen   := (state === s_lookup) || (state === s_r && way_sel === i.U)
         ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (state === s_r && way_sel === i.U)
         ways(i).D.io.bwen  := 1.U(1.W)
         ways(i).D.io.A     := Mux(state === s_r, req_reg.index, req.index)
@@ -148,7 +148,7 @@ class Cache(way : Int) extends Module
                 bwen(k) := Fill(8, req_reg.strb)
             }
 
-            ways(i).data.banks(j).cen  := ((state === s_idle || state === s_lookup) && cpu_request && req.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U)
+            ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U)
             ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (state === s_r && way_sel === i.U)
             ways(i).data.banks(j).bwen := Mux(state === s_r, Fill(64, 1.U(1.W)), bwen.asUInt())
             ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U, req_reg.index, req.index)
