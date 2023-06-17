@@ -113,7 +113,6 @@ class Cache(way : Int) extends Module
     val cache_rdata = Wire(UInt(64.W))
     val cache_rdata_reg = RegEnable(cache_rdata, state === s_lookup)
     cache_rdata := 0.U(64.W)
-    // cpu_slave.r.bits.data := 0.U(64.W)
     dirty := false.B
     hazard := false.B
     
@@ -167,14 +166,12 @@ class Cache(way : Int) extends Module
             dirty := true.B
         }
 
-        // Does cache support unaligned access?
         when (state === s_lookup && hit_way(i)) {
             for (j <- 0 until 4) {
                 when (req_reg.offset(4, 3) === j.U) {
                     cache_rdata := cache_line(i)(j) >> Cat(req_reg.offset(2, 0), 0.U(3.W))
                 }
             }
-            // cache_rdata := cache_line(i).asUInt() >> Cat(req_reg.offset, 0.U(3.W))
         }
     }
 
