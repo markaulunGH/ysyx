@@ -104,6 +104,9 @@ class Cache(way : Int) extends Module
     val cache_line = Seq.fill(way)(dontTouch(Wire(Vec(4, UInt(64.W)))))
     val cache_line_reg = dontTouch(Reg(Vec(4, UInt(64.W))))
 
+    val cache_line_buf = Reg(UInt(192.W))
+    val new_cache_line = Cat(slave.r.bits.data, cache_line_buf)
+
     cpu_slave.r.bits.data := 0.U(64.W)
     dirty := false.B
     hazard := false.B
@@ -164,9 +167,6 @@ class Cache(way : Int) extends Module
     }
 
     hit := hit_way.reduce(_ || _)
-
-    val cache_line_buf = Reg(UInt(192.W))
-    val new_cache_line = Cat(slave.r.bits.data, cache_line_buf)
 
     val cache_ready = dontTouch((state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
     
