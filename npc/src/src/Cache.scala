@@ -176,7 +176,7 @@ class Cache(way : Int) extends Module
 
     hit := hit_way.reduce(_ || _)
 
-    val cache_ready = dontTouch((state === s_idle || (state === s_lookup && hit)) && req.valid && !hazard)
+    val cache_ready = dontTouch((state === s_idle || (state === s_lookup && hit)) && !hazard)
     
     cpu_master.aw.ready := cache_ready
     cpu_master.w.ready  := cache_ready
