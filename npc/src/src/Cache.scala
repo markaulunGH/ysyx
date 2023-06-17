@@ -119,12 +119,10 @@ class Cache(way : Int) extends Module
     dirty := false.B
     hazard := false.B
 
-    val write_back_en = dontTouch(cnt === 3.U)
+    val write_back_en = dontTouch(state === s_r && cnt === 3.U)
     
     for (i <- 0 until way)
     {
-        // state === s_r will write multiple times, should not matter
-        // may be state === s_miss will solve this problem?
         ways(i).tag.io.cen  := (cache_ready && cpu_request) || (write_back_en && way_sel === i.U)
         ways(i).tag.io.wen  := write_back_en && way_sel === i.U
         ways(i).tag.io.bwen := Fill(53, 1.U(1.W))
