@@ -27,7 +27,7 @@ class PF extends Module
     
     val next_pc = Mux(ds_pf.br_taken && ds_pf.ds_valid, ds_pf.br_target, fs_pf.pc + 4.U)
 
-    inst_master.ar.valid := !ds_pf.hazard && !arfire && !reset.asBool()
+    inst_master.ar.valid := !ds_pf.hazard && (!arfire || ds_pf.ds_allow_in) && !reset.asBool()
     inst_master.ar.bits.addr := next_pc
     inst_master.ar.bits.prot := 0.U(3.W)
     inst_master.aw.valid := false.B
