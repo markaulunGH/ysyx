@@ -4,7 +4,6 @@ import chisel3.util._
 class DS_PF extends Bundle
 {
     val ds_valid = Output(Bool())
-    val ds_allow_in = Output(Bool())
     val br_taken = Output(Bool())
     val br_target = Output(UInt(64.W))
     val hazard = Output(Bool())
@@ -256,7 +255,6 @@ class DS extends Module
         inst_ecall -> csr_pc.mtvec,
         inst_mret -> csr_pc.mepc
     ))
-    ds_pf.ds_allow_in := ds_allow_in
 
     val alu_op = Wire(Vec(18, Bool()))
     alu_op(0)  := inst_lui || inst_auipc || inst_jal || inst_jalr || inst_load || inst_store || inst_addi || inst_addiw || inst_add || inst_addw
