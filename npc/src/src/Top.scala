@@ -94,8 +94,8 @@ class Top extends Module
     // dcache.cpu_slave  <> ms.data_slave
     
     val arbiter = Module(new AXI_Arbiter)
-    arbiter.inst_master <> icache.master
-    arbiter.inst_slave  <> icache.slave
+    // arbiter.inst_master <> icache.master
+    // arbiter.inst_slave  <> icache.slave
     arbiter.inst_master <> pf.inst_master
     arbiter.inst_slave  <> fs.inst_slave
     arbiter.data_master <> es.data_master
