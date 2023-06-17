@@ -123,19 +123,19 @@ class Cache(way : Int) extends Module
     {
         // state === s_r will write multiple times, should not matter
         // may be state === s_miss will solve this problem?
-        ways(i).tag.io.cen  := cache_ready && cpu_request || state === s_r && way_sel === i.U
+        ways(i).tag.io.cen  := (cache_ready && cpu_request) || (state === s_r && way_sel === i.U)
         ways(i).tag.io.wen  := state === s_r && way_sel === i.U
         ways(i).tag.io.bwen := Fill(53, 1.U(1.W))
         ways(i).tag.io.A    := Mux(state === s_r, req_reg.index, req.index)
         ways(i).tag.io.D    := req_reg.tag
 
-        ways(i).V.io.cen   := cache_ready && cpu_request || state === s_r && way_sel === i.U
+        ways(i).V.io.cen   := (cache_ready && cpu_request) || (state === s_r && way_sel === i.U)
         ways(i).V.io.wen   := state === s_r && way_sel === i.U
         ways(i).V.io.bwen  := 1.U(1.W)
         ways(i).V.io.A     := Mux(state === s_r, req_reg.index, req.index)
         ways(i).V.io.D     := 1.U(1.W)
 
-        ways(i).D.io.cen   := state === s_lookup || (state === s_r && way_sel === i.U)
+        ways(i).D.io.cen   := (state === s_lookup) || (state === s_r && way_sel === i.U)
         ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (state === s_r && way_sel === i.U)
         ways(i).D.io.bwen  := 1.U(1.W)
         ways(i).D.io.A     := Mux(state === s_r, req_reg.index, req.index)
