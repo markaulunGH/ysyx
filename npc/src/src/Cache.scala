@@ -99,7 +99,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
 
     state := MuxLookup(state, s_idle, Seq(
         s_idle   -> Mux(cpu_request, Mux(device_request, s_bypass, s_lookup), s_idle),
-        s_lookup -> Mux(hit, Mux(cpu_ready, Mux(cpu_request && !hazard, s_lookup, s_idle), s_wait), s_miss),
+        s_lookup -> Mux(hit, Mux(cpu_ready, Mux(cpu_request, Mux(hazard, s_idle, s_lookup), s_idle), s_wait), s_miss),
         s_wait   -> Mux(cpu_ready, s_idle, s_wait),
         s_miss   -> Mux(dirty && valid, s_aw, s_ar),
         s_aw     -> Mux((master.aw.fire || awfire) && (master.w.fire || wfire), s_b, s_aw),
