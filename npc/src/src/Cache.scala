@@ -240,8 +240,8 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     }
 
     master.w.valid     := (state === s_bypass || state === s_aw) && !wfire
-    master.w.bits.data := Mux(bypass, cpu_master.w.bits.data, cache_line(cnt))
-    master.w.bits.strb := Mux(bypass, cpu_master.w.bits.strb, Fill(8, 1.U))
+    master.w.bits.data := Mux(bypass, Cat(req_reg.tag, req_reg.index, req_reg.offset), cache_line(cnt))
+    master.w.bits.strb := Mux(bypass, req_reg.strb, Fill(8, 1.U))
     when (slave.b.fire) {
         wfire := false.B
     } .elsewhen (master.w.fire) {
