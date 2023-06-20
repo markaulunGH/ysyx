@@ -147,14 +147,14 @@ class Cache(way : Int) extends Module
         {
             val bwen = Wire(Vec(8, UInt(8.W)))
             for (k <- 0 until 8) {
-                bwen(k) := Fill(8, req_reg.strb)
+                bwen(k) := Fill(8, req_reg.strb(k))
             }
 
             ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(4, 3) === j.U) || (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (refill_wen && way_sel === i.U)
             ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (refill_wen && way_sel === i.U)
-            ways(i).data.banks(j).bwen := Mux(state === s_r, Fill(64, 1.U(1.W)), bwen.asUInt())
+            ways(i).data.banks(j).bwen := Mux(state === s_r && (!req_reg.op || req_reg.offset(4, 3) =/= j.U), Fill(64, 1.U(1.W)), bwen.asUInt() << Cat(req_reg.offset(2, 0), 0.U(3.W)))
             ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U, req_reg.index, req.index)
-            ways(i).data.banks(j).D    := Mux(state === s_r, new_cache_line >> Cat(j.U, 0.U(6.W)), req_reg.data)
+            ways(i).data.banks(j).D    := Mux(state === s_r && (!req_reg.op || req_reg.offset(4, 3) =/= j.U), new_cache_line >> Cat(j.U, 0.U(6.W)), req_reg.data << Cat(req_reg.offset(2, 0), 0.U(3.W)))
             cache_line(i)(j) := ways(i).data.banks(j).Q
             when (state === s_lookup && hit_way(i)) {
                 cache_line_reg(j) := ways(i).data.banks(j).Q
@@ -187,6 +187,7 @@ class Cache(way : Int) extends Module
     cpu_master.w.ready  := cache_ready
     cpu_master.ar.ready := cache_ready
 
+    // bvalid and rvalid should not be asserted at the same time
     cpu_slave.b.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && req_reg.op || state === s_wait
     cpu_slave.b.bits.resp := 0.U(2.W)
 
