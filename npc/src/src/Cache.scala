@@ -124,8 +124,8 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         way_sel_reg(i) := RegEnable(way_sel(i), state === s_lookup)
     }
     
-    val cache_line = Reg(Vec(bank, UInt(64.W)))
-    val cache_line_tag = Reg(UInt(tag_len.W))
+    val cache_line = dontTouch(Reg(Vec(bank, UInt(64.W))))
+    val cache_line_tag = dontTouch(Reg(UInt(tag_len.W)))
 
     val cache_line_buf = Reg(UInt((64 * (bank - 1)).W))
     val new_cache_line = dontTouch(Cat(slave.r.bits.data, cache_line_buf))
