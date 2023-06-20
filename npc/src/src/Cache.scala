@@ -43,7 +43,7 @@ class Cache_Line(depth : Int, bank : Int) extends Module
 
 class Cache_Way(depth : Int, bank : Int) extends Bundle
 {
-    val tag  = Module(new Cache_Sram(64 - log2Ceil(depth) - (log2Ceil(64 * bank) - 3), depth))
+    val tag  = Module(new Cache_Sram(64 - log2Ceil(depth) - (log2Ceil(bank) + 3), depth))
     val V    = Module(new Cache_Sram(1, depth))
     val D    = Module(new Cache_Sram(1, depth))
     val data = Module(new Cache_Line(depth, bank))
@@ -52,9 +52,9 @@ class Cache_Way(depth : Int, bank : Int) extends Bundle
 class Cache_Req(depth : Int, bank : Int) extends Bundle
 {
     val op     = Bool()
-    val tag    = UInt((64 - log2Ceil(depth) - (log2Ceil(64 * bank) - 3)).W)
+    val tag    = UInt((64 - log2Ceil(depth) - (log2Ceil(bank) + 3)).W)
     val index  = UInt(log2Ceil(depth).W)
-    val offset = UInt((log2Ceil(64 * bank) - 3).W)
+    val offset = UInt((log2Ceil(bank) + 3).W)
     val data   = UInt(64.W)
     val strb   = UInt(8.W)
 }
@@ -62,7 +62,7 @@ class Cache_Req(depth : Int, bank : Int) extends Bundle
 class Cache(way : Int, depth : Int, bank : Int) extends Module
 {
     val index_len = log2Ceil(depth)
-    val offset_len = log2Ceil(64 * bank) - 3
+    val offset_len = log2Ceil(bank) + 3
     val tag_len = 64 - index_len - offset_len
 
     val cpu_master = IO(Flipped(new AXI_Lite_Master))
@@ -102,9 +102,9 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         s_wait   -> Mux(cpu_ready, s_idle, s_wait),
         s_miss   -> Mux(dirty && valid, s_aw, s_ar),
         s_aw     -> Mux((master.aw.fire || awfire) && (master.w.fire || wfire), s_b, s_aw),
-        s_b      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_b),
+        s_b      -> Mux(slave.b.fire, Mux(cnt === (bank - 1).U, s_ar, s_aw), s_b),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
-        s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, Mux(cpu_ready, s_idle, s_wait), s_ar), s_r)
+        s_r      -> Mux(slave.r.fire, Mux(cnt === (bank - 1).U, Mux(cpu_ready, s_idle, s_wait), s_ar), s_r)
     ))
 
     val cache_ready = (state === s_idle || (state === s_lookup && hit)) && !hazard
@@ -178,7 +178,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
 
         for (j <- 0 until bank)
         {
-            hit_bank(j) := req_reg.offset(4, 3) === j.U
+            hit_bank(j) := req_reg.offset(offset_len - 1, 3) === j.U
 
             when (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op && req_reg.offset === req.offset) {
                 hazard := true.B
@@ -210,17 +210,17 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     cpu_master.w.ready  := cache_ready
     cpu_master.ar.ready := cache_ready
 
-    cpu_slave.b.valid := ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) || state === s_wait) && req_reg.op
+    cpu_slave.b.valid := ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === (bank - 1).U) || state === s_wait) && req_reg.op
     cpu_slave.b.bits.resp := 0.U(2.W)
 
-    cpu_slave.r.valid := ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) || state === s_wait) && !req_reg.op
+    cpu_slave.r.valid := ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === (bank - 1).U) || state === s_wait) && !req_reg.op
     cpu_slave.r.bits.resp := 0.U(2.W)
     cpu_slave.r.bits.data := Mux(state === s_wait, cache_rdata_reg, cache_rdata)
 
     when (cpu_master.aw.fire || cpu_master.ar.fire) {
-        cnt := 0.U
+        cnt := 0.U(log2Ceil(bank).W)
     } .elsewhen (slave.b.fire || slave.r.fire) {
-        cnt := cnt + 1.U
+        cnt := cnt + 1.U(log2Ceil(bank).W)
     }
 
     master.aw.valid := state === s_aw
