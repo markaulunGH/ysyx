@@ -73,11 +73,14 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val cpu_request = cpu_master.ar.valid || (cpu_master.aw.valid && cpu_master.w.valid)
     val cpu_ready = cpu_slave.r.ready || cpu_slave.b.ready
 
+    val offset_len = log2Ceil(64 * depth) - 3
+    val index_len = log2Ceil(depth)
+    val tag_len = 64 - index_len - offset_len
     val req = Wire(new Cache_Req(depth, bank))
     req.op     := cpu_master.aw.valid
-    req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 11), cpu_master.ar.bits.addr(63, 11))
-    req.index  := Mux(req.op, cpu_master.aw.bits.addr(10, 5), cpu_master.ar.bits.addr(10, 5))
-    req.offset := Mux(req.op, cpu_master.aw.bits.addr(4, 0), cpu_master.ar.bits.addr(4, 0))
+    req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, index_len + offset_len), cpu_master.ar.bits.addr(63, index_len + offset_len))
+    req.index  := Mux(req.op, cpu_master.aw.bits.addr(index_len + offset_len - 1, offset_len), cpu_master.ar.bits.addr(index_len + offset_len - 1, offset_len))
+    req.offset := Mux(req.op, cpu_master.aw.bits.addr(offset_len - 1, 0), cpu_master.ar.bits.addr(offset_len - 1, 0))
     req.data   := cpu_master.w.bits.data
     req.strb   := cpu_master.w.bits.strb
 
