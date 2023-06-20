@@ -82,9 +82,9 @@ class Cache(way : Int) extends Module
     req.data   := cpu_master.w.bits.data
     req.strb   := cpu_master.w.bits.strb
 
-    val dirty = Wire(Bool())
-    val valid = Wire(Bool())
-    val hazard = Wire(Bool())
+    val dirty = false.B
+    val valid = false.B
+    val hazard = false.B
     val hit = Wire(Bool())
     val cnt = RegInit(0.U(2.W))
 
@@ -121,21 +121,18 @@ class Cache(way : Int) extends Module
     
     val cache_line = Reg(Vec(4, UInt(64.W)))
     val cache_line_tag = Reg(UInt(53.W))
-    
+
     val cache_line_buf = Reg(UInt(192.W))
     val new_cache_line = Cat(slave.r.bits.data, cache_line_buf)
     
     val cache_rdata = Wire(UInt(64.W))
     val cache_rdata_reg = RegEnable(cache_rdata, state === s_lookup || state === s_r)
-    cache_rdata := 0.U(64.W)
-    
-    dirty := false.B
-    valid := false.B
-    hazard := false.B
     
     val refill_wen = state === s_r && cnt === 3.U
     
     val hit_way = Seq.fill(way)(Wire(Bool()))
+
+    cache_rdata := 0.U(64.W)
 
     for (i <- 0 until way)
     {
