@@ -230,10 +230,10 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         cnt := cnt + 1.U(log2Ceil(bank).W)
     }
 
-    master.aw.valid     := Mux(bypass, cpu_master.aw.valid, state === s_aw && !awfire)
-    master.aw.bits.addr := Mux(bypass, cpu_master.aw.bits.addr, Cat(cache_line_tag, req_reg.index, cnt, 0.U(3.W)))
-    master.aw.bits.prot := Mux(bypass, cpu_master.aw.bits.prot, 0.U(3.W))
-    when (state === s_b) {
+    master.aw.valid     := (state === s_bypass || state === s_aw) && !awfire
+    master.aw.bits.addr := Mux(bypass, Cat(req_reg.tag, req_reg.index, req_reg.offset), Cat(cache_line_tag, req_reg.index, cnt, 0.U(3.W)))
+    master.aw.bits.prot := 0.U(3.W)
+    when (slave.b.fire) {
         awfire := false.B
     } .elsewhen (master.aw.fire) {
         awfire := true.B
@@ -242,7 +242,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     master.w.valid     := Mux(bypass, cpu_master.w.valid, state === s_aw && !wfire)
     master.w.bits.data := Mux(bypass, cpu_master.w.bits.data, cache_line(cnt))
     master.w.bits.strb := Mux(bypass, cpu_master.w.bits.strb, Fill(8, 1.U))
-    when (state === s_b) {
+    when (slave.b.fire) {
         wfire := false.B
     } .elsewhen (master.w.fire) {
         wfire := true.B
