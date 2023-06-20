@@ -128,9 +128,9 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val cache_line_tag = Reg(UInt(tag_len.W))
 
     val cache_line_buf = Reg(UInt((64 * (bank - 1)).W))
-    val new_cache_line = Cat(slave.r.bits.data, cache_line_buf)
+    val new_cache_line = dontTouch(Cat(slave.r.bits.data, cache_line_buf))
     
-    val cache_rdata = Wire(UInt(64.W))
+    val cache_rdata = dontTouch(Wire(UInt(64.W)))
     val cache_rdata_reg = RegEnable(cache_rdata, state === s_lookup || state === s_r)
     
     val refill_wen = state === s_r && cnt === 3.U
