@@ -239,18 +239,18 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         awfire := true.B
     }
 
-    master.w.valid     := Mux(bypass, cpu_master.w.valid, state === s_aw && !wfire)
-    master.w.bits.data := Mux(bypass, cpu_master.w.bits.data, cache_line(cnt))
-    master.w.bits.strb := Mux(bypass, cpu_master.w.bits.strb, Fill(8, 1.U))
+    master.w.valid     := (state === s_bypass || state === s_aw) && !wfire
+    master.w.bits.data := Mux(bypass, req_reg.data, cache_line(cnt))
+    master.w.bits.strb := Mux(bypass, req_reg.strb, Fill(8, 1.U))
     when (slave.b.fire) {
         wfire := false.B
     } .elsewhen (master.w.fire) {
         wfire := true.B
     }
 
-    master.ar.valid     := Mux(bypass, cpu_master.ar.valid, state === s_ar)
-    master.ar.bits.addr := Mux(bypass, cpu_master.ar.bits.addr, Cat(req_reg.tag, req_reg.index, cnt, 0.U(3.W)))
-    master.ar.bits.prot := Mux(bypass, cpu_master.ar.bits.prot, 0.U(3.W))
+    master.ar.valid     := state === bypass || state === s_ar
+    master.ar.bits.addr := Mux(bypass, Cat(req_reg.tag, req_reg.index, req_reg.offset), Cat(req_reg.tag, req_reg.index, cnt, 0.U(3.W)))
+    master.ar.bits.prot := 0.U(3.W)
 
     slave.b.ready := Mux(bypass, cpu_slave.b.ready, state === s_b)
 
