@@ -73,7 +73,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val cpu_request = cpu_master.ar.valid || (cpu_master.aw.valid && cpu_master.w.valid)
     val cpu_ready = cpu_slave.r.ready || cpu_slave.b.ready
 
-    val req = Wire(new Cache_Req(depth, int))
+    val req = Wire(new Cache_Req(depth, bank))
     req.op     := cpu_master.aw.valid
     req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 11), cpu_master.ar.bits.addr(63, 11))
     req.index  := Mux(req.op, cpu_master.aw.bits.addr(10, 5), cpu_master.ar.bits.addr(10, 5))
