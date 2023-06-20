@@ -160,7 +160,7 @@ class Cache(way : Int) extends Module
                 cache_line_reg(j) := ways(i).data.banks(j).Q
             }
 
-            when (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset === j.U && req_reg.offset === req.offset) {
+            when (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U && req_reg.offset === req.offset) {
                 hazard := true.B
             }
         }
