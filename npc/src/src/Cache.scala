@@ -66,7 +66,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val master     = IO(new AXI_Lite_Master)
     val slave      = IO(new AXI_Lite_Slave)
 
-    val ways = Seq.fill(way)(new Cache_Way(depth, int))
+    val ways = Seq.fill(way)(new Cache_Way(depth, bank))
     val random_bit = LFSR(16)
 
     // we require that cpu always send w and aw request in one cycle
