@@ -107,10 +107,12 @@ class Cache(way : Int) extends Module
     val cache_ready = (state === s_idle || (state === s_lookup && hit)) && !hazard
 
     val req_reg = RegEnable(req, cache_ready && cpu_request)
+
     val way_sel = random_bit(log2Ceil(way) - 1, 0)
     val way_sel_reg = RegEnable(way_sel, state === s_lookup)
 
     val hit_way = Seq.fill(way)(Wire(Bool()))
+
     val cache_line = Seq.fill(way)(Wire(Vec(4, UInt(64.W))))
     val cache_line_reg = Reg(Vec(4, UInt(64.W)))
     val cache_line_tag_reg = Reg(UInt(53.W))
@@ -121,6 +123,7 @@ class Cache(way : Int) extends Module
     val cache_rdata = Wire(UInt(64.W))
     val cache_rdata_reg = RegEnable(cache_rdata, state === s_lookup || state === s_r)
     cache_rdata := 0.U(64.W)
+    
     dirty := false.B
     valid := false.B
     hazard := false.B
@@ -147,6 +150,8 @@ class Cache(way : Int) extends Module
         ways(i).D.io.A     := Mux(state === s_r, req_reg.index, req.index)
         ways(i).D.io.D     := Mux(state === s_lookup && hit_way(i) && req_reg.op, 1.U(1.W), 0.U(1.W))
 
+        val hit_bank = Seq.fill(4)(Wire(Bool()))
+
         for (j <- 0 until 4)
         {
             val bwen = Wire(Vec(8, UInt(8.W)))
@@ -154,17 +159,21 @@ class Cache(way : Int) extends Module
                 bwen(k) := Fill(8, req_reg.strb(k))
             }
 
-            ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(4, 3) === j.U) || (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (refill_wen && way_sel_reg === i.U)
-            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (refill_wen && way_sel_reg === i.U)
+            hit_bank(j) := req_reg.offset(4, 3) === j.U
+
+            ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(4, 3) === j.U) || (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg === i.U)
+            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg === i.U)
             ways(i).data.banks(j).bwen := Mux(state === s_r && (!req_reg.op || req_reg.offset(4, 3) =/= j.U), Fill(64, 1.U(1.W)), bwen.asUInt() << Cat(req_reg.offset(2, 0), 0.U(3.W)))
-            ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U, req_reg.index, req.index)
+            ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op, req_reg.index, req.index)
             ways(i).data.banks(j).D    := Mux(state === s_r && (!req_reg.op || req_reg.offset(4, 3) =/= j.U), new_cache_line >> Cat(j.U, 0.U(6.W)), req_reg.data << Cat(req_reg.offset(2, 0), 0.U(3.W)))
+
+
             cache_line(i)(j) := ways(i).data.banks(j).Q
             when (state === s_lookup && way_sel === i.U) {
                 cache_line_reg(j) := ways(i).data.banks(j).Q
             }
 
-            when (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U && req_reg.offset === req.offset) {
+            when (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op && req_reg.offset === req.offset) {
                 hazard := true.B
             }
         }
