@@ -82,9 +82,9 @@ class Cache(way : Int) extends Module
     req.data   := cpu_master.w.bits.data
     req.strb   := cpu_master.w.bits.strb
 
-    val dirty = false.B
-    val valid = false.B
-    val hazard = false.B
+    val dirty = Wire(Bool())
+    val valid = Wire(Bool())
+    val hazard = Wire(Bool())
     val hit = Wire(Bool())
     val cnt = RegInit(0.U(2.W))
 
@@ -132,6 +132,9 @@ class Cache(way : Int) extends Module
     
     val hit_way = Seq.fill(way)(Wire(Bool()))
 
+    dirty := false.B
+    valid := false.B
+    hazard := false.B
     cache_rdata := 0.U(64.W)
 
     for (i <- 0 until way)
