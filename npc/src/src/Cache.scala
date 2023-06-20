@@ -211,7 +211,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         cache_rdata := new_cache_line >> Cat(req_reg.offset, 0.U(3.W))
     }
 
-    val bypass = state === s_bypass
+    val bypass = bypass
 
     cpu_master.aw.ready := cache_ready
     cpu_master.w.ready  := cache_ready
@@ -230,7 +230,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         cnt := cnt + 1.U(log2Ceil(bank).W)
     }
 
-    master.aw.valid     := ((state === s_bypass && req_reg.op) || state === s_aw) && !awfire
+    master.aw.valid     := Mux(bypass, req_reg.op, state === s_aw) && !awfire
     master.aw.bits.addr := Mux(bypass, Cat(req_reg.tag, req_reg.index, req_reg.offset), Cat(cache_line_tag, req_reg.index, cnt, 0.U(3.W)))
     master.aw.bits.prot := 0.U(3.W)
     when (slave.b.fire) {
@@ -239,7 +239,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         awfire := true.B
     }
 
-    master.w.valid     := ((state === s_bypass && req_reg.op) || state === s_aw) && !wfire
+    master.w.valid     := Mux(bypass, req_reg.op, state === s_aw) && !wfire
     master.w.bits.data := Mux(bypass, req_reg.data, cache_line(cnt))
     master.w.bits.strb := Mux(bypass, req_reg.strb, Fill(8, 1.U))
     when (slave.b.fire) {
@@ -248,7 +248,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         wfire := true.B
     }
 
-    master.ar.valid     := (state === s_bypass && !req_reg.op) || state === s_ar
+    master.ar.valid     := Mux(bypass, !req_reg.op, state === s_ar)
     master.ar.bits.addr := Mux(bypass, Cat(req_reg.tag, req_reg.index, req_reg.offset), Cat(req_reg.tag, req_reg.index, cnt, 0.U(3.W)))
     master.ar.bits.prot := 0.U(3.W)
 
