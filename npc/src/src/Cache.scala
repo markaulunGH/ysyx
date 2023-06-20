@@ -21,36 +21,35 @@ class Cache_Sram(width : Int, depth : Int) extends Module
     io.Q := RegEnable(ram(io.A), io.cen && !io.wen)
 }
 
-class Bank_IO extends Bundle
+class Bank_IO(depth : Int, bank : Int) extends Bundle
 {
     val Q    = Output(UInt(64.W))
     val cen  = Input(Bool())
     val wen  = Input(Bool())
     val bwen = Input(UInt(64.W))
-    val A    = Input(UInt(7.W))
+    val A    = Input(UInt(log2Ceil(depth).W))
     val D    = Input(UInt(64.W))
 }
 
-class Cache_Line extends Module
+class Cache_Line(depth : Int, bank : Int) extends Module
 {
-    val banks = Seq.fill(4)(IO(new Bank_IO))
-    val datas = Seq.fill(4)(Module(new Cache_Sram(64, 64)))
+    val banks = Seq.fill(bank)(IO(new Bank_IO))
+    val datas = Seq.fill(bank)(Module(new Cache_Sram(64, depth)))
 
-    for (i <- 0 until 4)
-    {
+    for (i <- 0 until bank) {
         datas(i).io <> banks(i)
     }
 }
 
-class Cache_Way extends Bundle
+class Cache_Way(depth : Int, bank : Int) extends Bundle
 {
-    val tag  = Module(new Cache_Sram(53, 128))
-    val V    = Module(new Cache_Sram(1, 128))
-    val D    = Module(new Cache_Sram(1, 128))
-    val data = Module(new Cache_Line)
+    val tag  = Module(new Cache_Sram(64 - log2Ceil(depth) - (log2Ceil(64 * depth) - 3), depth))
+    val V    = Module(new Cache_Sram(1, depth))
+    val D    = Module(new Cache_Sram(1, depth))
+    val data = Module(new Cache_Line(depth, bank))
 }
 
-class Cache_Req extends Bundle
+class Cache_Req(depth : Int, bank : Int) extends Bundle
 {
     val op     = Bool()
     val tag    = UInt(53.W)
@@ -60,21 +59,21 @@ class Cache_Req extends Bundle
     val strb   = UInt(8.W)
 }
 
-class Cache(way : Int) extends Module
+class Cache(way : Int, depth : Int, bank : Int) extends Module
 {
     val cpu_master = IO(Flipped(new AXI_Lite_Master))
     val cpu_slave  = IO(Flipped(new AXI_Lite_Slave))
     val master     = IO(new AXI_Lite_Master)
     val slave      = IO(new AXI_Lite_Slave)
 
-    val ways = Seq.fill(way)(new Cache_Way)
+    val ways = Seq.fill(way)(new Cache_Way(depth, int))
     val random_bit = LFSR(16)
 
     // we require that cpu always send w and aw request in one cycle
     val cpu_request = cpu_master.ar.valid || (cpu_master.aw.valid && cpu_master.w.valid)
     val cpu_ready = cpu_slave.r.ready || cpu_slave.b.ready
 
-    val req = Wire(new Cache_Req)
+    val req = Wire(new Cache_Req(depth, int))
     req.op     := cpu_master.aw.valid
     req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 11), cpu_master.ar.bits.addr(63, 11))
     req.index  := Mux(req.op, cpu_master.aw.bits.addr(10, 5), cpu_master.ar.bits.addr(10, 5))
