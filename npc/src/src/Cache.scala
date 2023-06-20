@@ -143,13 +143,13 @@ class Cache(way : Int) extends Module
     for (i <- 0 until way)
     {
         ways(i).tag.io.cen  := (cache_ready && cpu_request) || (refill_wen && way_sel_reg(i))
-        ways(i).tag.io.wen  := refill_wen && way_sel_reg === i.U
+        ways(i).tag.io.wen  := refill_wen && way_sel_reg(i)
         ways(i).tag.io.bwen := Fill(53, 1.U(1.W))
         ways(i).tag.io.A    := Mux(state === s_r, req_reg.index, req.index)
         ways(i).tag.io.D    := req_reg.tag
 
         ways(i).V.io.cen   := (cache_ready && cpu_request) || (refill_wen && way_sel_reg(i))
-        ways(i).V.io.wen   := refill_wen && way_sel_reg === i.U
+        ways(i).V.io.wen   := refill_wen && way_sel_reg(i)
         ways(i).V.io.bwen  := 1.U(1.W)
         ways(i).V.io.A     := Mux(state === s_r, req_reg.index, req.index)
         ways(i).V.io.D     := 1.U(1.W)
@@ -167,7 +167,7 @@ class Cache(way : Int) extends Module
             hit_bank(j) := req_reg.offset(4, 3) === j.U
 
             ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(4, 3) === j.U) || (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg(i))
-            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg === i.U)
+            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg(i))
             ways(i).data.banks(j).bwen := Mux(state === s_r && (!req_reg.op || req_reg.offset(4, 3) =/= j.U), Fill(64, 1.U(1.W)), bwen.asUInt() << Cat(req_reg.offset(2, 0), 0.U(3.W)))
             ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op, req_reg.index, req.index)
             ways(i).data.banks(j).D    := Mux(state === s_r && (!req_reg.op || req_reg.offset(4, 3) =/= j.U), new_cache_line >> Cat(j.U, 0.U(6.W)), req_reg.data << Cat(req_reg.offset(2, 0), 0.U(3.W)))
@@ -189,11 +189,11 @@ class Cache(way : Int) extends Module
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
 
-        when (ways(i).D.io.Q === 1.U && way_sel_reg === i.U) {
+        when (ways(i).D.io.Q === 1.U && way_sel_reg(i)) {
             dirty := true.B
         }
 
-        when (ways(i).V.io.Q === 1.U && way_sel_reg === i.U) {
+        when (ways(i).V.io.Q === 1.U && way_sel_reg(i)) {
             valid := true.B
         }
 
