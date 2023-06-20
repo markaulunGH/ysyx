@@ -147,7 +147,7 @@ class Cache(way : Int) extends Module
         {
             val bwen = Wire(Vec(8, UInt(8.W)))
             for (k <- 0 until 8) {
-                bwen(k) := Fill(8, req_reg.strb)
+                bwen(k) := Fill(8, req_reg.strb(k))
             }
 
             ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(4, 3) === j.U) || (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (refill_wen && way_sel === i.U)
