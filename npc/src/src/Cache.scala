@@ -249,7 +249,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     }
 
     master.ar.valid     := state === bypass || state === s_ar
-    master.ar.bits.addr := Mux(bypass, Cat(req_reg.tag, req_reg.index, req_reg.offset), Cat(req_reg.tag, req_reg.index, cnt, 0.U(3.W)))
+    master.ar.bits.addr := Mux(bypass, cpu_master.ar.bits.addr, Cat(req_reg.tag, req_reg.index, cnt, 0.U(3.W)))
     master.ar.bits.prot := 0.U(3.W)
 
     slave.b.ready := Mux(bypass, cpu_slave.b.ready, state === s_b)
