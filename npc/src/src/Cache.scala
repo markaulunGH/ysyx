@@ -86,9 +86,9 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     req.data   := cpu_master.w.bits.data
     req.strb   := cpu_master.w.bits.strb
 
-    val dirty = Wire(Bool())
-    val valid = Wire(Bool())
-    val hazard = Wire(Bool())
+    val dirty = dontTouch(Wire(Bool()))
+    val valid = dontTouch(Wire(Bool()))
+    val hazard = dontTouch(Wire(Bool()))
     val hit = Wire(Bool())
     val cnt = RegInit(0.U(log2Ceil(bank).W))
     val awfire = RegInit(false.B)
