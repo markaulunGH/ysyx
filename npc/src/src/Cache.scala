@@ -108,6 +108,11 @@ class Cache(way : Int) extends Module
 
     val req_reg = RegEnable(req, cache_ready && cpu_request)
 
+    val bwen = Wire(Vec(8, UInt(8.W)))
+    for (i <- 0 until 8) {
+        bwen(i) := Fill(8, req_reg.strb(i))
+    }
+
     val way_sel = random_bit(log2Ceil(way) - 1, 0)
     val way_sel_reg = RegEnable(way_sel, state === s_lookup)
 
@@ -129,11 +134,6 @@ class Cache(way : Int) extends Module
     hazard := false.B
 
     val refill_wen = state === s_r && cnt === 3.U
-
-    val bwen = Wire(Vec(8, UInt(8.W)))
-    for (i <- 0 until 8) {
-        bwen(i) := Fill(8, req_reg.strb(i))
-    }
     
     for (i <- 0 until way)
     {
