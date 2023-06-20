@@ -78,7 +78,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val device_request = dontTouch(cpu_master.ar.bits.addr(31, 28) === 0xa.U || cpu_master.aw.bits.addr(31, 28) === 0xa.U)
     val cpu_ready = cpu_slave.r.ready || cpu_slave.b.ready
 
-    val req = Wire(new Cache_Req(depth, bank))
+    val req = dontTouch(Wire(new Cache_Req(depth, bank)))
     req.op     := cpu_master.aw.valid
     req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, index_len + offset_len), cpu_master.ar.bits.addr(63, index_len + offset_len))
     req.index  := Mux(req.op, cpu_master.aw.bits.addr(index_len + offset_len - 1, offset_len), cpu_master.ar.bits.addr(index_len + offset_len - 1, offset_len))
