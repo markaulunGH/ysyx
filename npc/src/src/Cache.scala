@@ -210,7 +210,7 @@ class Cache(way : Int) extends Module
     }
 
     master.aw.valid := state === s_aw
-    master.aw.bits.addr := Cat(cache_line_tag_reg.tag, req_reg.index, cnt, 0.U(3.W))
+    master.aw.bits.addr := Cat(cache_line_tag_reg, req_reg.index, cnt, 0.U(3.W))
     master.aw.bits.prot := 0.U(3.W)
 
     master.w.valid := state === s_w
