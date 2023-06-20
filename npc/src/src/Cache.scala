@@ -114,10 +114,12 @@ class Cache(way : Int) extends Module
     }
 
     val way_sel = Seq.fill(way)(Wire(Bool()))
+    val way_sel_reg = Seq.fill(way)(Reg(Bool()))
     for (i <- 0 until way) {
         way_sel(i) := random_bit(log2Ceil(way) - 1, 0) === i.U
+        way_sel_reg(i) := RegEnable(way_sel(i), state === s_lookup)
     }
-    val way_sel_reg = RegEnable(way_sel, state === s_lookup)
+    // val way_sel_reg = RegEnable(way_sel, state === s_lookup)
 
     val hit_way = Seq.fill(way)(Wire(Bool()))
 
