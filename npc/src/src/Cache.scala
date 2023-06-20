@@ -83,6 +83,7 @@ class Cache(way : Int) extends Module
     req.strb   := cpu_master.w.bits.strb
 
     val dirty = dontTouch(Wire(Bool()))
+    val valid = dontTouch(Wire(Bool()))
     val hazard = dontTouch(Wire(Bool()))
     val hit = dontTouch(Wire(Bool()))
     val cnt = RegInit(0.U(2.W))
@@ -95,7 +96,7 @@ class Cache(way : Int) extends Module
         s_lookup -> Mux(hit, Mux(cpu_ready, Mux(cpu_request && !hazard, s_lookup, s_idle), s_wait), s_miss),
         // Now cache state will change from idle -> lookup -> wait -> idle, maybe wait -> lookup directly in the future
         s_wait   -> Mux(cpu_ready, s_idle, s_wait),
-        s_miss   -> Mux(dirty, s_aw, s_ar),
+        s_miss   -> Mux(dirty && valid, s_aw, s_ar),
         // what if w has not fired?
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
@@ -120,6 +121,7 @@ class Cache(way : Int) extends Module
     val cache_rdata_reg = RegEnable(cache_rdata, state === s_lookup || state === s_r)
     cache_rdata := 0.U(64.W)
     dirty := false.B
+    valid := false.B
     hazard := false.B
 
     val refill_wen = dontTouch(state === s_r && cnt === 3.U)
@@ -174,6 +176,10 @@ class Cache(way : Int) extends Module
 
         when (ways(i).D.io.Q === 1.U && way_sel === i.U) {
             dirty := true.B
+        }
+
+        when (ways(i).V.io.Q === 1.U && way_sel === i.U) {
+            valid := true.B
         }
 
         when (state === s_lookup && hit_way(i)) {
