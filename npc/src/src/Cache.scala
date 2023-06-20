@@ -94,7 +94,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val awfire = RegInit(false.B)
     val wfire = RegInit(false.B)
 
-    val s_idle :: s_lookup :: s_miss :: s_aw :: s_b :: s_ar :: s_r :: s_wait :: s_bypass :: Nil = Enum(8)
+    val s_idle :: s_lookup :: s_miss :: s_aw :: s_b :: s_ar :: s_r :: s_wait :: s_bypass :: Nil = Enum(9)
     val state = RegInit(s_idle)
 
     state := MuxLookup(state, s_idle, Seq(
