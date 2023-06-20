@@ -75,8 +75,8 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
 
     // we require that cpu always send w and aw request in one cycle
     val cpu_request = cpu_master.ar.valid || (cpu_master.aw.valid && cpu_master.w.valid)
+    val device_request = cpu_master.ar.bits.addr(31, 28) === 0xa.U || cpu_master.aw.bits.addr(31, 28) === 0xa.U
     val cpu_ready = cpu_slave.r.ready || cpu_slave.b.ready
-    val device = cpu_master.ar.bits.addr(31, 28) === 0xa.U || cpu_master.aw.bits.addr(31, 28) === 0xa.U
 
     val req = Wire(new Cache_Req(depth, bank))
     req.op     := cpu_master.aw.valid
@@ -98,7 +98,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val state = RegInit(s_idle)
 
     state := MuxLookup(state, s_idle, Seq(
-        s_idle   -> Mux(cpu_request, s_lookup, s_idle),
+        s_idle   -> Mux(cpu_request, Mux(device_request, s_bypass, s_lookup), s_idle),
         s_lookup -> Mux(hit, Mux(cpu_ready, Mux(cpu_request && !hazard, s_lookup, s_idle), s_wait), s_miss),
         s_wait   -> Mux(cpu_ready, s_idle, s_wait),
         s_miss   -> Mux(dirty && valid, s_aw, s_ar),
