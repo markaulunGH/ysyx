@@ -135,7 +135,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     
     val refill_wen = state === s_r && cnt === 3.U
     
-    val hit_way = Seq.fill(way)(Wire(Bool()))
+    val hit_way = Seq.fill(way)(dontTouch(Wire(Bool())))
 
     dirty := false.B
     valid := false.B
