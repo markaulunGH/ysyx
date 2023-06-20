@@ -208,10 +208,10 @@ class Cache(way : Int) extends Module
     cpu_master.ar.ready := cache_ready
 
     // bvalid and rvalid should not be asserted at the same time
-    cpu_slave.b.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && req_reg.op || state === s_wait
+    cpu_slave.b.valid := ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) || state === s_wait) && req_reg.op
     cpu_slave.b.bits.resp := 0.U(2.W)
 
-    cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && !req_reg.op || state === s_wait
+    cpu_slave.r.valid := ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) || state === s_wait) && !req_reg.op
     cpu_slave.r.bits.resp := 0.U(2.W)
     cpu_slave.r.bits.data := Mux(state === s_wait, cache_rdata_reg, cache_rdata)
 
