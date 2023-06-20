@@ -180,7 +180,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         {
             hit_bank(j) := req_reg.offset(offset_len - 1, 3) === j.U
 
-            when (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op && req_reg.offset === req.offset) {
+            when (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op && req_reg.offset(offset_len - 1, 3) === req.offset(offset_len - 1, 3)) {
                 hazard := true.B
             }
 
