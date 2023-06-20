@@ -211,7 +211,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         cache_rdata := new_cache_line >> Cat(req_reg.offset, 0.U(3.W))
     }
 
-    val bypass = bypass
+    val bypass = state === s_bypass
 
     cpu_master.aw.ready := cache_ready
     cpu_master.w.ready  := cache_ready
