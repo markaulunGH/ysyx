@@ -71,10 +71,10 @@ class Cache(way : Int) extends Module
     val random_bit = LFSR(16)
 
     // what if w has not fired?
-    val cpu_request = dontTouch(cpu_master.ar.valid || cpu_master.aw.valid)
-    val cpu_ready = dontTouch(cpu_slave.r.ready || cpu_slave.b.ready)
+    val cpu_request = cpu_master.ar.valid || cpu_master.aw.valid
+    val cpu_ready = cpu_slave.r.ready || cpu_slave.b.ready
 
-    val req = dontTouch(Wire(new Cache_Req))
+    val req = Wire(new Cache_Req)
     req.op     := cpu_master.aw.valid
     req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, 11), cpu_master.ar.bits.addr(63, 11))
     req.index  := Mux(req.op, cpu_master.aw.bits.addr(10, 5), cpu_master.ar.bits.addr(10, 5))
@@ -82,10 +82,10 @@ class Cache(way : Int) extends Module
     req.data   := cpu_master.w.bits.data
     req.strb   := cpu_master.w.bits.strb
 
-    val dirty = dontTouch(Wire(Bool()))
-    val valid = dontTouch(Wire(Bool()))
-    val hazard = dontTouch(Wire(Bool()))
-    val hit = dontTouch(Wire(Bool()))
+    val dirty = Wire(Bool())
+    val valid = Wire(Bool())
+    val hazard = Wire(Bool())
+    val hit = Wire(Bool())
     val cnt = RegInit(0.U(2.W))
 
     val s_idle :: s_lookup :: s_miss :: s_aw :: s_w :: s_ar :: s_r :: s_wait :: Nil = Enum(8)
@@ -104,94 +104,104 @@ class Cache(way : Int) extends Module
         s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, Mux(cpu_ready, s_idle, s_wait), s_ar), s_r)
     ))
 
-    val cache_ready = dontTouch((state === s_idle || (state === s_lookup && hit)) && !hazard)
+    val cache_ready = (state === s_idle || (state === s_lookup && hit)) && !hazard
 
     val req_reg = RegEnable(req, cache_ready && cpu_request)
-    val way_sel = RegEnable(random_bit(log2Ceil(way) - 1, 0), state === s_lookup)
+    val bwen = Wire(Vec(8, UInt(8.W)))
+    for (i <- 0 until 8) {
+        bwen(i) := Fill(8, req_reg.strb(i))
+    }
 
-    val hit_way = Seq.fill(way)(dontTouch(Wire(Bool())))
-    val cache_line = Seq.fill(way)(dontTouch(Wire(Vec(4, UInt(64.W)))))
-    val cache_line_reg = dontTouch(Reg(Vec(4, UInt(64.W))))
-    val cache_line_tag_reg = dontTouch(Reg(UInt(53.W)))
+    val way_sel = Seq.fill(way)(Wire(Bool()))
+    val way_sel_reg = Seq.fill(way)(Reg(Bool()))
+    for (i <- 0 until way) {
+        way_sel(i) := random_bit(log2Ceil(way) - 1, 0) === i.U
+        way_sel_reg(i) := RegEnable(way_sel(i), state === s_lookup)
+    }
+    
+    val cache_line = Reg(Vec(4, UInt(64.W)))
+    val cache_line_tag = Reg(UInt(53.W))
 
     val cache_line_buf = Reg(UInt(192.W))
-    val new_cache_line = dontTouch(Cat(slave.r.bits.data, cache_line_buf))
-
+    val new_cache_line = Cat(slave.r.bits.data, cache_line_buf)
+    
     val cache_rdata = Wire(UInt(64.W))
     val cache_rdata_reg = RegEnable(cache_rdata, state === s_lookup || state === s_r)
-    cache_rdata := 0.U(64.W)
+    
+    val refill_wen = state === s_r && cnt === 3.U
+    
+    val hit_way = Seq.fill(way)(Wire(Bool()))
+
     dirty := false.B
     valid := false.B
     hazard := false.B
+    cache_rdata := 0.U(64.W)
 
-    val refill_wen = dontTouch(state === s_r && cnt === 3.U)
-    
     for (i <- 0 until way)
     {
-        ways(i).tag.io.cen  := (cache_ready && cpu_request) || (refill_wen && way_sel === i.U)
-        ways(i).tag.io.wen  := refill_wen && way_sel === i.U
-        ways(i).tag.io.bwen := Fill(53, 1.U(1.W))
-        ways(i).tag.io.A    := Mux(state === s_r, req_reg.index, req.index)
-        ways(i).tag.io.D    := req_reg.tag
-
-        ways(i).V.io.cen   := (cache_ready && cpu_request) || (refill_wen && way_sel === i.U)
-        ways(i).V.io.wen   := refill_wen && way_sel === i.U
-        ways(i).V.io.bwen  := 1.U(1.W)
-        ways(i).V.io.A     := Mux(state === s_r, req_reg.index, req.index)
-        ways(i).V.io.D     := 1.U(1.W)
-
-        ways(i).D.io.cen   := (state === s_lookup) || (refill_wen && way_sel === i.U)
-        ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (refill_wen && way_sel === i.U)
-        ways(i).D.io.bwen  := 1.U(1.W)
-        ways(i).D.io.A     := Mux(state === s_r, req_reg.index, req.index)
-        ways(i).D.io.D     := Mux(state === s_lookup && hit_way(i) && req_reg.op, 1.U(1.W), 0.U(1.W))
-
-        for (j <- 0 until 4)
-        {
-            val bwen = Wire(Vec(8, UInt(8.W)))
-            for (k <- 0 until 8) {
-                bwen(k) := Fill(8, req_reg.strb(k))
-            }
-
-            ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(4, 3) === j.U) || (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (refill_wen && way_sel === i.U)
-            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (refill_wen && way_sel === i.U)
-            ways(i).data.banks(j).bwen := Mux(state === s_r && (!req_reg.op || req_reg.offset(4, 3) =/= j.U), Fill(64, 1.U(1.W)), bwen.asUInt() << Cat(req_reg.offset(2, 0), 0.U(3.W)))
-            ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U, req_reg.index, req.index)
-            ways(i).data.banks(j).D    := Mux(state === s_r && (!req_reg.op || req_reg.offset(4, 3) =/= j.U), new_cache_line >> Cat(j.U, 0.U(6.W)), req_reg.data << Cat(req_reg.offset(2, 0), 0.U(3.W)))
-            cache_line(i)(j) := ways(i).data.banks(j).Q
-            when (state === s_lookup && random_bit(log2Ceil(way) - 1, 0) === i.U) {
-                cache_line_reg(j) := ways(i).data.banks(j).Q
-            }
-
-            when (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U && req_reg.offset === req.offset) {
-                hazard := true.B
-            }
-        }
-
-        when (state === s_lookup && random_bit(log2Ceil(way) - 1, 0) === i.U) {
-            cache_line_tag_reg := ways(i).tag.io.Q
-        }
-
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
 
-        when (ways(i).D.io.Q === 1.U && way_sel === i.U) {
+        when (state === s_lookup && way_sel(i)) {
+            cache_line_tag := ways(i).tag.io.Q
+        }
+
+        when (ways(i).D.io.Q === 1.U && way_sel_reg(i)) {
             dirty := true.B
         }
 
-        when (ways(i).V.io.Q === 1.U && way_sel === i.U) {
+        when (ways(i).V.io.Q === 1.U && way_sel_reg(i)) {
             valid := true.B
         }
 
-        when (state === s_lookup && hit_way(i)) {
-            for (j <- 0 until 4) {
-                when (req_reg.offset(4, 3) === j.U) {
-                    cache_rdata := cache_line(i)(j) >> Cat(req_reg.offset(2, 0), 0.U(3.W))
-                }
+        ways(i).tag.io.cen  := (cache_ready && cpu_request) || (refill_wen && way_sel_reg(i))
+        ways(i).tag.io.wen  := refill_wen && way_sel_reg(i)
+        ways(i).tag.io.A    := Mux(state === s_r, req_reg.index, req.index)
+        ways(i).tag.io.bwen := Fill(53, 1.U(1.W))
+        ways(i).tag.io.D    := req_reg.tag
+
+        ways(i).V.io.cen   := (cache_ready && cpu_request) || (refill_wen && way_sel_reg(i))
+        ways(i).V.io.wen   := refill_wen && way_sel_reg(i)
+        ways(i).V.io.A     := Mux(state === s_r, req_reg.index, req.index)
+        ways(i).V.io.bwen  := 1.U(1.W)
+        ways(i).V.io.D     := 1.U(1.W)
+
+        ways(i).D.io.cen   := (state === s_lookup) || (refill_wen && way_sel_reg(i))
+        ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (refill_wen && way_sel_reg(i))
+        ways(i).D.io.A     := Mux(state === s_r, req_reg.index, req.index)
+        ways(i).D.io.bwen  := 1.U(1.W)
+        ways(i).D.io.D     := Mux(state === s_lookup && hit_way(i) && req_reg.op, 1.U(1.W), 0.U(1.W))
+
+        val hit_bank = Seq.fill(4)(Wire(Bool()))
+
+        for (j <- 0 until 4)
+        {
+            hit_bank(j) := req_reg.offset(4, 3) === j.U
+
+            when (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op && req_reg.offset === req.offset) {
+                hazard := true.B
             }
+
+            when (state === s_lookup && hit_way(i) && hit_bank(j)) {
+                cache_rdata := ways(i).data.banks(j).Q >> Cat(req_reg.offset(2, 0), 0.U(3.W))
+            }
+
+            when (state === s_lookup && way_sel(i)) {
+                cache_line(j) := ways(i).data.banks(j).Q
+            }
+
+            ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(4, 3) === j.U) || (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg(i))
+            ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg(i))
+            ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op, req_reg.index, req.index)
+            ways(i).data.banks(j).bwen := Mux(state === s_r && !(hit_bank(j) && req_reg.op), Fill(64, 1.U(1.W)), bwen.asUInt() << Cat(req_reg.offset(2, 0), 0.U(3.W)))
+            ways(i).data.banks(j).D    := Mux(state === s_r && !(hit_bank(j) && req_reg.op), new_cache_line >> Cat(j.U, 0.U(6.W)), req_reg.data << Cat(req_reg.offset(2, 0), 0.U(3.W)))
         }
     }
 
     hit := hit_way.reduce(_ || _)
+
+    when (state === s_r) {
+        cache_rdata := new_cache_line >> Cat(req_reg.offset, 0.U(3.W))
+    }
 
     // what if aw has fired but w hasn't?
     cpu_master.aw.ready := cache_ready
@@ -204,9 +214,6 @@ class Cache(way : Int) extends Module
 
     cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && !req_reg.op || state === s_wait
     cpu_slave.r.bits.resp := 0.U(2.W)
-    when (state === s_r) {
-        cache_rdata := new_cache_line >> Cat(req_reg.offset, 0.U(3.W))
-    }
     cpu_slave.r.bits.data := Mux(state === s_wait, cache_rdata_reg, cache_rdata)
 
     when (cpu_master.aw.fire || cpu_master.ar.fire) {
@@ -216,11 +223,11 @@ class Cache(way : Int) extends Module
     }
 
     master.aw.valid := state === s_aw
-    master.aw.bits.addr := Cat(cache_line_tag_reg, req_reg.index, cnt, 0.U(3.W))
+    master.aw.bits.addr := Cat(cache_line_tag, req_reg.index, cnt, 0.U(3.W))
     master.aw.bits.prot := 0.U(3.W)
 
     master.w.valid := state === s_w
-    master.w.bits.data := cache_line_reg(cnt)
+    master.w.bits.data := cache_line(cnt)
     master.w.bits.strb := Fill(8, 1.U)
 
     master.ar.valid := state === s_ar
