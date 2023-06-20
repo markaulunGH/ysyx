@@ -197,14 +197,6 @@ class Cache(way : Int) extends Module
         when (ways(i).V.io.Q === 1.U && way_sel_reg(i)) {
             valid := true.B
         }
-
-        // when (state === s_lookup && hit_way(i)) {
-        //     for (j <- 0 until 4) {
-        //         when (req_reg.offset(4, 3) === j.U) {
-        //             cache_rdata := cache_line(i)(j) >> Cat(req_reg.offset(2, 0), 0.U(3.W))
-        //         }
-        //     }
-        // }
     }
 
     hit := hit_way.reduce(_ || _)
