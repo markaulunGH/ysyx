@@ -157,7 +157,7 @@ class Cache(way : Int) extends Module
             ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U, req_reg.index, req.index)
             ways(i).data.banks(j).D    := Mux(state === s_r && (!req_reg.op || req_reg.offset(4, 3) =/= j.U), new_cache_line >> Cat(j.U, 0.U(6.W)), req_reg.data << Cat(req_reg.offset(2, 0), 0.U(3.W)))
             cache_line(i)(j) := ways(i).data.banks(j).Q
-            when (state === s_lookup && way_sel === i.U) {
+            when (state === s_lookup && random_bit(log2Ceil(way) - 1, 0) === i.U) {
                 cache_line_reg(j) := ways(i).data.banks(j).Q
             }
 
@@ -166,8 +166,8 @@ class Cache(way : Int) extends Module
             }
         }
 
-        when (state === s_lookup) {
-            cache_line_tag_reg(i) := ways(i).tag.io.Q
+        when (state === s_lookup && random_bit(log2Ceil(way) - 1, 0) === i.U) {
+            cache_line_tag_reg := ways(i).tag.io.Q
         }
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
@@ -210,7 +210,7 @@ class Cache(way : Int) extends Module
     }
 
     master.aw.valid := state === s_aw
-    master.aw.bits.addr := Cat(cache_line_tag_reg(way_sel.U), req_reg.index, cnt, 0.U(3.W))
+    master.aw.bits.addr := Cat(cache_line_tag_reg, req_reg.index, cnt, 0.U(3.W))
     master.aw.bits.prot := 0.U(3.W)
 
     master.w.valid := state === s_w
