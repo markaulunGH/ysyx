@@ -121,7 +121,9 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val way_sel_reg = Seq.fill(way)(Reg(Bool()))
     for (i <- 0 until way) {
         way_sel(i) := random_bit(log2Ceil(way) - 1, 0) === i.U
-        way_sel_reg(i) := way_sel(i), state === s_lookup
+        when (state === s_lookup) {
+            way_sel_reg(i) := way_sel(i)
+        }
     }
     
     val cache_line = Reg(Vec(bank, UInt(64.W)))
