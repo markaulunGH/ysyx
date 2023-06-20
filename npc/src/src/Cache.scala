@@ -223,7 +223,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         cnt := cnt + 1.U(log2Ceil(bank).W)
     }
 
-    master.aw.valid := state === s_aw
+    master.aw.valid := state === s_aw && !awfire
     master.aw.bits.addr := Cat(cache_line_tag, req_reg.index, cnt, 0.U(3.W))
     master.aw.bits.prot := 0.U(3.W)
     when (state === s_b) {
@@ -232,7 +232,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         awfire := true.B
     }
 
-    master.w.valid := state === s_b
+    master.w.valid := state === s_aw && !wfire
     master.w.bits.data := cache_line(cnt)
     master.w.bits.strb := Fill(8, 1.U)
     when (state === s_b) {
