@@ -70,7 +70,7 @@ class Cache(way : Int) extends Module
     val ways = Seq.fill(way)(new Cache_Way)
     val random_bit = LFSR(16)
 
-    // we assume that cpu always sends w and aw request in one cycle
+    // we require that cpu always send w and aw request in one cycle
     val cpu_request = cpu_master.ar.valid || (cpu_master.aw.valid && cpu_master.w.valid)
     val cpu_ready = cpu_slave.r.ready || cpu_slave.b.ready
 
@@ -207,7 +207,6 @@ class Cache(way : Int) extends Module
     cpu_master.w.ready  := cache_ready
     cpu_master.ar.ready := cache_ready
 
-    // bvalid and rvalid should not be asserted at the same time
     cpu_slave.b.valid := ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) || state === s_wait) && req_reg.op
     cpu_slave.b.bits.resp := 0.U(2.W)
 
