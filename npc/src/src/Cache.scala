@@ -99,13 +99,14 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
 
     state := MuxLookup(state, s_idle, Seq(
         s_idle   -> Mux(cpu_request, Mux(device_request, s_bypass, s_lookup), s_idle),
-        s_lookup -> Mux(hit, Mux(cpu_ready, Mux(cpu_request, Mux(hazard, s_idle, s_lookup), s_idle), s_wait), s_miss),
+        s_lookup -> Mux(hit, Mux(cpu_ready, Mux(cpu_request, Mux(device_request, s_bypass, Mux(hazard, s_idle, s_lookup)), s_idle), s_wait), s_miss),
         s_wait   -> Mux(cpu_ready, s_idle, s_wait),
         s_miss   -> Mux(dirty && valid, s_aw, s_ar),
         s_aw     -> Mux((master.aw.fire || awfire) && (master.w.fire || wfire), s_b, s_aw),
         s_b      -> Mux(slave.b.fire, Mux(cnt === (bank - 1).U, s_ar, s_aw), s_b),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
-        s_r      -> Mux(slave.r.fire, Mux(cnt === (bank - 1).U, Mux(cpu_ready, s_idle, s_wait), s_ar), s_r)
+        s_r      -> Mux(slave.r.fire, Mux(cnt === (bank - 1).U, Mux(cpu_ready, s_idle, s_wait), s_ar), s_r),
+        s_bypass -> Mux(slave.b.fire || slave.r.fire, s_idle, s_bypass)
     ))
 
     val cache_ready = (state === s_idle || (state === s_lookup && hit)) && !hazard
@@ -207,16 +208,18 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         cache_rdata := new_cache_line >> Cat(req_reg.offset, 0.U(3.W))
     }
 
-    cpu_master.aw.ready := cache_ready
-    cpu_master.w.ready  := cache_ready
-    cpu_master.ar.ready := cache_ready
+    val bypass = state === s_bypass
 
-    cpu_slave.b.valid := ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === (bank - 1).U) || state === s_wait) && req_reg.op
-    cpu_slave.b.bits.resp := 0.U(2.W)
+    cpu_master.aw.ready := Mux(bypass, master.aw.ready, cache_ready)
+    cpu_master.w.ready  := Mux(bypass, master.w.ready,  cache_ready)
+    cpu_master.ar.ready := Mux(bypass, master.ar.ready, cache_ready)
 
-    cpu_slave.r.valid := ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === (bank - 1).U) || state === s_wait) && !req_reg.op
-    cpu_slave.r.bits.resp := 0.U(2.W)
-    cpu_slave.r.bits.data := Mux(state === s_wait, cache_rdata_reg, cache_rdata)
+    cpu_slave.b.valid     := Mux(bypass, slave.b.valid, ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === (bank - 1).U) || state === s_wait) && req_reg.op)
+    cpu_slave.b.bits.resp := Mux(bypass, slave.b.bits.resp, 0.U(2.W))
+
+    cpu_slave.r.valid     := Mux(bypass, slave.r.valid, ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === (bank - 1).U) || state === s_wait) && !req_reg.op)
+    cpu_slave.r.bits.resp := Mux(bypass, slave.r.bits.resp, 0.U(2.W))
+    cpu_slave.r.bits.data := Mux(bypass, slave.r.bits.data, Mux(state === s_wait, cache_rdata_reg, cache_rdata))
 
     when (cpu_master.aw.fire || cpu_master.ar.fire) {
         cnt := 0.U(log2Ceil(bank).W)
@@ -224,31 +227,31 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         cnt := cnt + 1.U(log2Ceil(bank).W)
     }
 
-    master.aw.valid := state === s_aw
-    master.aw.bits.addr := Cat(cache_line_tag, req_reg.index, cnt, 0.U(3.W))
-    master.aw.bits.prot := 0.U(3.W)
+    master.aw.valid     := Mux(bypass, cpu_master.aw.valid, state === s_aw)
+    master.aw.bits.addr := Mux(bypass, cpu_master.aw.bits.addr, Cat(cache_line_tag, req_reg.index, cnt, 0.U(3.W)))
+    master.aw.bits.prot := Mux(bypass, cpu_master.aw.bits.prot, 0.U(3.W))
     when (state === s_b) {
         awfire := false.B
     } .elsewhen (master.aw.fire) {
         awfire := true.B
     }
 
-    master.w.valid := state === s_b
-    master.w.bits.data := cache_line(cnt)
-    master.w.bits.strb := Fill(8, 1.U)
+    master.w.valid     := Mux(bypass, cpu_master.w.valid, state === s_b)
+    master.w.bits.data := Mux(bypass, cpu_master.w.bits.data, cache_line(cnt))
+    master.w.bits.strb := Mux(bypass, cpu_master.w.bits.strb, Fill(8, 1.U))
     when (state === s_b) {
         wfire := false.B
     } .elsewhen (master.w.fire) {
         wfire := true.B
     }
 
-    master.ar.valid := state === s_ar
-    master.ar.bits.addr := Cat(req_reg.tag, req_reg.index, cnt, 0.U(3.W))
-    master.ar.bits.prot := 0.U(3.W)
+    master.ar.valid     := Mux(bypass, cpu_master.ar.valid, state === s_ar)
+    master.ar.bits.addr := Mux(bypass, cpu_master.ar.bits.addr, Cat(req_reg.tag, req_reg.index, cnt, 0.U(3.W)))
+    master.ar.bits.prot := Mux(bypass, cpu_master.ar.bits.prot, 0.U(3.W))
 
-    slave.b.ready := state === s_b
+    slave.b.ready := Mux(bypass, cpu_slave.b.ready, state === s_b)
 
-    slave.r.ready := state === s_r
+    slave.r.ready := Mux(bypass, cpu_slave.r.ready, state === s_r)
     when (slave.r.fire) {
         cache_line_buf := cache_line_buf >> 64.U | Cat(slave.r.bits.data, 0.U((64 * (bank - 2)).W))
     }
