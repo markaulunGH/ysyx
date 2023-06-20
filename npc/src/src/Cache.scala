@@ -142,20 +142,20 @@ class Cache(way : Int) extends Module
     
     for (i <- 0 until way)
     {
-        ways(i).tag.io.cen  := (cache_ready && cpu_request) || (refill_wen && way_sel_reg === i.U)
+        ways(i).tag.io.cen  := (cache_ready && cpu_request) || (refill_wen && way_sel_reg(i))
         ways(i).tag.io.wen  := refill_wen && way_sel_reg === i.U
         ways(i).tag.io.bwen := Fill(53, 1.U(1.W))
         ways(i).tag.io.A    := Mux(state === s_r, req_reg.index, req.index)
         ways(i).tag.io.D    := req_reg.tag
 
-        ways(i).V.io.cen   := (cache_ready && cpu_request) || (refill_wen && way_sel_reg === i.U)
+        ways(i).V.io.cen   := (cache_ready && cpu_request) || (refill_wen && way_sel_reg(i))
         ways(i).V.io.wen   := refill_wen && way_sel_reg === i.U
         ways(i).V.io.bwen  := 1.U(1.W)
         ways(i).V.io.A     := Mux(state === s_r, req_reg.index, req.index)
         ways(i).V.io.D     := 1.U(1.W)
 
-        ways(i).D.io.cen   := (state === s_lookup) || (refill_wen && way_sel_reg === i.U)
-        ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (refill_wen && way_sel_reg === i.U)
+        ways(i).D.io.cen   := (state === s_lookup) || (refill_wen && way_sel_reg(i))
+        ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (refill_wen && way_sel_reg(i))
         ways(i).D.io.bwen  := 1.U(1.W)
         ways(i).D.io.A     := Mux(state === s_r, req_reg.index, req.index)
         ways(i).D.io.D     := Mux(state === s_lookup && hit_way(i) && req_reg.op, 1.U(1.W), 0.U(1.W))
