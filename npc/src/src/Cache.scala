@@ -129,6 +129,11 @@ class Cache(way : Int) extends Module
     hazard := false.B
 
     val refill_wen = state === s_r && cnt === 3.U
+
+    val bwen = Wire(Vec(8, UInt(8.W)))
+    for (i <- 0 until 8) {
+        bwen(i) := Fill(8, req_reg.strb(i))
+    }
     
     for (i <- 0 until way)
     {
@@ -154,11 +159,6 @@ class Cache(way : Int) extends Module
 
         for (j <- 0 until 4)
         {
-            val bwen = Wire(Vec(8, UInt(8.W)))
-            for (k <- 0 until 8) {
-                bwen(k) := Fill(8, req_reg.strb(k))
-            }
-
             hit_bank(j) := req_reg.offset(4, 3) === j.U
 
             ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(4, 3) === j.U) || (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg === i.U)
