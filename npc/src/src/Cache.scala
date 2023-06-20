@@ -239,7 +239,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         awfire := true.B
     }
 
-    master.w.valid     := Mux(bypass, cpu_master.w.valid, state === s_aw && !wfire)
+    master.w.valid     := (state === s_bypass || state === s_aw) && !wfire
     master.w.bits.data := Mux(bypass, cpu_master.w.bits.data, cache_line(cnt))
     master.w.bits.strb := Mux(bypass, cpu_master.w.bits.strb, Fill(8, 1.U))
     when (slave.b.fire) {
