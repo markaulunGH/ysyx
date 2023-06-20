@@ -52,7 +52,7 @@ class Cache_Way(depth : Int, bank : Int) extends Bundle
 class Cache_Req(depth : Int, bank : Int) extends Bundle
 {
     val op     = Bool()
-    val tag    = UInt(53.W)
+    val tag    = UInt(64 - log2Ceil(depth) - (log2Ceil(64 * depth) - 3).W)
     val index  = UInt(6.W)
     val offset = UInt(5.W)
     val data   = UInt(64.W)
