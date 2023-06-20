@@ -187,6 +187,7 @@ class Cache(way : Int) extends Module
     cpu_master.w.ready  := cache_ready
     cpu_master.ar.ready := cache_ready
 
+    // bvalid and rvalid should not be asserted at the same time
     cpu_slave.b.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && req_reg.op || state === s_wait
     cpu_slave.b.bits.resp := 0.U(2.W)
 
