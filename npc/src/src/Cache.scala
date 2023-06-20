@@ -75,7 +75,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
 
     // we require that cpu always send w and aw request in one cycle
     val cpu_request = cpu_master.ar.valid || (cpu_master.aw.valid && cpu_master.w.valid)
-    val device_request = cpu_master.ar.bits.addr(31, 28) === 0xa.U || cpu_master.aw.bits.addr(31, 28) === 0xa.U
+    val device_request = dontTouch(cpu_master.ar.bits.addr(31, 28) === 0xa.U || cpu_master.aw.bits.addr(31, 28) === 0xa.U)
     val cpu_ready = cpu_slave.r.ready || cpu_slave.b.ready
 
     val req = Wire(new Cache_Req(depth, bank))
