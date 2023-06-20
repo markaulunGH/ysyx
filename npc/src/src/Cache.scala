@@ -174,7 +174,7 @@ class Cache(way : Int) extends Module
 
 
             cache_line(i)(j) := ways(i).data.banks(j).Q
-            when (state === s_lookup && way_sel === i.U) {
+            when (state === s_lookup && way_sel(i)) {
                 cache_line_reg(j) := ways(i).data.banks(j).Q
             }
 
@@ -183,7 +183,7 @@ class Cache(way : Int) extends Module
             }
         }
 
-        when (state === s_lookup && way_sel === i.U) {
+        when (state === s_lookup && way_sel(i)) {
             cache_line_tag_reg := ways(i).tag.io.Q
         }
 
