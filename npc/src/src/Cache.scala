@@ -70,6 +70,7 @@ class Cache(way : Int) extends Module
     val ways = Seq.fill(way)(new Cache_Way)
     val random_bit = LFSR(16)
 
+    // what if w has not fired?
     val cpu_request = dontTouch(cpu_master.ar.valid || cpu_master.aw.valid)
     val cpu_ready = dontTouch(cpu_slave.r.ready || cpu_slave.b.ready)
 
@@ -95,6 +96,7 @@ class Cache(way : Int) extends Module
         // Now cache state will change from idle -> lookup -> wait -> idle, maybe wait -> lookup directly in the future
         s_wait   -> Mux(cpu_ready, s_idle, s_wait),
         s_miss   -> Mux(dirty, s_aw, s_ar),
+        // what if w has not fired?
         s_aw     -> Mux(master.aw.fire, s_w, s_aw),
         s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
@@ -148,7 +150,7 @@ class Cache(way : Int) extends Module
                 bwen(k) := Fill(8, req_reg.strb)
             }
 
-            ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(4, 3) === j.U) || (refill_wen && way_sel === i.U)
+            ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(4, 3) === j.U) || (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (refill_wen && way_sel === i.U)
             ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U) || (refill_wen && way_sel === i.U)
             ways(i).data.banks(j).bwen := Mux(state === s_r, Fill(64, 1.U(1.W)), bwen.asUInt())
             ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && req_reg.op && req_reg.offset(4, 3) === j.U, req_reg.index, req.index)
@@ -180,6 +182,7 @@ class Cache(way : Int) extends Module
 
     hit := hit_way.reduce(_ || _)
 
+    // what if aw has fired but w hasn't?
     cpu_master.aw.ready := cache_ready
     cpu_master.w.ready  := cache_ready
     cpu_master.ar.ready := cache_ready
