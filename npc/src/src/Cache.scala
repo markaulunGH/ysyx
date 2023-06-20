@@ -111,7 +111,7 @@ class Cache(way : Int) extends Module
     val hit_way = Seq.fill(way)(dontTouch(Wire(Bool())))
     val cache_line = Seq.fill(way)(dontTouch(Wire(Vec(4, UInt(64.W)))))
     val cache_line_reg = dontTouch(Reg(Vec(4, UInt(64.W))))
-    val cache_line_tag_reg = dontTouch(Reg(UInt(53.W)))
+    val cache_line_tag_reg = Seq.fill(way)(dontTouch(Reg(UInt(53.W))))
 
     val cache_line_buf = Reg(UInt(192.W))
     val new_cache_line = dontTouch(Cat(slave.r.bits.data, cache_line_buf))
@@ -166,8 +166,8 @@ class Cache(way : Int) extends Module
             }
         }
 
-        when (state === s_lookup && way_sel === i.U) {
-            cache_line_tag_reg := ways(i).tag.io.Q
+        when (state === s_lookup) {
+            cache_line_tag_reg(i) := ways(i).tag.io.Q
         }
 
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
@@ -210,7 +210,7 @@ class Cache(way : Int) extends Module
     }
 
     master.aw.valid := state === s_aw
-    master.aw.bits.addr := Cat(cache_line_tag_reg, req_reg.index, cnt, 0.U(3.W))
+    master.aw.bits.addr := Cat(cache_line_tag_reg(way_sel), req_reg.index, cnt, 0.U(3.W))
     master.aw.bits.prot := 0.U(3.W)
 
     master.w.valid := state === s_w
