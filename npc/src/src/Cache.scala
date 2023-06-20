@@ -70,8 +70,8 @@ class Cache(way : Int) extends Module
     val ways = Seq.fill(way)(new Cache_Way)
     val random_bit = LFSR(16)
 
-    // what if w has not fired?
-    val cpu_request = cpu_master.ar.valid || cpu_master.aw.valid
+    // we require that cpu always send w and aw request in one cycle
+    val cpu_request = cpu_master.ar.valid || (cpu_master.aw.valid && cpu_master.w.valid)
     val cpu_ready = cpu_slave.r.ready || cpu_slave.b.ready
 
     val req = Wire(new Cache_Req)
@@ -87,19 +87,19 @@ class Cache(way : Int) extends Module
     val hazard = Wire(Bool())
     val hit = Wire(Bool())
     val cnt = RegInit(0.U(2.W))
+    val awfire = RegInit(false.B)
+    val wfire = RegInit(false.B)
 
-    val s_idle :: s_lookup :: s_miss :: s_aw :: s_w :: s_ar :: s_r :: s_wait :: Nil = Enum(8)
+    val s_idle :: s_lookup :: s_miss :: s_aw :: s_b :: s_ar :: s_r :: s_wait :: Nil = Enum(8)
     val state = RegInit(s_idle)
 
     state := MuxLookup(state, s_idle, Seq(
         s_idle   -> Mux(cpu_request && !hazard, s_lookup, s_idle),
         s_lookup -> Mux(hit, Mux(cpu_ready, Mux(cpu_request && !hazard, s_lookup, s_idle), s_wait), s_miss),
-        // Now cache state will change from idle -> lookup -> wait -> idle, maybe wait -> lookup directly in the future
         s_wait   -> Mux(cpu_ready, s_idle, s_wait),
         s_miss   -> Mux(dirty && valid, s_aw, s_ar),
-        // what if w has not fired?
-        s_aw     -> Mux(master.aw.fire, s_w, s_aw),
-        s_w      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_w),
+        s_aw     -> Mux((master.aw.fire || awfire) && (master.w.fire || wfire), s_b, s_aw),
+        s_b      -> Mux(slave.b.fire, Mux(cnt === 3.U, s_ar, s_aw), s_b),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
         s_r      -> Mux(slave.r.fire, Mux(cnt === 3.U, Mux(cpu_ready, s_idle, s_wait), s_ar), s_r)
     ))
@@ -203,16 +203,14 @@ class Cache(way : Int) extends Module
         cache_rdata := new_cache_line >> Cat(req_reg.offset, 0.U(3.W))
     }
 
-    // what if aw has fired but w hasn't?
     cpu_master.aw.ready := cache_ready
     cpu_master.w.ready  := cache_ready
     cpu_master.ar.ready := cache_ready
 
-    // bvalid and rvalid should not be asserted at the same time
-    cpu_slave.b.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && req_reg.op || state === s_wait
+    cpu_slave.b.valid := ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) || state === s_wait) && req_reg.op
     cpu_slave.b.bits.resp := 0.U(2.W)
 
-    cpu_slave.r.valid := (state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) && !req_reg.op || state === s_wait
+    cpu_slave.r.valid := ((state === s_lookup && hit) || (state === s_r && slave.r.fire && cnt === 3.U) || state === s_wait) && !req_reg.op
     cpu_slave.r.bits.resp := 0.U(2.W)
     cpu_slave.r.bits.data := Mux(state === s_wait, cache_rdata_reg, cache_rdata)
 
@@ -225,16 +223,26 @@ class Cache(way : Int) extends Module
     master.aw.valid := state === s_aw
     master.aw.bits.addr := Cat(cache_line_tag, req_reg.index, cnt, 0.U(3.W))
     master.aw.bits.prot := 0.U(3.W)
+    when (state === s_b) {
+        awfire := false.B
+    } .elsewhen (master.aw.fire) {
+        awfire := true.B
+    }
 
-    master.w.valid := state === s_w
+    master.w.valid := state === s_b
     master.w.bits.data := cache_line(cnt)
     master.w.bits.strb := Fill(8, 1.U)
+    when (state === s_b) {
+        wfire := false.B
+    } .elsewhen (master.w.fire) {
+        wfire := true.B
+    }
 
     master.ar.valid := state === s_ar
     master.ar.bits.addr := Cat(req_reg.tag, req_reg.index, cnt, 0.U(3.W))
     master.ar.bits.prot := 0.U(3.W)
 
-    slave.b.ready := state === s_w
+    slave.b.ready := state === s_b
 
     slave.r.ready := state === s_r
     when (slave.r.fire) {
