@@ -78,7 +78,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val cpu_request = cpu_master.ar.valid || (cpu_master.aw.valid && cpu_master.w.valid)
     val cpu_ready = cpu_slave.r.ready || cpu_slave.b.ready
 
-    val req = dontTouch(Wire(new Cache_Req(depth, bank)))
+    val req = Wire(new Cache_Req(depth, bank))
     req.op     := cpu_master.aw.valid
     req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, index_len + offset_len), cpu_master.ar.bits.addr(63, index_len + offset_len))
     req.index  := Mux(req.op, cpu_master.aw.bits.addr(index_len + offset_len - 1, offset_len), cpu_master.ar.bits.addr(index_len + offset_len - 1, offset_len))
@@ -87,8 +87,8 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     req.strb   := cpu_master.w.bits.strb
     req.device := cpu_master.ar.bits.addr(31, 28) === 0xa.U || cpu_master.aw.bits.addr(31, 28) === 0xa.U
 
-    val dirty = dontTouch(Wire(Bool()))
-    val hazard = dontTouch(Wire(Bool()))
+    val dirty = Wire(Bool())
+    val hazard = Wire(Bool())
     val hit = Wire(Bool())
     val cnt = RegInit(0.U(log2Ceil(bank).W))
     val awfire = RegInit(false.B)
@@ -130,14 +130,14 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val cache_line_tag = Reg(UInt(tag_len.W))
 
     val cache_line_buf = Reg(UInt((64 * (bank - 1)).W))
-    val new_cache_line = dontTouch(Cat(slave.r.bits.data, cache_line_buf))
+    val new_cache_line = Cat(slave.r.bits.data, cache_line_buf)
     
-    val cache_rdata = dontTouch(Wire(UInt(64.W)))
+    val cache_rdata = Wire(UInt(64.W))
     val cache_rdata_reg = RegEnable(cache_rdata, state === s_lookup || state === s_r)
     
     val refill_wen = state === s_r && cnt === 3.U
     
-    val hit_way = Seq.fill(way)(dontTouch(Wire(Bool())))
+    val hit_way = Seq.fill(way)(Wire(Bool()))
 
     dirty := false.B
     hazard := false.B
@@ -167,7 +167,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         ways(i).V.io.bwen  := 1.U(1.W)
         ways(i).V.io.D     := 1.U(1.W)
 
-        ways(i).D.io.cen   := (state === s_lookup) || (refill_wen && req_reg.op && way_sel_reg(i))
+        ways(i).D.io.cen   := (state === s_lookup) || (refill_wen && way_sel_reg(i))
         ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (refill_wen && way_sel_reg(i))
         ways(i).D.io.A     := req_reg.index
         ways(i).D.io.bwen  := 1.U(1.W)
