@@ -88,7 +88,6 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     req.device := cpu_master.ar.bits.addr(31, 28) === 0xa.U || cpu_master.aw.bits.addr(31, 28) === 0xa.U
 
     val dirty = dontTouch(Wire(Bool()))
-    val valid = dontTouch(Wire(Bool()))
     val hazard = dontTouch(Wire(Bool()))
     val hit = Wire(Bool())
     val cnt = RegInit(0.U(log2Ceil(bank).W))
@@ -102,7 +101,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         s_idle   -> Mux(cpu_request, Mux(req.device, s_bypass, s_lookup), s_idle),
         s_lookup -> Mux(hit, Mux(cpu_ready, Mux(cpu_request, Mux(req.device, s_bypass, Mux(hazard, s_idle, s_lookup)), s_idle), s_wait), s_miss),
         s_wait   -> Mux(cpu_ready, s_idle, s_wait),
-        s_miss   -> Mux(dirty && valid, s_aw, s_ar),
+        s_miss   -> Mux(dirty, s_aw, s_ar),
         s_aw     -> Mux((master.aw.fire || awfire) && (master.w.fire || wfire), s_b, s_aw),
         s_b      -> Mux(slave.b.fire, Mux(cnt === (bank - 1).U, s_ar, s_aw), s_b),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
@@ -155,10 +154,6 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
 
         when (ways(i).D.io.Q === 1.U && way_sel_reg(i)) {
             dirty := true.B
-        }
-
-        when (ways(i).V.io.Q === 1.U && way_sel_reg(i)) {
-            valid := true.B
         }
 
         ways(i).tag.io.cen  := (cache_ready && cpu_request) || (refill_wen && way_sel_reg(i))
