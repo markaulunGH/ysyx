@@ -153,11 +153,11 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
             cache_line_tag := ways(i).tag.io.Q
         }
 
-        when (ways(i).D.io.Q === 1.U && way_sel(i)) {
+        when (ways(i).D.io.Q === 1.U && way_sel_reg(i)) {
             dirty := true.B
         }
 
-        when (ways(i).V.io.Q === 1.U && way_sel(i)) {
+        when (ways(i).V.io.Q === 1.U && way_sel_reg(i)) {
             valid := true.B
         }
 
