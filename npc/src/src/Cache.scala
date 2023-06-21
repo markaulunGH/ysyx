@@ -140,7 +140,6 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val hit_way = Seq.fill(way)(dontTouch(Wire(Bool())))
 
     dirty := false.B
-    valid := false.B
     hazard := false.B
     cache_rdata := 0.U(64.W)
 
