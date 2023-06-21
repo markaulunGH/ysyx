@@ -167,8 +167,8 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         ways(i).V.io.bwen  := 1.U(1.W)
         ways(i).V.io.D     := 1.U(1.W)
 
-        ways(i).D.io.cen   := (state === s_lookup) || (refill_wen && way_sel_reg(i))
-        ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (refill_wen && way_sel_reg(i))
+        ways(i).D.io.cen   := (state === s_lookup) || (refill_wen && req_reg.op && way_sel_reg(i))
+        ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (refill_wen && req_reg.op && way_sel_reg(i))
         ways(i).D.io.A     := Mux(state === s_r, req_reg.index, req.index)
         ways(i).D.io.bwen  := 1.U(1.W)
         ways(i).D.io.D     := Mux(state === s_lookup && hit_way(i) && req_reg.op, 1.U(1.W), 0.U(1.W))
