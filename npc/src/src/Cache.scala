@@ -86,7 +86,6 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     req.strb   := cpu_master.w.bits.strb
 
     val dirty = Wire(Bool())
-    val valid = Wire(Bool())
     val hazard = Wire(Bool())
     val hit = Wire(Bool())
     val cnt = RegInit(0.U(log2Ceil(bank).W))
@@ -100,7 +99,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         s_idle   -> Mux(cpu_request && !hazard, s_lookup, s_idle),
         s_lookup -> Mux(hit, Mux(cpu_ready, Mux(cpu_request && !hazard, s_lookup, s_idle), s_wait), s_miss),
         s_wait   -> Mux(cpu_ready, s_idle, s_wait),
-        s_miss   -> Mux(dirty && valid, s_aw, s_ar),
+        s_miss   -> Mux(dirty, s_aw, s_ar),
         s_aw     -> Mux((master.aw.fire || awfire) && (master.w.fire || wfire), s_b, s_aw),
         s_b      -> Mux(slave.b.fire, Mux(cnt === (bank - 1).U, s_ar, s_aw), s_b),
         s_ar     -> Mux(master.ar.fire, s_r, s_ar),
@@ -119,7 +118,9 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val way_sel_reg = Seq.fill(way)(Reg(Bool()))
     for (i <- 0 until way) {
         way_sel(i) := random_bit(log2Ceil(way) - 1, 0) === i.U
-        way_sel_reg(i) := RegEnable(way_sel(i), state === s_lookup)
+        when (state === s_lookup) {
+            way_sel_reg(i) := way_sel(i)
+        }
     }
     
     val cache_line = Reg(Vec(bank, UInt(64.W)))
@@ -136,7 +137,6 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val hit_way = Seq.fill(way)(Wire(Bool()))
 
     dirty := false.B
-    valid := false.B
     hazard := false.B
     cache_rdata := 0.U(64.W)
 
@@ -150,10 +150,6 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
 
         when (ways(i).D.io.Q === 1.U && way_sel_reg(i)) {
             dirty := true.B
-        }
-
-        when (ways(i).V.io.Q === 1.U && way_sel_reg(i)) {
-            valid := true.B
         }
 
         ways(i).tag.io.cen  := (cache_ready && cpu_request) || (refill_wen && way_sel_reg(i))
@@ -170,9 +166,9 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
 
         ways(i).D.io.cen   := (state === s_lookup) || (refill_wen && way_sel_reg(i))
         ways(i).D.io.wen   := (state === s_lookup && hit_way(i) && req_reg.op) || (refill_wen && way_sel_reg(i))
-        ways(i).D.io.A     := Mux(state === s_r, req_reg.index, req.index)
+        ways(i).D.io.A     := req_reg.index
         ways(i).D.io.bwen  := 1.U(1.W)
-        ways(i).D.io.D     := Mux(state === s_lookup && hit_way(i) && req_reg.op, 1.U(1.W), 0.U(1.W))
+        ways(i).D.io.D     := Mux(refill_wen && way_sel_reg(i) && !req_reg.op, 0.U(1.W), 1.U(1.W))
 
         val hit_bank = Seq.fill(bank)(Wire(Bool()))
 
@@ -192,7 +188,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
                 cache_line(j) := ways(i).data.banks(j).Q
             }
 
-            ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(offset_len - 1, 3) === j.U) || (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg(i))
+            ways(i).data.banks(j).cen  := (cache_ready && cpu_request) || (state === s_lookup) || (refill_wen && way_sel_reg(i))
             ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg(i))
             ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op, req_reg.index, req.index)
             ways(i).data.banks(j).bwen := Mux(state === s_r && !(hit_bank(j) && req_reg.op), Fill(64, 1.U(1.W)), bwen.asUInt() << Cat(req_reg.offset(2, 0), 0.U(3.W)))
