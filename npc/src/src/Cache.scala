@@ -191,7 +191,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
                 cache_line(j) := ways(i).data.banks(j).Q
             }
 
-            ways(i).data.banks(j).cen  := (cache_ready && cpu_request && req.offset(offset_len - 1, 3) === j.U) || (state === s_lookup) || (refill_wen && way_sel_reg(i))
+            ways(i).data.banks(j).cen  := (cache_ready && cpu_request) || (state === s_lookup) || (refill_wen && way_sel_reg(i))
             ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg(i))
             ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op, req_reg.index, req.index)
             ways(i).data.banks(j).bwen := Mux(state === s_r && !(hit_bank(j) && req_reg.op), Fill(64, 1.U(1.W)), bwen.asUInt() << Cat(req_reg.offset(2, 0), 0.U(3.W)))
