@@ -86,8 +86,8 @@ class Top extends Module
     ws.ws_ds <> ds.ws_ds
     ws.ws_ms <> ms.ws_ms
 
-    val icache = Module(new Cache(2, 8, 4))
-    val dcache = Module(new Cache(2, 8, 4))
+    val icache = Module(new Cache(2, 4, 4))
+    val dcache = Module(new Cache(2, 4, 4))
     icache.cpu_master <> pf.inst_master
     icache.cpu_slave  <> fs.inst_slave
     dcache.cpu_master <> es.data_master
