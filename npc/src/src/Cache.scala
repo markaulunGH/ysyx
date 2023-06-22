@@ -93,6 +93,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val cnt = RegInit(0.U(log2Ceil(bank).W))
     val awfire = RegInit(false.B)
     val wfire = RegInit(false.B)
+    val arfire = RegInit(false.B)
 
     val s_idle :: s_lookup :: s_miss :: s_aw :: s_b :: s_ar :: s_r :: s_wait :: s_bypass :: Nil = Enum(9)
     val state = RegInit(s_idle)
@@ -246,9 +247,14 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         wfire := true.B
     }
 
-    master.ar.valid     := Mux(bypass, !req_reg.op, state === s_ar)
+    master.ar.valid     := Mux(bypass, !req_reg.op, state === s_ar) && !arfire
     master.ar.bits.addr := Mux(bypass, Cat(req_reg.tag, req_reg.index, req_reg.offset), Cat(req_reg.tag, req_reg.index, cnt, 0.U(3.W)))
     master.ar.bits.prot := 0.U(3.W)
+    when (slave.r.fire) {
+        arfire := false.B
+    } .elsewhen (master.ar.fire) {
+        arfire := true.B
+    }
 
     slave.b.ready := Mux(bypass, cpu_slave.b.ready, state === s_b)
 
