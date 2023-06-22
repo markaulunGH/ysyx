@@ -263,7 +263,6 @@ static void exec_once(Decode *s)
     }
     s->dnpc = top->io_pc;
     cpu.pc = s->dnpc;
-    printf("pc: %lx\n", s->dnpc);
 #ifdef CONFIG_ITRACE
     char *p = s->logbuf;
     p += snprintf(p, sizeof(s->logbuf), "0x%016lx:", s->pc);
