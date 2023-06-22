@@ -147,7 +147,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     {
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
 
-        when (state === s_lookup && way_sel(i)) {
+        when (state === s_miss && way_sel_reg(i)) {
             cache_line_tag := ways(i).tag.io.Q
         }
 
@@ -187,7 +187,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
                 cache_rdata := ways(i).data.banks(j).Q >> Cat(req_reg.offset(2, 0), 0.U(3.W))
             }
 
-            when (state === s_lookup && way_sel(i)) {
+            when (state === s_miss && way_sel_reg(i)) {
                 cache_line(j) := ways(i).data.banks(j).Q
             }
 
@@ -197,7 +197,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
 
             ways(i).data.banks(j).cen  := (cache_ready && cpu_request) || (state === s_lookup) || (refill_wen && way_sel_reg(i))
             ways(i).data.banks(j).wen  := (state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op) || (refill_wen && way_sel_reg(i))
-            ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && hit_way(i) && hit_bank(j) && req_reg.op, req_reg.index, req.index)
+            ways(i).data.banks(j).A    := Mux(state === s_r || state === s_lookup && (hit_way(i) && hit_bank(j) && req_reg.op || !hit), req_reg.index, req.index)
             ways(i).data.banks(j).bwen := Mux(state === s_r, Fill(64, 1.U(1.W)), data_bwen)
             ways(i).data.banks(j).D    := Mux(state === s_r, Mux(hit_bank(j) && req_reg.op, (cpu_data & data_bwen) | (sram_data & ~data_bwen), sram_data), cpu_data)
         }
