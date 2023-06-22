@@ -78,7 +78,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val cpu_request = cpu_master.ar.valid || (cpu_master.aw.valid && cpu_master.w.valid)
     val cpu_ready = cpu_slave.r.ready || cpu_slave.b.ready
 
-    val req = Wire(new Cache_Req(depth, bank))
+    val req = dontTouch(Wire(new Cache_Req(depth, bank)))
     req.op     := cpu_master.aw.valid
     req.tag    := Mux(req.op, cpu_master.aw.bits.addr(63, index_len + offset_len), cpu_master.ar.bits.addr(63, index_len + offset_len))
     req.index  := Mux(req.op, cpu_master.aw.bits.addr(index_len + offset_len - 1, offset_len), cpu_master.ar.bits.addr(index_len + offset_len - 1, offset_len))
@@ -87,9 +87,9 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     req.strb   := cpu_master.w.bits.strb
     req.device := cpu_master.ar.bits.addr(31, 28) === 0xa.U || cpu_master.aw.bits.addr(31, 28) === 0xa.U
 
-    val dirty = Wire(Bool())
-    val hazard = Wire(Bool())
-    val hit = Wire(Bool())
+    val dirty = dontTouch(Wire(Bool()))
+    val hazard = dontTouch(Wire(Bool()))
+    val hit = dontTouch(Wire(Bool()))
     val cnt = RegInit(0.U(log2Ceil(bank).W))
     val awfire = RegInit(false.B)
     val wfire = RegInit(false.B)
@@ -117,7 +117,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
         bwen(i) := Fill(8, req_reg.strb(i))
     }
 
-    val way_sel = Seq.fill(way)(Wire(Bool()))
+    val way_sel = Seq.fill(way)(dontTouch(Wire(Bool())))
     val way_sel_reg = Seq.fill(way)(Reg(Bool()))
     for (i <- 0 until way) {
         way_sel(i) := random_bit(log2Ceil(way) - 1, 0) === i.U
@@ -130,14 +130,14 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     val cache_line_tag = Reg(UInt(tag_len.W))
 
     val cache_line_buf = Reg(UInt((64 * (bank - 1)).W))
-    val new_cache_line = Cat(slave.r.bits.data, cache_line_buf)
+    val new_cache_line = dontTouch(Cat(slave.r.bits.data, cache_line_buf))
     
-    val cache_rdata = Wire(UInt(64.W))
+    val cache_rdata = dontTouch(Wire(UInt(64.W)))
     val cache_rdata_reg = RegEnable(cache_rdata, state === s_lookup || state === s_r)
     
     val refill_wen = state === s_r && cnt === 3.U
     
-    val hit_way = Seq.fill(way)(Wire(Bool()))
+    val hit_way = Seq.fill(way)(dontTouch(Wire(Bool())))
 
     dirty := false.B
     hazard := false.B
