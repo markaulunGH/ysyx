@@ -190,10 +190,11 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc)
 
 static void exec_once(Decode *s)
 {
+    if (contextp->time() > 8750000000)
+        wave_enable = true;
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
     static uint64_t skip_pc = 0;
-    int cnt = 0;
     do
     {
         top->eval();
@@ -247,13 +248,7 @@ static void exec_once(Decode *s)
             }
         }
         cycle_end();
-        ++ cnt;
-    } while (!top->io_inst_end || top->io_pc == 0x00000000 || cnt > 90);
-    if (cnt > 100)
-    {
-        end_simulation();
-        assert(0);
-    }
+    } while (!top->io_inst_end || top->io_pc == 0x00000000);
     if (top->io_pc == skip_pc)
     {
         difftest_skip_ref();
@@ -270,7 +265,6 @@ static void exec_once(Decode *s)
     }
     s->dnpc = top->io_pc;
     cpu.pc = s->dnpc;
-    printf("pc = %lx\n", s->dnpc);
 #ifdef CONFIG_ITRACE
     char *p = s->logbuf;
     p += snprintf(p, sizeof(s->logbuf), "0x%016lx:", s->pc);
