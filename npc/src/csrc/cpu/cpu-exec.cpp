@@ -248,7 +248,7 @@ static void exec_once(Decode *s)
         }
         cycle_end();
         ++ cnt;
-    } while (!top->io_inst_end || top->io_pc == 0x00000000 || cnt > 20);
+    } while (!top->io_inst_end || top->io_pc == 0x00000000);
     if (cnt > 20)
     {
         end_simulation();
