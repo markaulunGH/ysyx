@@ -147,7 +147,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
     {
         hit_way(i) := ways(i).V.io.Q === 1.U && ways(i).tag.io.Q === req_reg.tag
 
-        when (state === s_lookup && way_sel(i)) {
+        when (state === s_miss && way_sel_reg(i)) {
             cache_line_tag := ways(i).tag.io.Q
         }
 
