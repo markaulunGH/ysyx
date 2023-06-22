@@ -18,6 +18,7 @@ extern VerilatedFstC* tfp;
 #else
 extern VerilatedVcdC* tfp;
 #endif
+extern bool wave_enable;
 
 void init_simulation(int argc, char** argv);
 void end_simulation();
