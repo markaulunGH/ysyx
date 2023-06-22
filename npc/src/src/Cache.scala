@@ -187,7 +187,7 @@ class Cache(way : Int, depth : Int, bank : Int) extends Module
                 cache_rdata := ways(i).data.banks(j).Q >> Cat(req_reg.offset(2, 0), 0.U(3.W))
             }
 
-            when (state === s_miss && way_sel(i)) {
+            when (state === s_miss && way_sel_reg(i)) {
                 cache_line(j) := ways(i).data.banks(j).Q
             }
 
