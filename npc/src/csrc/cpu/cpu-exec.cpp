@@ -193,6 +193,7 @@ static void exec_once(Decode *s)
     s->pc = top->io_pc;
     s->npc.inst.val = top->io_inst;
     static uint64_t skip_pc = 0;
+    int cnt = 0;
     do
     {
         top->eval();
@@ -246,7 +247,13 @@ static void exec_once(Decode *s)
             }
         }
         cycle_end();
-    } while (!top->io_inst_end || top->io_pc == 0x00000000);
+        ++ cnt;
+    } while (!top->io_inst_end || top->io_pc == 0x00000000 || cnt > 20);
+    if (cnt > 20)
+    {
+        end_simulation();
+        assert(0);
+    }
     if (top->io_pc == skip_pc)
     {
         difftest_skip_ref();
@@ -263,7 +270,6 @@ static void exec_once(Decode *s)
     }
     s->dnpc = top->io_pc;
     cpu.pc = s->dnpc;
-    printf("pc: %lx\n", s->dnpc);
 #ifdef CONFIG_ITRACE
     char *p = s->logbuf;
     p += snprintf(p, sizeof(s->logbuf), "0x%016lx:", s->pc);
