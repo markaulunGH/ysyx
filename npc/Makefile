@@ -67,6 +67,7 @@ SO ?=
 ARGS ?=
 
 sim:
+	$(call verilog)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 	@$^
