@@ -67,7 +67,8 @@ SO ?=
 ARGS ?=
 
 sim:
-	$(call verilog)
+	mkdir -p $(BUILD_DIR)
+	mill -i __.test.runMain Elaborate -td $(BUILD_DIR)
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 
 	@$^
